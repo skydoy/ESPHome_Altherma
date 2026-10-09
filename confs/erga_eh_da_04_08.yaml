@@ -216,23 +216,13 @@ sensor:
     unit_of_measurement: bar
     state_class: measurement
     accuracy_decimals: 1
-  # Register is 0 at full speed and 100 when stopped.
   - <<: *altherma_base
-    name: Water pump speed
+    name: "Water pump signal (0:max-100:stop)"
     register: 0x62
     offset: 12
     convid: 152
     datasize: 1
     accuracy_decimals: 0
-    unit_of_measurement: "%"
-    state_class: measurement
-    icon: mdi:pump
-    filters:
-      - lambda: |-
-          if (isnan(x)) return NAN;
-          if (x <= 0.0f) return 100.0f;
-          if (x >= 100.0f) return 0.0f;
-          return 100.0f - x;
 binary_sensor:
   - <<: *binary
     name: Defrost Operation
