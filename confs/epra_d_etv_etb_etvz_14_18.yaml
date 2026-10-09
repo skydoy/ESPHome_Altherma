@@ -304,12 +304,21 @@ sensor:
     offset: 11
     convid: 105
     datasize: 1
+  # Register is 0 at full speed and 100 when stopped.
   - <<: *number
-    name: "Water pump signal (0:max-100:stop)"
+    name: Water pump speed
     register: 0x62
     offset: 12
     convid: 152
     datasize: 1
+    unit_of_measurement: "%"
+    icon: mdi:pump
+    filters:
+      - lambda: |-
+          if (isnan(x)) return NAN;
+          if (x <= 0.0f) return 100.0f;
+          if (x >= 100.0f) return 0.0f;
+          return 100.0f - x;
   - <<: *pressure
     name: Refrigerant pressure
     register: 0x62
@@ -430,6 +439,7 @@ binary_sensor:
     offset: 11
     convid: 307
     datasize: 1
+  # Bit is 1 while the cutout is closed (healthy). Invert so Problem means tripped.
   - <<: *binary
     name: Thermal protector BUH (Q1L)
     device_class: problem
@@ -437,6 +447,8 @@ binary_sensor:
     offset: 11
     convid: 306
     datasize: 1
+    filters:
+      - invert:
   - <<: *binary
     name: Thermal protector BSH
     device_class: problem
@@ -444,6 +456,8 @@ binary_sensor:
     offset: 11
     convid: 305
     datasize: 1
+    filters:
+      - invert:
   - <<: *binary
     name: Bivalent operation
     register: 0x60
