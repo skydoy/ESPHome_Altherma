@@ -1,0 +1,161 @@
+name: Build firmware & publish installer
+# Web installer for this fork (https://skydoy.github.io/esphome-altherma/), in the same style
+# as skydoy/ESPHome_AC: one firmware per board x heat pump model, each in its own Pages folder
+# firmware/<board>/<model>/ with an ESP Web Tools manifest.json that is also the OTA source of
+# the "Firmware" update entity (see installer/*.installer.yaml).
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    # Every push / PR builds the whole matrix (that is the validation); only tags and manual
+    # runs deploy (see "deploy"). Keep "model" in sync with confs/*.yaml and static/index.html.
+    name: ${{ matrix.board }} / ${{ matrix.model }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        board: [esp32, esp32-s3, atoms3, esp8266, m5stack]
+        model:
+          - erga_eh_da_04_08
+          - erga_eh_e_ej_04_08
+          - erla_d_ebv_ebb_ebvz_11_16
+          - erla_d_ebsh_11_16_ech2o
+          - epra_d_etv_etb_etvz_14_18
+          - altherma_ehvh_ehvx_cb
+    env:
+      BOARD: ${{ matrix.board }}
+      MODEL: ${{ matrix.model }}
+      WRAPPER: installer/esphome-altherma-${{ matrix.board }}.installer.yaml
+      SITE_DIR: firmware/${{ matrix.board }}/${{ matrix.model }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Pick the heat pump model and the firmware version
+        run: |
+          test -f "confs/$MODEL.yaml"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then v="${GITHUB_REF_NAME#v}"; else v="dev-${GITHUB_SHA::7}"; fi
+          sed -i "s|^\(\s*altherma_model:\).*|\1 $MODEL|; s|^\(\s*altherma_version:\).*|\1 \"$v\"|" "$WRAPPER"
+          grep -n "altherma_model:\|altherma_version:\|altherma_board:" "$WRAPPER"
+      - name: Placeholder secrets (esphome-altherma-m5stack.yaml uses !secret; the wrapper drops Wi-Fi)
+        run: |
+          printf 'wifi_ssid: ""\nwifi_password: ""\nota_password: ""\n' > secrets.yaml
+      - id: esphome
+        uses: esphome/build-action@v8.1.0   # consider pinning to the release commit SHA
+        with:
+          yaml-file: ${{ env.WRAPPER }}
+          version: "2026.10.1"
+          complete-manifest: true
+          release-url: ${{ github.server_url }}/${{ github.repository }}/releases
+      - name: Stage the firmware in its Pages folder
+        run: |
+          mkdir -p "out/$SITE_DIR"
+          cp -r "${{ steps.esphome.outputs.name }}"/* "out/$SITE_DIR/"
+          ls -R out
+      - uses: actions/upload-artifact@v7
+        with:
+          name: fw-${{ matrix.board }}-${{ matrix.model }}
+          path: out
+          if-no-files-found: error
+  pages:
+    # Installer page + every firmware folder in one Pages artifact.
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: fw-*
+          merge-multiple: true
+          path: site
+      - name: Assemble Pages site
+        run: |
+          # Only the installer files: static/index.md + _config.yml belong to upstream's Jekyll site.
+          cp static/*.html static/*.svg static/*.png static/*.ico site/
+          ls -R site
+          for b in esp32 esp32-s3 atoms3 esp8266 m5stack; do
+            for m in $(ls confs | sed 's/\.yaml$//'); do
+              test -f "site/firmware/$b/$m/manifest.json" || { echo "::error::missing firmware/$b/$m/manifest.json"; exit 1; }
+            done
+          done
+          test "$(find site/firmware -name manifest.json | wc -l)" -eq 30
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+  deploy:
+    # Publish the installer and the OTA manifests only for release tags (or a manual run).
+    if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch')
+    needs: pages
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
+  release:
+    # Create (or update) the GitHub Release for a v* tag: notes from CHANGELOG.md when it has
+    # a "## [x.y.z]" section (otherwise GitHub's generated notes), every image attached.
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: fw-*
+          merge-multiple: true
+          path: fw
+      - name: Release notes
+        run: |
+          v="${TAG#v}"
+          : > notes.md
+          if [ -f CHANGELOG.md ]; then
+            awk -v h="## [$v]" 'index($0,h)==1{f=1;next} f&&/^## /{exit} f&&/^\[[^]]+\]: /{exit} f{print}' CHANGELOG.md > notes.md
+          fi
+          if grep -q '[^[:space:]]' notes.md; then echo "notes=file" >> "$GITHUB_ENV"; else echo "notes=generate" >> "$GITHUB_ENV"; fi
+          {
+            echo
+            echo "---"
+            echo "**Install or update:** flash from the [web installer](https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/) (Chrome or Edge): pick your board and heat pump model."
+            echo "Devices already running this firmware update over the air through the **Firmware** update entity."
+            echo "Assets are named \`esphome-altherma-<board>-<model>-${TAG}\`; \`*.factory.bin\` is the full image for a first USB flash at offset 0x0, \`*.ota.bin\` is for manual OTA uploads."
+          } >> notes.md
+          cat notes.md
+      - name: Prepare assets
+        run: |
+          mkdir assets
+          for d in fw/firmware/*/*/; do
+            board=$(basename "$(dirname "$d")"); model=$(basename "$d")
+            for f in "$d"*.bin; do
+              b=$(basename "$f"); cp "$f" "assets/esphome-altherma-${board}-${model}-${TAG}.${b#*.}"
+            done
+          done
+          test "$(ls assets | wc -l)" -ge 60   # factory + ota for 5 boards x 6 models
+          (cd assets && sha256sum * > SHA256SUMS.txt)
+          ls -l assets
+      - name: Create or update the release
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            if [ "$notes" = file ]; then gh release edit "$TAG" --title "$TAG" --notes-file notes.md; fi
+            gh release upload "$TAG" assets/* --clobber
+          elif [ "$notes" = file ]; then
+            gh release create "$TAG" assets/* --title "$TAG" --notes-file notes.md --verify-tag
+          else
+            gh release create "$TAG" assets/* --title "$TAG" --generate-notes --notes-file notes.md --verify-tag
+          fi

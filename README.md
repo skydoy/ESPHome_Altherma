@@ -1,3 +1,46 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="docs/logo-light.png">
+    <img src="docs/logo-light.png" alt="ESPHome Altherma" width="320">
+  </picture>
+</p>
+
+<p align="center">
+  <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml/badge.svg" alt="Build"></a>
+  <a href="https://github.com/skydoy/esphome-altherma/releases/latest"><img src="https://img.shields.io/github/v/release/skydoy/esphome-altherma?sort=semver" alt="Release"></a>
+  <a href="https://github.com/jjohnsen/esphome-altherma"><img src="https://img.shields.io/badge/upstream-jjohnsen%2Fesphome--altherma-555" alt="Upstream"></a>
+</p>
+
+<p align="center"><b>Your Daikin Altherma 3 in Home Assistant. Plug in by USB, pick your heat pump, click Install. No YAML.</b><br>
+🇵🇹 <a href="README.pt.md">Ler em português</a></p>
+
+<p align="center">
+  <a href="https://skydoy.github.io/esphome-altherma/"><img src="https://img.shields.io/badge/Open%20the%20web%20installer-1784F7?style=for-the-badge&logo=esphome&logoColor=white" alt="Open the web installer" height="40"></a>
+</p>
+
+This fork adds a one-click web installer with a ready-made firmware for every **board × heat pump model**
+(ESP32, ESP32-S3, M5Stack AtomS3 / AtomS3 Lite, ESP8266, M5Stack Core / Basic). Each firmware updates itself
+over the air from the same place (the **Firmware** update entity in Home Assistant). On the M5Stack Core the
+firmware shows a short animated boot splash.
+
+## Install in 3 steps
+1. **Flash.** Open the **[web installer](https://skydoy.github.io/esphome-altherma/)** in Chrome or Edge, pick your
+   board and your heat pump model, plug the board into your computer by USB → **Install**.
+   Do this *before* wiring the board to the heat pump: never connect USB and the X10A 5 V at the same time.
+2. **Wi-Fi.** Type your Wi-Fi in the same window. (Or later: join the `esphome-altherma-…` hotspot from your phone.)
+3. **Wire and add.** Heat pump off at the breaker, connect the board to the **X10A** connector
+   (the installer shows the pins for your board), breaker back on. Home Assistant finds *ESPHome Altherma* under
+   **Settings → Devices & services** → **Configure**.
+
+<p align="center"><img src="docs/logo-animation.gif" alt="ESPHome Altherma animated logo" width="240"></p>
+
+> Everything below is the upstream documentation of [jjohnsen/esphome-altherma](https://github.com/jjohnsen/esphome-altherma),
+> kept unchanged (its links to the upstream installer still work). Firmware logic, sensors and model files come from
+> upstream and [ESPAltherma](https://github.com/raomin/ESPAltherma); this fork only adds the installer and its builds.
+
+---
+
 # ESPHome Altherma
 
 [![ESPHome](https://img.shields.io/badge/ESPHome-component-000?logo=esphome&logoColor=white)](https://esphome.io/)

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600"><style>
+.hg{transform-box:fill-box;transform-origin:50% 100%;animation:hg 4s ease-in-out infinite}
+.wv{animation:wv 4s ease-in-out infinite}
+@keyframes hg{0%{transform:scaleY(.12)}45%,80%{transform:scaleY(1)}100%{transform:scaleY(.12)}}
+@keyframes wv{0%,20%{opacity:0;transform:translateY(14px)}50%,80%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-10px)}}
+@media (prefers-reduced-motion:reduce){.hg,.wv{animation:none}}
+</style><defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0FE3FA"/><stop offset="1" stop-color="#1784F7"/></linearGradient>
+</defs>
+<rect x="0" y="0" width="600" height="600" rx="128" fill="url(#g)"/>
+<g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+<path stroke-width="28" d="M112 300L300 128L488 300M156 262V492H444V262"/>
+<path stroke-width="10" d="M356 236H386M356 268H374M356 300H386M356 332H374M356 364H386"/>
+<path class="wv" stroke-width="13" d="M206 404c-14-16 14-32 0-48s14-32 0-48s14-32 0-48M236 404c-14-16 14-32 0-48s14-32 0-48s14-32 0-48"/>
+</g>
+<g fill="#fff"><rect x="262" y="196" width="76" height="230" rx="38"/><circle cx="300" cy="430" r="56"/></g>
+<circle cx="300" cy="430" r="36" fill="#FF6A2B"/>
+<rect class="hg" x="288" y="283.1" width="24" height="146.9" rx="12" fill="#FF6A2B"/></svg>
