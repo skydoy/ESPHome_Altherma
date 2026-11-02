@@ -33,6 +33,13 @@
     a { color: var(--accent); }
     html[data-lang=pt] .en, html[data-lang=en] .pt { display:none !important; }
     [hidden] { display:none !important; }
+    .donate { display:flex; flex-wrap:wrap; align-items:center; gap:.75rem 1rem; border-left:4px solid var(--hot); }
+    .donate p { margin:0; flex:1 1 18rem; }
+    .donate .btns { display:flex; gap:.5rem; flex-wrap:wrap; }
+    .donate .btns a { display:inline-flex; align-items:center; gap:.4rem; padding:.5rem .9rem; border-radius:999px; font-weight:700; text-decoration:none; }
+    .donate .kofi { background:#F16061; color:#fff; }
+    .donate .bmc { background:#FFDD00; color:#000; }
+    .donate .btns a:hover { filter:brightness(1.07); }
     header { background: linear-gradient(135deg, var(--g1), var(--g2)); color:#fff; padding: 1.25rem 1rem 3.5rem; }
     .wrap { max-width: 52rem; margin: 0 auto; padding: 0 1rem; }
     .top { display:flex; align-items:center; gap:.9rem; }
@@ -127,6 +134,13 @@
 </header>
 
 <main class="wrap">
+  <section class="card donate" aria-label="Donativos / Donations">
+    <p><span class="pt">☕ <b>Gostas deste projeto?</b> Ajuda-me a trazer algo ainda melhor: hardware para testes, novas placas e modelos de bomba de calor.</span><span class="en">☕ <b>Like it?</b> Help me bring something even better: test hardware, new boards and more heat pump models.</span></p>
+    <div class="btns">
+      <a class="kofi" href="https://ko-fi.com/skydoy" target="_blank" rel="noopener">Ko-fi</a>
+      <a class="bmc" href="https://buymeacoffee.com/skydoy" target="_blank" rel="noopener">Buy Me a Coffee</a>
+    </div>
+  </section>
   <div id="nosupport" class="card note warn">
     <span class="pt"><b>Este browser não consegue instalar.</b> Abre esta página no <b>Chrome</b> ou <b>Edge</b> num computador (não funciona no telemóvel, Safari nem Firefox).</span>
     <span class="en"><b>This browser can't install.</b> Open this page in <b>Chrome</b> or <b>Edge</b> on a computer (phones, Safari and Firefox don't work).</span>

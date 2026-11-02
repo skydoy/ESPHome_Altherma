@@ -6,6 +6,12 @@
   </picture>
 </p>
 
+<p align="center">☕ <b>Gostas? Ajuda-me a trazer algo ainda melhor.</b></p>
+<p align="center">
+  <a href="https://ko-fi.com/skydoy" target="_blank"><img src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
+  <a href="https://buymeacoffee.com/skydoy" target="_blank"><img src="https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee"></a>
+</p>
+
 <p align="center">
   <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml/badge.svg" alt="Build"></a>
   <a href="https://github.com/skydoy/esphome-altherma/releases/latest"><img src="https://img.shields.io/github/v/release/skydoy/esphome-altherma?sort=semver" alt="Release"></a>
