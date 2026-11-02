@@ -1,0 +1,39 @@
+# Web installer build for the skydoy/esphome-altherma fork (board: esp32).
+# Same as the upstream ../esphome-altherma-esp32.factory.yaml (which is left untouched),
+# plus what the fork's installer needs: a selectable heat pump model, the fork's
+# project name/version and a per-board, per-model OTA manifest URL.
+# CI (.github/workflows/publish.yml) rewrites altherma_model and altherma_version per build.
+substitutions:
+  altherma_model: erga_eh_da_04_08
+  altherma_version: dev
+  altherma_board: esp32
+  # Build the component from this checkout (path is relative to installer/).
+  altherma_component_source: ../components
+
+packages:
+  board: !include ../esphome-altherma-esp32.yaml
+
+esphome:
+  project:
+    name: skydoy.esphome-altherma
+    version: ${altherma_version}
+
+# Adopting in the ESPHome Device Builder imports the plain board file from the fork.
+# Add "altherma_model: <model>" under substitutions in the adopted YAML to keep your model.
+dashboard_import:
+  package_import_url: github://skydoy/esphome-altherma/esphome-altherma-esp32.yaml@main
+
+# Wi-Fi provisioning over USB from the web installer.
+improv_serial:
+
+# OTA updates from the fork's GitHub Pages (same board and model you installed).
+http_request:
+
+ota:
+  - platform: http_request
+
+update:
+  - platform: http_request
+    id: update_http_request
+    name: None
+    source: https://skydoy.github.io/esphome-altherma/firmware/${altherma_board}/${altherma_model}/manifest.json
