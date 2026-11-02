@@ -10,6 +10,10 @@ permissions:
 jobs:
   build-firmware:
     name: Build Firmware
+    # Upstream (jjohnsen) release pipeline. Disabled in forks: skydoy/esphome-altherma publishes
+    # its own releases and Pages from publish.yml, and a release made there would otherwise
+    # trigger this workflow and publish-pages.yml, which would overwrite the fork's installer.
+    if: github.repository == 'jjohnsen/esphome-altherma'
     uses: esphome/workflows/.github/workflows/build.yml@2026.10.2
     with:
       #### Modify below here to match your project ####
@@ -27,6 +31,7 @@ jobs:
 
   upload-to-release:
     name: Upload to Release
+    if: github.repository == 'jjohnsen/esphome-altherma'
     uses: esphome/workflows/.github/workflows/upload-to-gh-release.yml@2026.10.2
     needs:
       - build-firmware

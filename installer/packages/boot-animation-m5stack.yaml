@@ -1,0 +1,92 @@
+# Optional boot animation for the M5Stack Core / Basic screen (320x240, id m5_display).
+# Shows the ESPHome Altherma logo with its thermometer filling up, then the name and the
+# firmware version, then hands the screen back to the normal UI of
+# esphome-altherma-m5stack.yaml. That file is not modified: the splash is drawn as a
+# temporary display page (a page takes precedence over the display's lambda while shown).
+#
+# Use:   packages:
+#          boot_animation: !include packages/boot-animation-m5stack.yaml
+# The image path below is relative to the folder of the main YAML (installer/).
+substitutions:
+  splash_frames: "24"      # animation frames
+  splash_frame_ms: "45"    # time per frame (24 x 45 ms ≈ 1.1 s)
+  splash_hold_ms: "1500"   # logo + version stay on screen after the animation
+
+globals:
+  - id: splash_frame
+    type: int
+    restore_value: no
+    initial_value: "0"
+
+image:
+  - file: packages/splash_icon.png   # 120x120 logo without the mercury column
+    id: splash_icon
+    type: RGB565
+    transparency: alpha_channel
+
+font:
+  - file: "gfonts://Roboto@700"
+    id: splash_font
+    size: 30
+    glyphs: "ESPHomeAltr "   # unique characters of "ESPHome Altherma"
+  - file: "gfonts://Roboto"
+    id: splash_font_small
+    size: 16
+
+esphome:
+  on_boot:
+    - priority: 300   # after the display is set up, before Wi-Fi
+      then:
+        - script.execute: boot_splash
+
+script:
+  - id: boot_splash
+    mode: single
+    then:
+      - lambda: |-
+          static display::DisplayPage splash_page([](display::Display &it) {
+            const int n = ${splash_frames};
+            int f = id(splash_frame);
+            if (f < 0) f = 0;
+            if (f > n) f = n;
+            float t = (float) f / n;
+            t = 1.0f - (1.0f - t) * (1.0f - t);  // ease out
+            const int w = it.get_width(), h = it.get_height();
+            const int ix = (w - 120) / 2, iy = 16;
+            it.fill(Color(8, 18, 40));
+            it.image(ix, iy, id(splash_icon));
+            // Mercury column, logo coordinates / 5 (600 -> 120 px): x 288..312, bulb centre y 430,
+            // full logo level is 72% of the 204 px tube.
+            const int top = iy + (int) ((430.0f - 204.0f * 0.72f * t) / 5.0f);
+            const int bot = iy + 430 / 5;
+            const Color hot(255, 106, 43);
+            it.filled_rectangle(ix + 288 / 5, top, 24 / 5 + 1, bot - top, hot);
+            it.filled_circle(ix + 60, top, 2, hot);
+            if (f * 2 >= n) {
+              int x1, y1, w1, h1, x2, y2, w2, h2;
+              it.get_text_bounds(0, 0, "ESPHome ", id(splash_font), TextAlign::TOP_LEFT, &x1, &y1, &w1, &h1);
+              it.get_text_bounds(0, 0, "Altherma", id(splash_font), TextAlign::TOP_LEFT, &x2, &y2, &w2, &h2);
+              const int tx = (w - w1 - w2) / 2;
+              it.print(tx, 150, id(splash_font), Color::WHITE, TextAlign::TOP_LEFT, "ESPHome ");
+              it.print(tx + w1, 150, id(splash_font), hot, TextAlign::TOP_LEFT, "Altherma");
+            }
+            if (f >= n) {
+            #ifdef ESPHOME_PROJECT_VERSION
+              it.printf(w / 2, 192, id(splash_font_small), Color(154, 169, 189), TextAlign::TOP_CENTER, "v%s", ESPHOME_PROJECT_VERSION);
+            #endif
+            }
+            // Progress bar along the bottom edge.
+            it.filled_rectangle(0, h - 4, (w * f) / n, 4, Color(15, 227, 250));
+          });
+          id(splash_frame) = 0;
+          id(m5_display).show_page(&splash_page);
+      - component.update: m5_display
+      - repeat:
+          count: ${splash_frames}
+          then:
+            - delay: ${splash_frame_ms}ms
+            - lambda: id(splash_frame) += 1;
+            - component.update: m5_display
+      - delay: ${splash_hold_ms}ms
+      - lambda: id(m5_display).show_page(nullptr);   // back to the normal UI lambda
+      - component.update: m5_display

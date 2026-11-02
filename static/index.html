@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="pt" data-lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ESPHome Altherma · Web installer</title>
+  <meta name="description" content="Install ESPHome Altherma from your browser: your Daikin Altherma heat pump in Home Assistant through the X10A port, local, no YAML.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta property="og:title" content="ESPHome Altherma">
+  <meta property="og:description" content="Your Daikin Altherma heat pump in Home Assistant. Plug in, pick your model, click Install. No cloud, no app.">
+  <meta property="og:image" content="https://raw.githubusercontent.com/skydoy/esphome-altherma/main/docs/social-preview.png">
+  <meta name="theme-color" content="#1784F7">
+  <script>
+    (function () { var t = null; try { t = localStorage.getItem('theme'); } catch (e) {}
+      if (t !== 'dark' && t !== 'light') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t; })();
+  </script>
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+  <style>
+    :root { --bg:#f4f8fc; --card:#fff; --text:#0b1b3f; --muted:#52647a; --line:#dce5ef; --g1:#0FE3FA; --g2:#1784F7; --accent:#1784F7; --hot:#FF6A2B; --warn-bg:#fff6e5; --warn:#e69500; --ok-bg:#e8f4fe; --ok:#1784F7; }
+    :root { color-scheme: light; }
+    html[data-theme=dark] { color-scheme: dark; --bg:#0b1220; --card:#131c2e; --text:#e6edf3; --muted:#9aa9bd; --line:#26334a; --accent:#4fb3ff; --warn-bg:#2b2111; --ok-bg:#0f2238; --ok:#4fb3ff; }
+    html[data-theme=dark] .boards img { background:#fff; }
+    esp-web-install-button { --mdc-theme-primary:#1784F7; }
+    .theme { border:1px solid #fff8; background:transparent; color:#fff; border-radius:999px; padding:.25rem .6rem; cursor:pointer; font-weight:600; line-height:1; }
+    .theme:hover, .lang button:hover { background:#fff3; }
+    html[data-theme=dark] .theme .sun, html:not([data-theme=dark]) .theme .moon { display:none; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+    a { color: var(--accent); }
+    html[data-lang=pt] .en, html[data-lang=en] .pt { display:none !important; }
+    [hidden] { display:none !important; }
+    header { background: linear-gradient(135deg, var(--g1), var(--g2)); color:#fff; padding: 1.25rem 1rem 3.5rem; }
+    .wrap { max-width: 52rem; margin: 0 auto; padding: 0 1rem; }
+    .top { display:flex; align-items:center; gap:.9rem; }
+    .top .logo { width:56px; height:56px; border-radius:14px; box-shadow: 0 2px 10px rgba(0,0,0,.2); outline:2px solid #fff6; flex:none; }
+    .top h1 { font-size:1.6rem; margin:0; line-height:1.1; }
+    .top small { opacity:.92; font-size:.95rem; }
+    .lang { margin-left:auto; display:flex; gap:.25rem; }
+    .lang button { border:1px solid #fff8; background:transparent; color:#fff; border-radius:999px; padding:.25rem .7rem; cursor:pointer; font-weight:600; }
+    .lang button[aria-pressed=true] { background:#fff; color:#0f63c4; }
+    .pitch { font-size:1.15rem; margin:1rem 0 0; max-width:40rem; }
+    main { margin-top:-2.5rem; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:1.25rem 1.25rem 1rem; margin-bottom:1rem; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+    .card h2 { margin:0 0 .6rem; font-size:1.2rem; display:flex; align-items:center; gap:.6rem; }
+    .card h3 { font-size:1rem; margin:1rem 0 .3rem; }
+    .num { flex:none; width:2rem; height:2rem; border-radius:50%; display:inline-grid; place-items:center; color:#fff; font-size:1rem; background: linear-gradient(135deg, var(--g1), var(--g2)); }
+    .boards { display:grid; grid-template-columns: 1fr 1fr; gap:.8rem; }
+    .boards label { display:block; border:2px solid var(--line); border-radius:12px; padding:.6rem; cursor:pointer; transition: border-color .15s; }
+    .boards label:hover { border-color: var(--accent); }
+    .boards label:has(input:checked) { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+    .boards input, .models input { accent-color: var(--accent); }
+    .boards img { width:100%; height:auto; border-radius:8px; margin-top:.4rem; display:block; }
+    .boards .t, .models .t { font-weight:700; font-size:1.05rem; }
+    .boards .d, .models .d { color:var(--muted); font-size:.92rem; }
+    .models { display:grid; grid-template-columns: 1fr 1fr; gap:.6rem; }
+    .models label { display:flex; gap:.6rem; align-items:flex-start; border:2px solid var(--line); border-radius:12px; padding:.55rem .7rem; cursor:pointer; transition: border-color .15s; }
+    .models label:hover { border-color: var(--accent); }
+    .models label:has(input:checked) { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+    .models input { margin-top:.35rem; }
+    .models code { font-size:.8rem; }
+    .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#fff; background:var(--hot); border-radius:999px; padding:0 .45rem; margin-left:.3rem; vertical-align:middle; }
+    .brandline { color:var(--muted); font-size:.92rem; margin:.8rem 0 .2rem; }
+    .install { text-align:center; padding:.5rem 0 .25rem; }
+    .btn { font: inherit; font-size:1.15rem; font-weight:700; color:#fff; border:0; border-radius:12px; padding:.85rem 2.2rem; cursor:pointer; background: linear-gradient(135deg, var(--g1), var(--g2)); box-shadow: 0 4px 14px rgba(23,132,247,.35); }
+    .btn:hover { filter: brightness(1.05); }
+    .ver { color:var(--muted); font-size:.9rem; margin-top:.4rem; }
+    .pick { color:var(--muted); font-size:.92rem; margin:.2rem 0 .6rem; text-align:center; }
+    .note { border-radius:10px; padding:.6rem .85rem; margin:.7rem 0; }
+    .warn { background:var(--warn-bg); border-left:4px solid var(--warn); }
+    .ok { background:var(--ok-bg); border-left:4px solid var(--ok); }
+    ol, ul { padding-left:1.25rem; } li { margin:.25rem 0; }
+    code { background: color-mix(in srgb, var(--text) 8%, transparent); padding:.05rem .35rem; border-radius:5px; }
+    table { width:100%; border-collapse:collapse; font-size:.95rem; }
+    td, th { border-top:1px solid var(--line); padding:.45rem .3rem; vertical-align:top; text-align:left; }
+    table.wire td:first-child, table.ents td:first-child { font-weight:600; white-space:nowrap; padding-right:.8rem; }
+    table.wire td.nc { color:var(--muted); }
+    details { border-top:1px solid var(--line); padding:.55rem 0; }
+    summary { cursor:pointer; font-weight:600; }
+    details p, details li { color:var(--muted); }
+    details p { margin:.4rem 0 0; }
+    footer { color:var(--muted); font-size:.88rem; padding: 1rem 0 2.5rem; }
+    #nosupport { display:none; }
+    @media (max-width: 38rem) { .boards, .models { grid-template-columns:1fr; } .top h1 { font-size:1.3rem; } }
+    /* Animated logo: the thermometer fills up and the heat waves rise (off with reduced motion). */
+    .hg{transform-box:fill-box;transform-origin:50% 100%;animation:hg 4s ease-in-out infinite}
+    .wv{animation:wv 4s ease-in-out infinite}
+    @keyframes hg{0%{transform:scaleY(.12)}45%,80%{transform:scaleY(1)}100%{transform:scaleY(.12)}}
+    @keyframes wv{0%,20%{opacity:0;transform:translateY(14px)}50%,80%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-10px)}}
+    @media (prefers-reduced-motion:reduce){.hg,.wv{animation:none}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" class="logo" role="img" aria-label="ESPHome Altherma logo"><defs>
+<linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0FE3FA"/><stop offset="1" stop-color="#1784F7"/></linearGradient>
+</defs>
+<rect x="0" y="0" width="600" height="600" rx="128" fill="url(#lg)"/>
+<g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+<path stroke-width="28" d="M112 300L300 128L488 300M156 262V492H444V262"/>
+<path stroke-width="10" d="M356 236H386M356 268H374M356 300H386M356 332H374M356 364H386"/>
+<path class="wv" stroke-width="13" d="M206 404c-14-16 14-32 0-48s14-32 0-48s14-32 0-48M236 404c-14-16 14-32 0-48s14-32 0-48s14-32 0-48"/>
+</g>
+<g fill="#fff"><rect x="262" y="196" width="76" height="230" rx="38"/><circle cx="300" cy="430" r="56"/></g>
+<circle cx="300" cy="430" r="36" fill="#FF6A2B"/>
+<rect class="hg" x="288" y="283.1" width="24" height="146.9" rx="12" fill="#FF6A2B"/></svg>
+      <div>
+        <h1>ESPHome Altherma</h1>
+        <small><span class="pt">Instalador web</span><span class="en">Web installer</span></small>
+      </div>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-set="pt">PT</button>
+        <button type="button" data-set="en">EN</button>
+        <button type="button" class="theme" id="theme-toggle" aria-label="Toggle dark mode"><span class="moon" aria-hidden="true">☾</span><span class="sun" aria-hidden="true">☀</span></button>
+      </div>
+    </div>
+    <p class="pitch">
+      <span class="pt">A tua bomba de calor Daikin Altherma no Home Assistant, pela ficha X10A. Escolhe a placa e o modelo, carrega em Instalar, feito. Sem YAML, sem nuvem, sem app.</span>
+      <span class="en">Your Daikin Altherma heat pump in Home Assistant, through the X10A port. Pick your board and model, click Install, done. No YAML, no cloud, no app.</span>
+    </p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="nosupport" class="card note warn">
+    <span class="pt"><b>Este browser não consegue instalar.</b> Abre esta página no <b>Chrome</b> ou <b>Edge</b> num computador (não funciona no telemóvel, Safari nem Firefox).</span>
+    <span class="en"><b>This browser can't install.</b> Open this page in <b>Chrome</b> or <b>Edge</b> on a computer (phones, Safari and Firefox don't work).</span>
+  </div>
+
+  <section class="card">
+    <h2><span class="num">1</span><span class="pt">Que placa compraste?</span><span class="en">Which board did you buy?</span></h2>
+    <form id="board-form" class="boards">
+      <label><input type="radio" name="board" value="esp32" checked>
+        <span class="t">ESP32 DevKit</span>
+        <div class="d"><span class="pt">A mais comum e barata (WROOM-32, 30 ou 38 pinos)</span><span class="en">The most common and cheapest (WROOM-32, 30 or 38 pins)</span></div>
+        <img src="board-esp32.svg" alt="Illustration of an ESP32 DevKit" loading="lazy"></label>
+      <label><input type="radio" name="board" value="esp32-s3">
+        <span class="t">ESP32-S3 DevKitC-1</span>
+        <div class="d"><span class="pt">Placa S3 genérica (também SuperMini)</span><span class="en">Generic S3 board (also SuperMini)</span></div>
+        <img src="board-esp32-s3.svg" alt="Illustration of an ESP32-S3 DevKitC-1" loading="lazy"></label>
+      <label><input type="radio" name="board" value="atoms3">
+        <span class="t">M5Stack AtomS3 / AtomS3 Lite</span>
+        <div class="d"><span class="pt">Pequena, com caixa · cabo Grove</span><span class="en">Tiny, cased · Grove cable</span></div>
+        <img src="board-atoms3.svg" alt="Illustration of an M5Stack AtomS3 Lite" loading="lazy"></label>
+      <label><input type="radio" name="board" value="esp8266">
+        <span class="t">D1 mini (ESP8266)</span>
+        <div class="d"><span class="pt">Placa antiga, menos memória</span><span class="en">Older board, less memory</span></div>
+        <img src="board-esp8266.svg" alt="Illustration of a Wemos D1 mini" loading="lazy"></label>
+      <label><input type="radio" name="board" value="m5stack">
+        <span class="t">M5Stack Core / Basic</span>
+        <div class="d"><span class="pt">Ecrã com os valores da bomba · três botões · animação no arranque</span><span class="en">Screen with the heat pump values · three buttons · boot animation</span></div>
+        <img src="board-m5stack.svg" alt="Illustration of an M5Stack Core with its screen" loading="lazy"></label>
+    </form>
+    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> a placa escolhida com contorno azul. Os passos seguintes mudam para essa placa.</span><span class="en"><b>You should see:</b> your board outlined in blue. The next steps change to match it.</span></p>
+  </section>
+
+  <section class="card">
+    <h2><span class="num">2</span><span class="pt">Que bomba de calor tens?</span><span class="en">Which heat pump do you have?</span></h2>
+    <p><span class="pt">Vê a etiqueta da unidade exterior (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) e da unidade interior (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Escolhe a linha que tem as duas.</span>
+      <span class="en">Check the label on the outdoor unit (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) and the indoor unit (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Pick the row that matches both.</span></p>
+    <form id="model-form" class="models"></form>
+    <p class="note warn">🧪 <span class="pt"><b>Deteção automática do modelo:</b> experimental, ainda não está neste instalador. Está a ser preparada no projeto original (<a href="https://github.com/jjohnsen/esphome-altherma/pull/51">jjohnsen/esphome-altherma #51</a>). Até lá, escolhe o modelo à mão; se errares, os valores ficam estranhos mas nada se estraga, basta reinstalar com outro modelo.</span>
+      <span class="en"><b>Automatic model detection:</b> experimental, not in this installer yet. It is being prepared upstream (<a href="https://github.com/jjohnsen/esphome-altherma/pull/51">jjohnsen/esphome-altherma #51</a>). Until then, pick the model by hand; a wrong pick only shows odd values and breaks nothing, just reinstall with another model.</span></p>
+    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> o teu modelo marcado. Não encontras o teu? <a href="https://github.com/jjohnsen/esphome-altherma/discussions">Pergunta nas Discussions</a>; o mais próximo costuma ser <code>erga_eh_da_04_08</code>.</span><span class="en"><b>You should see:</b> your model ticked. Not listed? <a href="https://github.com/jjohnsen/esphome-altherma/discussions">Ask in Discussions</a>; the closest is usually <code>erga_eh_da_04_08</code>.</span></p>
+  </section>
+
+  <section class="card" id="wiring">
+    <h2><span class="num">3</span><span class="pt">Ligar à ficha X10A</span><span class="en">Wire it to the X10A port</span></h2>
+    <p class="note warn">⚠️ <span class="pt"><b>Desliga a bomba de calor no disjuntor antes de abrir.</b> Há tensão da rede lá dentro. Prepara o cabo agora, mas faz a instalação (passo 4) por USB <b>com a placa desligada da X10A</b>: nunca ligues o USB e os 5V da bomba ao mesmo tempo.</span>
+      <span class="en"><b>Switch the heat pump off at the breaker before opening it.</b> There is mains voltage inside. Prepare the cable now, but do the install (step 4) over USB <b>with the board unplugged from the X10A</b>: never connect USB and the pump's 5V at the same time.</span></p>
+    <p><span class="pt">A X10A fica na placa principal da unidade interior (ficha de 5 pinos JST EH 2,5 mm; servem 4 fios Dupont). Para a tua placa</span><span class="en">The X10A is on the indoor unit's main board (5-pin JST EH 2.5 mm; 4 Dupont wires also work). For your board</span>
+      (<b id="wire-board">ESP32 DevKit</b>):</p>
+    <table class="wire" id="wire-table">
+      <tr><th><span class="pt">Pino X10A</span><span class="en">X10A pin</span></th><th><span class="pt">Sinal</span><span class="en">Signal</span></th><th><span class="pt">Na placa</span><span class="en">On the board</span></th></tr>
+    </table>
+    <p><span class="pt">O TX da bomba vai ao RX da placa e vice-versa (cruzado). Fotos e detalhes:</span><span class="en">The pump's TX goes to the board's RX and vice versa (crossed). Photos and details:</span>
+      <a href="https://github.com/raomin/ESPAltherma?tab=readme-ov-file#daikin-altherma-4-pin-x10a-connection"><span class="pt">guia de ligação do ESPAltherma</span><span class="en">ESPAltherma wiring guide</span></a>.</p>
+    <p class="note warn">🔌 <span class="pt"><b>Alimentação de 5V:</b> o pino 1 da X10A dá pouca corrente. Chega para a maioria das placas, mas há instalações (ex. ESP32-WROOM-32U com antena externa) que reiniciam sozinhas; nesse caso deixa o pino 1 sem ligar e alimenta a placa por um carregador USB, mantendo o GND ligado. O ecrã do M5Stack também gasta mais.</span>
+      <span class="en"><b>5V power:</b> X10A pin 1 supplies little current. It is enough for most boards, but some installs (e.g. ESP32-WROOM-32U with an external antenna) keep rebooting; then leave pin 1 unconnected and power the board from a USB charger, keeping GND connected. The M5Stack screen also draws more.</span></p>
+    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> 4 fios ligados (pino 4 livre) e, depois do passo 4, o LED da placa aceso quando a bomba está ligada.</span><span class="en"><b>You should see:</b> 4 wires connected (pin 4 free) and, after step 4, the board's LED on while the heat pump is powered.</span></p>
+  </section>
+
+  <section class="card">
+    <h2><span class="num">4</span><span class="pt">Instalar</span><span class="en">Install</span></h2>
+    <ol class="pt">
+      <li>Liga a placa ao computador por USB (desligada da X10A).</li>
+      <li>Carrega em <b>Instalar</b>, escolhe a porta série e depois <b>Install</b>.</li>
+      <li>No fim, escolhe a tua rede Wi-Fi (<b>2,4 GHz</b>) e escreve a palavra-passe. Saltaste? A placa abre a rede <code>esphome-altherma-…</code>: liga-te pelo telemóvel e escolhe o Wi-Fi.</li>
+      <li>Desliga o USB e liga a placa à X10A (passo 3).</li>
+    </ol>
+    <ol class="en">
+      <li>Plug the board into your computer by USB (unplugged from the X10A).</li>
+      <li>Press <b>Install</b>, pick the serial port, then <b>Install</b>.</li>
+      <li>At the end, pick your Wi-Fi network (<b>2.4 GHz</b>) and type the password. Skipped it? The board opens a <code>esphome-altherma-…</code> hotspot: join it from your phone and pick your Wi-Fi.</li>
+      <li>Unplug USB and connect the board to the X10A (step 3).</li>
+    </ol>
+    <p class="pick" id="pick"></p>
+    <div class="install">
+      <esp-web-install-button id="install" manifest="firmware/esp32/erga_eh_da_04_08/manifest.json">
+        <button slot="activate" class="btn"><span class="pt">⚡ Instalar</span><span class="en">⚡ Install</span></button>
+        <span slot="unsupported"><span class="pt">Usa o Chrome ou Edge num computador.</span><span class="en">Use Chrome or Edge on a computer.</span></span>
+        <span slot="not-allowed"><span class="pt">A página tem de abrir em https.</span><span class="en">The page must be opened over https.</span></span>
+      </esp-web-install-button>
+      <div class="ver" id="ver"></div>
+    </div>
+    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> uma porta série nova na lista, uma barra de progresso (1 a 2 minutos) e <i>Installation complete</i>.</span><span class="en"><b>You should see:</b> a new serial port in the list, a progress bar (1 to 2 minutes) and <i>Installation complete</i>.</span>
+      <span data-board="m5stack"><span class="pt">No M5Stack aparece a animação do logótipo e a versão antes dos valores.</span><span class="en">On the M5Stack the logo animation and the version show before the values.</span></span></p>
+    <details><summary><span class="pt">A placa não aparece na lista?</span><span class="en">Board not showing up?</span></summary>
+      <p class="pt">Instala o driver USB (CP210x ou CH340/CH9102, conforme o chip junto à ficha USB) e volta a ligar a placa. Experimenta outro cabo: muitos só carregam. Nas ESP32-S3, mantém o botão <b>BOOT</b> carregado ao ligar.</p>
+      <p class="en">Install the USB driver (CP210x or CH340/CH9102, depending on the chip next to the USB port) and reconnect the board. Try another cable: many only charge. On ESP32-S3 boards, hold <b>BOOT</b> while plugging in.</p>
+      <p><a href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers">CP210x</a> · <a href="https://www.wch-ic.com/downloads/CH341SER_ZIP.html">CH340</a> · <a href="https://docs.m5stack.com/en/download">M5Stack</a></p>
+      <p class="pt">Reinstalar mantém o Wi-Fi: numa placa que já tem este firmware o instalador oferece <b>Update</b>. Para mudar de modelo, reinstala com o novo modelo escolhido.</p>
+      <p class="en">Reinstalling keeps your Wi-Fi: on a board that already runs this firmware the installer offers <b>Update</b>. To change model, reinstall with the new model selected.</p>
+    </details>
+  </section>
+
+  <section class="card">
+    <h2><span class="num">5</span>Home Assistant</h2>
+    <p class="pt"><b>Definições → Dispositivos e serviços</b>: aparece <b>ESPHome Altherma</b> (ESPHome) → <b>Configurar</b>.</p>
+    <p class="en"><b>Settings → Devices &amp; services</b>: <b>ESPHome Altherma</b> (ESPHome) shows up → <b>Configure</b>.</p>
+    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> temperaturas (exterior, ida, retorno, AQS), caudal, compressor, potências e estados a mudar em segundos.</span><span class="en"><b>You should see:</b> temperatures (outdoor, leaving, return, DHW), flow, compressor, power and states updating every few seconds.</span></p>
+    <p class="pt"><b>Atualizações:</b> a entidade <b>Firmware</b> avisa quando há versão nova para a tua placa e modelo; instala-se com um clique.</p>
+    <p class="en"><b>Updates:</b> the <b>Firmware</b> entity tells you when a new version exists for your board and model; install it in one click.</p>
+  </section>
+
+  <section class="card">
+    <h2><span class="num">?</span><span class="pt">Problemas</span><span class="en">Troubleshooting</span></h2>
+    <details><summary><span class="pt">Os sensores ficam <i>Indisponível</i> ou a 0</span><span class="en">Sensors stay <i>Unavailable</i> or 0</span></summary>
+      <p class="pt">Troca o TX com o RX (é o erro mais comum), confirma o GND e o modelo escolhido no passo 2.</p>
+      <p class="en">Swap TX and RX (the most common mistake), check GND and the model picked in step 2.</p></details>
+    <details><summary><span class="pt">A placa reinicia sozinha</span><span class="en">The board keeps rebooting</span></summary>
+      <p class="pt">Falta de corrente no pino 5V da X10A. Alimenta a placa por USB e deixa o pino 1 sem ligar (GND ligado).</p>
+      <p class="en">Not enough current from the X10A 5V pin. Power the board over USB and leave pin 1 unconnected (GND connected).</p></details>
+    <details><summary><span class="pt">Alguns valores parecem errados</span><span class="en">Some values look wrong</span></summary>
+      <p class="pt">Provavelmente o modelo não é o teu. Reinstala com outro modelo do passo 2.</p>
+      <p class="en">The model is probably not yours. Reinstall with another model from step 2.</p></details>
+    <details><summary><span class="pt">O Home Assistant não encontra a placa</span><span class="en">Home Assistant doesn't find the board</span></summary>
+      <p class="pt">Tem de estar na mesma rede (sem rede de convidados). Adiciona à mão: integração ESPHome → o IP da placa, porta <code>6053</code>.</p>
+      <p class="en">It must be on the same network (not a guest network). Add it by hand: ESPHome integration → the board's IP, port <code>6053</code>.</p></details>
+    <details><summary><span class="pt">Mudar de Wi-Fi</span><span class="en">Change Wi-Fi</span></summary>
+      <p class="pt">Sem o Wi-Fi antigo, a placa abre a rede <code>esphome-altherma-…</code> após cerca de um minuto. Ou liga-a por USB aqui → <b>Change Wi-Fi</b>.</p>
+      <p class="en">Without its old Wi-Fi, the board opens the <code>esphome-altherma-…</code> hotspot after about a minute. Or plug it in by USB here → <b>Change Wi-Fi</b>.</p></details>
+    <p><a href="https://github.com/skydoy/esphome-altherma#readme">README</a>
+      · <a href="https://community.home-assistant.io/t/esphome-altherma-monitor-your-daikin-altherma-3-heat-pump-via-x10a/1000476">HA Community</a>
+      · <a href="https://github.com/jjohnsen/esphome-altherma/discussions"><span class="pt">Pedir ajuda</span><span class="en">Ask for help</span></a></p>
+  </section>
+
+  <footer>
+    <p><span class="pt">Componente e configurações:</span><span class="en">Component and configs:</span>
+      <a href="https://github.com/jjohnsen/esphome-altherma">jjohnsen/esphome-altherma</a>
+      (<span class="pt">por</span><span class="en">by</span> jjohnsen).
+      <span class="pt">Mapas de registos baseados no</span><span class="en">Register maps based on</span>
+      <a href="https://github.com/raomin/ESPAltherma">ESPAltherma</a> (raomin).
+      <span class="pt">Instalador e logótipo:</span><span class="en">Installer and logo:</span>
+      <a href="https://github.com/skydoy/esphome-altherma">skydoy/esphome-altherma</a>.
+      <span class="pt">As imagens das placas são ilustrações.</span><span class="en">Board pictures are illustrations.</span></p>
+    <p><span class="pt">Daikin e Altherma são marcas dos respetivos donos. Projeto comunitário independente, sem ligação à Daikin. Usa por tua conta e risco.</span>
+      <span class="en">Daikin and Altherma are trademarks of their owners. Independent community project, not affiliated with Daikin. Use at your own risk.</span></p>
+  </footer>
+</main>
+
+<script>
+  // Heat pump models: confs/<key>.yaml (keep in sync with base.yaml and the publish.yml matrix).
+  const MODELS = [
+    { key: 'erga_eh_da_04_08', name: 'Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA', d: '4–8 kW', def: true },
+    { key: 'erga_eh_e_ej_04_08', name: 'Altherma 3 R · ERGA E + EHV/EHB/EHVZ E/EJ', d: '4–8 kW' },
+    { key: 'erla_d_ebv_ebb_ebvz_11_16', name: 'Altherma 3 R · ERLA D + EBV/EBB/EBVZ D', d: '11–16 kW' },
+    { key: 'erla_d_ebsh_11_16_ech2o', name: 'Altherma 3 R ECH₂O · ERLA D + EBSH-X D', d: '11–16 kW' },
+    { key: 'epra_d_etv_etb_etvz_14_18', name: 'Altherma 3 H HT · EPRA D + ETV/ETB/ETVZ', d: '14–18 kW' },
+    { key: 'altherma_ehvh_ehvx_cb', name: 'Altherma LT · EHVH/EHVX CB', d: '11–16 kW' },
+  ];
+  // Pins from the board YAMLs (tx_pin / rx_pin of uart_bus).
+  const BOARDS = {
+    'esp32':   { name: 'ESP32 DevKit', v5: ['5V / VIN', '5V / VIN'], rx: 'GPIO16 (RX2)', tx: 'GPIO17 (TX2)' },
+    'esp32-s3': { name: 'ESP32-S3 DevKitC-1', v5: ['5V', '5V'], rx: 'GPIO2', tx: 'GPIO1' },
+    'atoms3':  { name: 'M5Stack AtomS3', v5: ['Grove 5V (vermelho)', 'Grove 5V (red)'], rx: 'Grove G2', tx: 'Grove G1', gnd: ['Grove GND (preto)', 'Grove GND (black)'] },
+    'esp8266': { name: 'D1 mini (ESP8266)', v5: ['5V', '5V'], rx: 'D1 (GPIO5)', tx: 'D2 (GPIO4)' },
+    'm5stack': { name: 'M5Stack Core / Basic', v5: ['5V (M-Bus)', '5V (M-Bus)'], rx: 'GPIO16', tx: 'GPIO17' },
+  };
+  const root = document.documentElement;
+  const button = document.getElementById('install');
+  const ver = document.getElementById('ver');
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const bi = (pt, en) => '<span class="pt">' + pt + '</span><span class="en">' + en + '</span>';
+  document.getElementById('model-form').innerHTML = MODELS.map(m =>
+    '<label><input type="radio" name="model" value="' + m.key + '"' + (m.def ? ' checked' : '') + '><span><span class="t">' + esc(m.name) + '</span>' +
+    (m.def ? '<span class="tag">' + bi('padrão', 'default') + '</span>' : '') +
+    '<div class="d">' + esc(m.d) + ' · <code>' + m.key + '</code></div></span></label>').join('');
+  let manifest = null;
+  async function showVersion() {
+    const url = button.getAttribute('manifest');
+    try {
+      if (!manifest || manifest.url !== url) manifest = { url, data: await (await fetch(url, { cache: 'no-cache' })).json() };
+      const pt = root.dataset.lang === 'pt';
+      ver.textContent = (pt ? 'Versão ' : 'Version ') + manifest.data.version + ' · ' + manifest.data.name;
+    } catch (e) { ver.textContent = ''; }
+  }
+  function setLang(l) {
+    root.dataset.lang = l; root.lang = l;
+    document.querySelectorAll('.lang button[data-set]').forEach(b => b.setAttribute('aria-pressed', b.dataset.set === l));
+    try { localStorage.setItem('lang', l); } catch (e) {}
+    showVersion();
+  }
+  function select() {
+    const board = document.querySelector('input[name="board"]:checked').value;
+    const model = document.querySelector('input[name="model"]:checked').value;
+    const b = BOARDS[board], m = MODELS.find(x => x.key === model);
+    button.setAttribute('manifest', 'firmware/' + board + '/' + model + '/manifest.json');
+    document.querySelectorAll('[data-board]').forEach(el => { el.hidden = el.dataset.board !== board; });
+    document.getElementById('wire-board').textContent = b.name;
+    const gnd = b.gnd || ['GND', 'GND'];
+    const rows = [
+      ['1', '5V', bi(b.v5[0], b.v5[1])],
+      ['2', bi('TX (bomba → placa)', 'TX (pump → board)'), 'RX · ' + b.rx],
+      ['3', bi('RX (placa → bomba)', 'RX (board → pump)'), 'TX · ' + b.tx],
+      ['4', 'NC', bi('Não ligar', 'Not connected'), 'nc'],
+      ['5', 'GND', bi(gnd[0], gnd[1])],
+    ];
+    const t = document.getElementById('wire-table');
+    t.querySelectorAll('tr.r').forEach(r => r.remove());
+    rows.forEach(r => t.insertAdjacentHTML('beforeend', '<tr class="r"><td>' + r[0] + '</td><td>' + r[1] + '</td><td' + (r[3] ? ' class="nc"' : '') + '>' + r[2] + '</td></tr>'));
+    document.getElementById('pick').innerHTML = bi('Vais instalar:', 'You will install:') + ' <b>' + esc(b.name) + '</b> · <b>' + esc(m.name) + '</b>';
+    try { localStorage.setItem('altherma-pick', JSON.stringify({ board, model })); } catch (e) {}
+    showVersion();
+  }
+  document.querySelectorAll('.lang button[data-set]').forEach(b => b.addEventListener('click', () => setLang(b.dataset.set)));
+  const tbtn = document.getElementById('theme-toggle');
+  function themeLabel() {
+    const dark = root.dataset.theme === 'dark', pt = root.dataset.lang === 'pt';
+    tbtn.setAttribute('aria-pressed', dark);
+    tbtn.setAttribute('aria-label', pt ? (dark ? 'Mudar para modo claro' : 'Mudar para modo escuro') : (dark ? 'Switch to light mode' : 'Switch to dark mode'));
+    tbtn.title = tbtn.getAttribute('aria-label');
+  }
+  tbtn.addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
+    themeLabel();
+  });
+  new MutationObserver(themeLabel).observe(root, { attributes: true, attributeFilter: ['data-lang'] });
+  themeLabel();
+  if (!('serial' in navigator)) document.getElementById('nosupport').style.display = 'block';
+  try { // restore the last board + model
+    const p = JSON.parse(localStorage.getItem('altherma-pick') || 'null');
+    if (p) ['board', 'model'].forEach(k => { const el = document.querySelector('input[name="' + k + '"][value="' + p[k] + '"]'); if (el) el.checked = true; });
+  } catch (e) {}
+  document.getElementById('board-form').addEventListener('change', select);
+  document.getElementById('model-form').addEventListener('change', select);
+  let saved = null; try { saved = localStorage.getItem('lang'); } catch (e) {}
+  select();
+  setLang(saved === 'en' ? 'en' : 'pt');  // Portuguese by default
+</script>
+</body>
+</html>
