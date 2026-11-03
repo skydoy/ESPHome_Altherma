@@ -2,59 +2,115 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.png">
     <source media="(prefers-color-scheme: light)" srcset="docs/logo-light.png">
-    <img src="docs/logo-light.png" alt="ESPHome Altherma" width="320">
+    <img src="docs/logo-light.png" alt="ESPHome Altherma" width="256">
   </picture>
 </p>
 
-<p align="center">☕ <b>Gostas? Ajuda-me a trazer algo ainda melhor.</b></p>
-<p align="center">
-  <a href="https://ko-fi.com/skydoy" target="_blank"><img src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
-  <a href="https://buymeacoffee.com/skydoy" target="_blank"><img src="https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee"></a>
+<p align="center"><b>Gostas? Ajuda-me a fazer algo ainda melhor.</b><br>
+  <a href="https://ko-fi.com/skydoy"><img src="https://img.shields.io/badge/Ko--fi-Support%20me-FF5E5B?logo=ko-fi&logoColor=white" alt="Apoiar no Ko-fi"></a>
+  <a href="https://buymeacoffee.com/skydoy"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20me-FFDD00?logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee"></a>
 </p>
 
 <p align="center">
   <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml/badge.svg" alt="Build"></a>
-  <a href="https://github.com/skydoy/esphome-altherma/releases/latest"><img src="https://img.shields.io/github/v/release/skydoy/esphome-altherma?sort=semver" alt="Release"></a>
-  <a href="https://github.com/jjohnsen/esphome-altherma"><img src="https://img.shields.io/badge/upstream-jjohnsen%2Fesphome--altherma-555" alt="Upstream"></a>
+  <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/ci.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/skydoy/esphome-altherma/releases/latest"><img src="https://img.shields.io/github/v/release/skydoy/esphome-altherma?sort=semver" alt="Versão"></a>
+  <a href="https://github.com/jjohnsen/esphome-altherma"><img src="https://img.shields.io/badge/upstream-jjohnsen%2Fesphome--altherma-555" alt="Projeto original"></a>
 </p>
 
-<p align="center"><b>A tua Daikin Altherma 3 no Home Assistant. Liga por USB, escolhe a bomba de calor, clica em Instalar. Sem YAML.</b><br>
+<p align="center"><b>A sua Daikin Altherma 3 no Home Assistant. Ligar por USB, escolher a bomba de calor, carregar em Instalar. Sem YAML.</b><br>
 🇬🇧 <a href="README.md">Read in English</a></p>
 
 <p align="center">
   <a href="https://skydoy.github.io/esphome-altherma/"><img src="https://img.shields.io/badge/Abrir%20o%20instalador%20web-1784F7?style=for-the-badge&logo=esphome&logoColor=white" alt="Abrir o instalador web" height="40"></a>
 </p>
 
-Este fork junta um instalador web de um clique, com um firmware pronto para cada **placa × modelo de bomba de calor**
-(ESP32, ESP32-S3, M5Stack AtomS3 / AtomS3 Lite, ESP8266, M5Stack Core / Basic). Cada firmware atualiza-se sozinho
-pelo ar a partir do mesmo sítio (a entidade de atualização **Firmware** no Home Assistant). No M5Stack Core aparece
-uma pequena animação de arranque.
+Ligue uma pequena placa ESP32 ao conector de serviço **X10A** da sua bomba de calor **Daikin Altherma** e veja
+temperaturas, caudal, potência e muito mais, localmente, no Home Assistant. Sem nuvem, sem MQTT, sem app.
+
+**A minha bomba de calor é compatível?** Veja os [modelos](#modelos-de-bomba-de-calor) abaixo ·
+[instalações com sucesso (projeto original)](https://github.com/jjohnsen/esphome-altherma#successful-installs)
 
 ## Instalar em 3 passos
-1. **Gravar.** Abre o **[instalador web](https://skydoy.github.io/esphome-altherma/)** no Chrome ou no Edge, escolhe
-   a placa e o modelo da bomba de calor, liga a placa ao computador por USB → **Instalar**.
-   Faz isto *antes* de ligar a placa à bomba de calor: nunca ligues o USB e os 5 V do X10A ao mesmo tempo.
-2. **Wi-Fi.** Escreve o teu Wi-Fi na mesma janela. (Ou mais tarde: liga-te à rede `esphome-altherma-…` pelo telemóvel.)
-3. **Ligar e adicionar.** Desliga a bomba de calor no disjuntor, liga a placa ao conector **X10A**
-   (o instalador mostra os pinos da tua placa) e volta a ligar o disjuntor. O Home Assistant encontra *ESPHome Altherma* em
-   **Definições → Dispositivos e serviços** → **Configurar**.
+1. **Instalar o firmware.** Abra o **[instalador web](https://skydoy.github.io/esphome-altherma/)** no Chrome ou Edge,
+   num computador, escolha a placa e o modelo da bomba de calor, ligue a placa por USB → **Instalar**.
+   (Faça isto *antes* de ligar os fios: nunca ligue o USB e os 5 V do X10A ao mesmo tempo.)
+2. **Wi-Fi.** Escreva o seu Wi-Fi na mesma janela. (Ou mais tarde: ligue-se à rede `esphome-altherma…` com o telemóvel.)
+3. **Ligar e adicionar.** Desligue a bomba de calor no disjuntor, ligue a placa ao **X10A** (tabela abaixo) e volte a
+   ligar o disjuntor. O Home Assistant mostra *ESPHome Altherma* em **Definições → Dispositivos e serviços** → **Configurar**.
 
-<p align="center"><img src="docs/logo-animation.gif" alt="Logótipo animado do ESPHome Altherma" width="240"></p>
+A partir daí as atualizações chegam pelo ar, na entidade **Firmware** do Home Assistant. Não precisa de USB outra vez.
 
-## Modelos suportados
-| Ficheiro em `confs/` | Unidade |
+| Pino X10A | Sinal | ESP32 DevKit | ESP32-S3 DevKitC-1 | M5Stack AtomS3 | D1 mini (ESP8266) | M5Stack Core / Basic |
+|---|---|---|---|---|---|---|
+| 1 | 5 V | 5V / VIN | 5V | Grove 5V (vermelho) | 5V | 5V (M-Bus) |
+| 2 | TX (bomba → ESP) | GPIO16 | GPIO2 | Grove G2 | D1 (GPIO5) | GPIO16 |
+| 3 | RX (ESP → bomba) | GPIO17 | GPIO1 | Grove G1 | D2 (GPIO4) | GPIO17 |
+| 4 | – | não ligar | não ligar | não ligar | não ligar | não ligar |
+| 5 | GND | GND | GND | Grove GND (preto) | GND | GND |
+
+O TX liga ao RX e o RX ao TX. Fotografias: [guia de ligações do ESPAltherma](https://github.com/raomin/ESPAltherma?tab=readme-ov-file#daikin-altherma-4-pin-x10a-connection).
+
+## O que aparece no Home Assistant
+| Entidade | Para que serve |
 |---|---|
-| `erga_eh_da_04_08` (predefinido) | Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA (4–8 kW) |
+| **Sensores** | Temperaturas da água e do refrigerante, caudal, pressões, velocidade do compressor e do ventilador, tensão, corrente, potência (depende do ficheiro do modelo). |
+| **Funcionamento** | Modo de funcionamento, descongelação, estado das bombas e válvulas, códigos de erro. |
+| **Firmware** | Novas versões com um clique, pelo ar. |
+| Ação **query_register** | Ler à mão qualquer registo do X10A para mapear sensores novos (experimental). |
+
+No M5Stack Core / Basic o ecrã mostra os valores em direto (botões para navegar, tema escuro / claro) e uma pequena animação de arranque.
+
+<p align="center"><img src="docs/logo-animation.gif" alt="Logótipo animado do ESPHome Altherma" width="200"></p>
+
+## Placas
+| Placa | Notas |
+|---|---|
+| [ESP32 DevKit](https://www.espboards.dev/esp32/esp32doit-devkit-v1/) | A mais barata e a mais testada. |
+| [ESP32-S3 DevKitC-1](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/) | Chip mais recente. |
+| [M5Stack AtomS3 / AtomS3 Lite](https://docs.m5stack.com/en/core/AtomS3%20Lite) | Minúscula, fios na porta Grove. |
+| [D1 mini (ESP8266)](https://docs.wemos.cc/en/latest/d1/d1_mini.html) | Funciona, mas tem menos memória. |
+| [M5Stack Core / Basic](https://docs.m5stack.com/en/core/basic) | Ecrã + botões. |
+
+> ⚠️ Algumas máquinas não conseguem alimentar a placa pelo pino de 5 V do X10A. Se a placa estiver sempre a
+> reiniciar, alimente-a por um carregador USB (e ligue só o TX, o RX e o GND).
+
+## Modelos de bomba de calor
+| Escolher no instalador | Unidade |
+|---|---|
+| `erga_eh_da_04_08` (predefinido) | Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA (4–8 kW), também Altherma 3 R MT (ERRA + ELVH/ELVX) |
 | `erga_eh_e_ej_04_08` | Altherma 3 R · ERGA E + EHV/EHB/EHVZ E/EJ (4–8 kW) |
 | `erla_d_ebv_ebb_ebvz_11_16` | Altherma 3 R · ERLA D + EBV/EBB/EBVZ D (11–16 kW) |
 | `erla_d_ebsh_11_16_ech2o` | Altherma 3 R ECH₂O · ERLA D + EBSH-X D (11–16 kW) |
 | `epra_d_etv_etb_etvz_14_18` | Altherma 3 H HT · EPRA D + ETV/ETB/ETVZ (14–18 kW) |
 | `altherma_ehvh_ehvx_cb` | Altherma LT · EHVH/EHVX CB (11–16 kW) |
 
-A deteção automática do modelo (PR #51 no projeto original) ainda é experimental e não está neste instalador:
-escolhe o modelo à mão.
+> **Estado:** escolha o modelo à mão; a deteção automática ([PR #51 do projeto original](https://github.com/jjohnsen/esphome-altherma/pull/51))
+> ainda é experimental. O seu modelo não está na lista? Partilhe-o nas
+> [discussões do projeto original](https://github.com/jjohnsen/esphome-altherma/discussions).
+
+## Avançado / YAML manual
+Compilação própria ou Device Builder: configurações por placa `esphome-altherma-<placa>.yaml`, `base.yaml` comum e
+mapas de sensores em [`confs/`](confs/). Corra `esphome run esphome-altherma-esp32.yaml` com o seu Wi-Fi em `secrets.yaml`.
+Relés (termóstato / Smart Grid), UART simulada, descoberta de registos e ficheiros do ESPAltherma:
+veja o [README do projeto original](https://github.com/jjohnsen/esphome-altherma#readme) (em inglês).
+
+## Documentação
+[README original](https://github.com/jjohnsen/esphome-altherma#readme) ·
+[Descoberta de registos](https://github.com/jjohnsen/esphome-altherma#register-discovery-experimental) ·
+[Guia Emoncms](https://jjohnsen.no/2026/esphome-altherma-emoncms-setup-guide/) ·
+[Comunidade HA](https://community.home-assistant.io/t/esphome-altherma-monitor-your-daikin-altherma-3-heat-pump-via-x10a/1000476) ·
+[Reportar um problema](https://github.com/skydoy/esphome-altherma/issues/new) ·
+[Versões](https://github.com/skydoy/esphome-altherma/releases)
+
+Os documentos técnicos estão em inglês.
 
 ## Créditos
-Componente, sensores e ficheiros de modelo: [jjohnsen/esphome-altherma](https://github.com/jjohnsen/esphome-altherma),
-baseado no [ESPAltherma](https://github.com/raomin/ESPAltherma). Este fork só junta o instalador web e as compilações.
-A documentação completa (em inglês) está no [README.md](README.md).
+- Componente, sensores e ficheiros de modelo: [jjohnsen/esphome-altherma](https://github.com/jjohnsen/esphome-altherma)
+  e os seus contribuidores, baseado no [ESPAltherma](https://github.com/raomin/ESPAltherma) de raomin.
+- Instalador web, compilações, logótipo e animação de arranque: [skydoy](https://github.com/skydoy). As imagens das placas são ilustrações.
+
+Fornecido tal como está, para uso pessoal e educativo, como o projeto original; os ficheiros do ESPAltherma mantêm a
+[licença original](https://github.com/raomin/ESPAltherma/blob/main/LICENSE). Use por sua conta e risco: mexa na
+bomba de calor com o disjuntor desligado. Daikin e Altherma são marcas registadas do seu dono; este é um projeto
+independente da comunidade, sem ligação à marca.

@@ -2,18 +2,18 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.png">
     <source media="(prefers-color-scheme: light)" srcset="docs/logo-light.png">
-    <img src="docs/logo-light.png" alt="ESPHome Altherma" width="320">
+    <img src="docs/logo-light.png" alt="ESPHome Altherma" width="256">
   </picture>
 </p>
 
-<p align="center">☕ <b>Like it? Help me bring something even better.</b></p>
-<p align="center">
-  <a href="https://ko-fi.com/skydoy" target="_blank"><img src="https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white" alt="Support on Ko-fi"></a>
-  <a href="https://buymeacoffee.com/skydoy" target="_blank"><img src="https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee"></a>
+<p align="center"><b>Like it? Help me build something better.</b><br>
+  <a href="https://ko-fi.com/skydoy"><img src="https://img.shields.io/badge/Ko--fi-Support%20me-FF5E5B?logo=ko-fi&logoColor=white" alt="Support me on Ko-fi"></a>
+  <a href="https://buymeacoffee.com/skydoy"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20me-FFDD00?logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee"></a>
 </p>
 
 <p align="center">
   <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml/badge.svg" alt="Build"></a>
+  <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/ci.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/skydoy/esphome-altherma/releases/latest"><img src="https://img.shields.io/github/v/release/skydoy/esphome-altherma?sort=semver" alt="Release"></a>
   <a href="https://github.com/jjohnsen/esphome-altherma"><img src="https://img.shields.io/badge/upstream-jjohnsen%2Fesphome--altherma-555" alt="Upstream"></a>
 </p>
@@ -25,385 +25,90 @@
   <a href="https://skydoy.github.io/esphome-altherma/"><img src="https://img.shields.io/badge/Open%20the%20web%20installer-1784F7?style=for-the-badge&logo=esphome&logoColor=white" alt="Open the web installer" height="40"></a>
 </p>
 
-This fork adds a one-click web installer with a ready-made firmware for every **board × heat pump model**
-(ESP32, ESP32-S3, M5Stack AtomS3 / AtomS3 Lite, ESP8266, M5Stack Core / Basic). Each firmware updates itself
-over the air from the same place (the **Firmware** update entity in Home Assistant). On the M5Stack Core the
-firmware shows a short animated boot splash.
+Connect a small ESP32 board to the **X10A** service connector of your **Daikin Altherma** heat pump and read
+temperatures, flow, power and more locally in Home Assistant. No cloud, no MQTT, no app.
+
+**Is my heat pump supported?** See the [models](#heat-pump-models) below ·
+[successful installs (upstream)](https://github.com/jjohnsen/esphome-altherma#successful-installs)
 
 ## Install in 3 steps
-1. **Flash.** Open the **[web installer](https://skydoy.github.io/esphome-altherma/)** in Chrome or Edge, pick your
-   board and your heat pump model, plug the board into your computer by USB → **Install**.
-   Do this *before* wiring the board to the heat pump: never connect USB and the X10A 5 V at the same time.
-2. **Wi-Fi.** Type your Wi-Fi in the same window. (Or later: join the `esphome-altherma-…` hotspot from your phone.)
-3. **Wire and add.** Heat pump off at the breaker, connect the board to the **X10A** connector
-   (the installer shows the pins for your board), breaker back on. Home Assistant finds *ESPHome Altherma* under
-   **Settings → Devices & services** → **Configure**.
-
-<p align="center"><img src="docs/logo-animation.gif" alt="ESPHome Altherma animated logo" width="240"></p>
-
-> Everything below is the upstream documentation of [jjohnsen/esphome-altherma](https://github.com/jjohnsen/esphome-altherma),
-> kept unchanged (its links to the upstream installer still work). Firmware logic, sensors and model files come from
-> upstream and [ESPAltherma](https://github.com/raomin/ESPAltherma); this fork only adds the installer and its builds.
-
----
-
-# ESPHome Altherma
-
-[![ESPHome](https://img.shields.io/badge/ESPHome-component-000?logo=esphome&logoColor=white)](https://esphome.io/)
-[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-integration-41BDF5?logo=homeassistant&logoColor=white)](https://www.home-assistant.io/)
-[![GitHub stars](https://img.shields.io/github/stars/jjohnsen/esphome-altherma)](https://github.com/jjohnsen/esphome-altherma/stargazers)
-
-A native [ESPHome](https://esphome.io/) custom component for monitoring Daikin Altherma 3 heat pumps via the X10A connector. It exposes temperatures, voltages, currents, and other operational data directly to [Home Assistant](https://www.home-assistant.io/). Native Home Assistant integration through ESPHome. No MQTT required.
-
-🌐 [Web Installer](https://esphome-altherma.jjohnsen.no) · 💬 [HA Community](https://community.home-assistant.io/t/esphome-altherma-monitor-your-daikin-altherma-3-heat-pump-via-x10a/1000476) · 🗨️ [Discussions](https://github.com/jjohnsen/esphome-altherma/discussions) · 📖 [Emoncms Setup Guide](https://jjohnsen.no/2026/esphome-altherma-emoncms-setup-guide/)
-
-![M5stack Running ESPHome Altherma](img/esphome-altherma-m5stack.jpg)  
-M5Stack Basic running ESPHome Altherma
-
-![Home Assistant dashboard with real-time Altherma data](img/home-assistant-dashboard-sensors.png)  
-ESPHome Altherma with real-time data in Home Assistant
-
-![My Heatpump dashboard in Home Assistant](img/home-assistant-emoncms-myheatpump-dashboard.png)  
-ESPHome Altherma + Emoncms and My Heatpump App
-
-## Quick Start
-
-1. Open the [Web Installer](https://esphome-altherma.jjohnsen.no) in Chrome/Edge
-2. Connect your ESP32 via USB and click **Connect**
-3. Flash the firmware and configure Wi-Fi
-4. The device appears automatically in Home Assistant 🎉
-
-No command line needed. See [Installation](#installation) for more options.
-
-## Features
-
-- **Real-time sensor data** - temperatures, voltages, currents, flow rates, pressures, fan speeds, and more
-- **Model-specific configuration** via modular YAML files for different Altherma units
-- **Multiple board support** - ESP8266, ESP32, ESP32-S3, M5Stack Core / Basic, and M5Stack AtomS3 Lite
-- **Interactive on-device UI (M5Stack Core)** - button navigation, bold high-contrast fonts, and dynamic Dark/Light theme switching
-- **Browser-based installation** via [ESP Web Tools](https://esphome.github.io/esp-web-tools/) (no command line needed)
-- **OTA updates** with automatic update checking via GitHub releases
-- **Mock UART mode** for development and testing without hardware
-
-## Supported Boards
-
-| Board | YAML Config | UART RX Pin | UART TX Pin |
-| -- | -- | -- | -- |
-| [ESP8266 D1 Mini](https://docs.wemos.cc/en/latest/d1/d1_mini.html) | `esphome-altherma-esp8266.yaml` | GPIO 5 | GPIO 4 |
-| [ESP32 DevKit](https://www.espboards.dev/esp32/esp32doit-devkit-v1/) | `esphome-altherma-esp32.yaml` | GPIO 16 | GPIO 17 |
-| [ESP32-S3 DevKit](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/) | `esphome-altherma-esp32-s3.yaml` | GPIO 2 | GPIO 1 |
-| [M5Stack Core / Basic](https://docs.m5stack.com/en/core/basic) | `esphome-altherma-m5stack.yaml` | GPIO 16 | GPIO 17 |
-| [M5Stack AtomS3 Lite](https://docs.m5stack.com/en/core/AtomS3%20Lite) | `esphome-altherma-atoms3.yaml` | GPIO 2 (G1) | GPIO 1 (G2) |
-
-## Hardware Requirements
-
-- ESP8266, ESP32, or M5Stack development board
-- Daikin Altherma heat pump with X10A connector
-- 5-pin JST EH 2.5 mm connector or 4 Dupont M-F wires
-- *(Optional)* 5V Active-Low relay module for physical contact control (Thermostat / Smart Grid)
-
-### Wiring
-
-Connect the ESP32 / M5Stack to the Altherma unit using the X10A connector:
-
-| X10A Pin | Signal | ESP32 DevKit | M5Stack Core / Basic | M5Stack AtomS3 Lite / ESP32-S3 |
-| -- | -- | -- | -- | -- |
-| 1 | 5V | 5V / VIN | 5V | 5V |
-| 2 | TX (pump → ESP) | RX pin (GPIO 16) | RX pin (GPIO 16) | RX pin (GPIO 2) |
-| 3 | RX (ESP → pump) | TX pin (GPIO 17) | TX pin (GPIO 17) | TX pin (GPIO 1) |
-| 4 | NC | Not connected | Not connected | Not connected |
-| 5 | GND | GND | GND | GND |
-
-> **Note:** The heat pump's TX connects to the ESP's RX, and vice versa (crossover).
-
-Refer to the [ESPAltherma wiring guide](https://github.com/raomin/ESPAltherma?tab=readme-ov-file#daikin-altherma-4-pin-x10a-connection) for additional details and photos.
-
-### Optional: External Relays (Thermostat & Smart Grid SG1)
-
-If you wish to control dry contacts on your heat pump (such as external thermostat demand or Smart Grid 1 photovoltaic boost), you can connect external relay modules to available GPIOs:
-
-| Function | ESP32 DevKit Pin | M5Stack Core Pin | Notes |
-| -- | -- | -- | -- |
-| **Thermostat Demand** | GPIO 22 | GPIO 22 | Active-Low / Inverted logic typically required |
-| **Smart Grid 1 (SG1)** | GPIO 21 | GPIO 21 | Active-Low / Inverted logic typically required |
-
-Example configuration snippet to append to your YAML:
-
-```yaml
-switch:
-  - platform: gpio
-    pin:
-      number: GPIO22
-      inverted: true
-    name: "Altherma Thermostat"
-    id: relay_thermo
-    icon: "mdi:radiator"
-    restore_mode: RESTORE_DEFAULT_OFF
-
-  - platform: gpio
-    pin:
-      number: GPIO21
-      inverted: true
-    name: "Altherma Smart Grid 1 (SG1)"
-    id: relay_sg1
-    icon: "mdi:solar-power"
-    restore_mode: RESTORE_DEFAULT_OFF
-```
-
-## Successful Installs
-
-| Board | Heat Pump | User | Additional info |
-| -- | -- | -- | -- |
-| Generic esp32dev board | ERGA08DAV3 / EHVH08S23DA6V | @jjohnsen | This repo ;) |
-| M5-Stack Basic | ERGA08DAV3 / EHVH08S23DA6V | @jjohnsen | This repo ;) |
-| M5Stack AtomS3 Lite | DAIKIN Altherma 3 R Ech2o / EHSXB08P30EF | @maromme | https://github.com/jjohnsen/esphome-altherma/discussions/4 |
-| DOIT ESP32 DEVKIT V1 | EHVX08S26CB9W | @MaBeniu | https://github.com/jjohnsen/esphome-altherma/discussions/5 |
-| esp32dev | ERLQ011CAV3 / EHBX11CB9W | | [Detailed setup guide in French](https://domo.rem81.com/index.php/2026/01/12/ha-monitoring-de-ma-pac-daikin-altherma-avec-esphome-esphome-altherma-alternative-a-espaltherma/) |
-| ESP32-C6-WROOM-1 | EHBH16C9W | @AndriesMuylaert | Includes relay + onboard sensors - https://github.com/jjohnsen/esphome-altherma/discussions/11 |
-| Freenove ESP32 Dev Board Kit | EDLA09DA3V3 | @jandenouden2 | https://github.com/jjohnsen/esphome-altherma/discussions/13 |
-| ESP32-WROOM-32U DevKit | ERLQ016CAW1 (16kW Low Temp) | @ezfrag2021 | External antenna routed outside casing (Faraday cage), needs external USB power (Altherma 5V pin insufficient) - https://github.com/jjohnsen/esphome-altherma/discussions/25 |
-| ESP32 DevKit (ESP32-D0WDQ6) | ERGA04 E / EHVX04S18EJ6V | @sh4jonny | Uses `erga_eh_e_ej_04_08.yaml` |
-| ESP32-S3 DevKit | Altherma 3 R MT: ERRA08EV3/ERRA08EAV37 + ELVH12S23E6V/ELVX12S23EJ6V | @mathep34 | Bibloc R MT series, confirmed working with `erga_eh_da_04_08.yaml` — https://github.com/jjohnsen/esphome-altherma/discussions/41 |
-| M5Stack Stamp S3 | EHSX08P50BB | @smdx2 | [Discussion #47](https://github.com/jjohnsen/esphome-altherma/discussions/47) |
-| ESP32 | EHBH08CA3V | @papayou66 | Custom Home Assistant dashboards [Discussion #63](https://github.com/jjohnsen/esphome-altherma/discussions/63) |
-| ESP32-S3 SuperMini | ERLA16D2W17 / EBVX16S23DJ9W | @hansiputz | Custom sensor mapping, including operational findings — [Discussion #48](https://github.com/jjohnsen/esphome-altherma/discussions/48) |
-| DOIT ESP32 DevKit V1 | ETBX16E9W7 / EPRA18DW17 | @kepten | Altherma 3 H HT — [PR #49](https://github.com/jjohnsen/esphome-altherma/pull/49) |
-| ESP32 | ERLA11D2V3 / EBBH11DF6V | @skydoy | [PR #46](https://github.com/jjohnsen/esphome-altherma/pull/46) |
-
-## Installation
-
-> **⚠️ Note:** This repo currently includes sensor mappings for the:
-> * **ERGA E EHV/EHB/EHVZ E/EJ series (04-08kW)** — `confs/erga_eh_e_ej_04_08.yaml` (tested on EHVX04S18EJ6V + ERGA04 E)
-> * **ERGA-D EHV/EHB/EHVZ DA series (04-08kW)** (confirmed working on the bibloc **Altherma 3 R MT (ERRA + ELVH/ELVX)** series — see [discussion #41](https://github.com/jjohnsen/esphome-altherma/discussions/41))
-> * **ERLA D EBSH-X 16P30-50 D series 11-16kW-ECH2O**, **Daikin Altherma LT CA/CB EHVH-CB / EHVX-CB 11-16kW**
-> * **EPRA D/D7 with ETV16, ETB16, ETVZ16 (E/E7) 14-18kW** (including ETBX16E9W7 / EPRA18DW17).
-> * **ERLA D / EBV-EBB-EBVZ D series (11–16 kW)** — `confs/erla_d_ebv_ebb_ebvz_11_16.yaml` (tested on ERLA11D2V3 / EBBH11DF6V).
-> 
-> Contributions for other models are welcome!
-
-### Option 1: Browser Install (ESP Web Tools)
-
-The easiest way to get started - no tools to install.
-
-1. Open https://jjohnsen.github.io/esphome-altherma/ and click **Connect**
-
-   ![Browser install step 1 - connect dialog](img/browser-install-1.png)
-
-2. Follow the guided process to:
-   - Flash the firmware
-   - Connect to Wi-Fi
-   - Add the device to Home Assistant
-   
-   ![Browser install step 2 - device discovered](img/browser-install-2.png)
-
-OTA Updates are available within Home Assistant:
-
-![OTA Updates](img/ota-updates.png)
-
-### Option 2: Command Line (ESPHome CLI)
-
-1. [Install ESPHome](https://esphome.io/guides/getting_started_command_line/)
-2. Clone this repository:
-   ```sh
-   git clone https://github.com/jjohnsen/esphome-altherma.git
-   cd esphome-altherma
-   ```
-3. Configure Wi-Fi credentials in `secrets.yaml`:
-   ```yaml
-   wifi_ssid: "YourWiFiSSID"
-   wifi_password: "YourWiFiPassword"
-   ```
-4. Connect your ESP32 via USB and flash:
-   ```sh
-   esphome run esphome-altherma-esp32.yaml
-   ```
-5. After the initial flash, subsequent updates can be done wirelessly (OTA)
-
-## Configuration
-
-### Model Files (`confs/*.yaml`)
-
-Model files define the available sensors for specific Altherma units. Each sensor entry specifies the UART register, byte offset, data size, and converter ID used to decode the value.
-
-**Available models:**
-- `erga_eh_da_04_08.yaml` - ERGA-D EHV/EHB/EHVZ DA series (04-08kW)
-- `erla_d_ebsh_11_16_ech2o.yaml` - EBSXB16P50DF / ERLA D EBSH-X 16P30-50 D series 11-16kW-ECH2O
-- `altherma_ehvh_ehvx_cb.yaml` - Daikin Altherma LT CA/CB EHVH-CB / EHVX-CB (11-16kW)
-- `epra_d_etv_etb_etvz_14_18.yaml` - EPRA D/D7 with ETV16, ETB16 (including wall-mounted ETBX), ETVZ16 E/E7 series (14-18kW). Mapped for ETBX16E9W7 / EPRA18DW17
-
-### Packages In `base.yaml`
-
-The `packages:` block in `base.yaml` supports two workflows:
-
-- `!include github://jjohnsen/esphome-altherma/...@main` is for **"Take Control" in ESPHome Device Builder**. In this mode, YAML files are fetched from GitHub.
-- `!include confs/...` is for **local compilation** (for example `esphome run ...` from this cloned repository). In this mode, files are read from your local workspace.
-
-You can also enable additional ESP diagnostics (status, uptime, Wi-Fi info, internal temperature, boot count, restart button) by uncommenting the diagnostics package line.
-
-**Community-contributed models:**
-- [EHVX configs by @MaBeniu](https://github.com/MaBeniu/esphome-altherma/tree/main/confs)
-
-### Board-Specific Files
-
-Choose the YAML file matching your board:
-- `esphome-altherma-esp32.yaml` - Generic ESP32
-- `esphome-altherma-esp32-s3.yaml` - ESP32-S3 DevKit
-- `esphome-altherma-esp8266.yaml` - Generic ESP8266
-- `esphome-altherma-m5stack.yaml` - M5Stack Core / Basic (includes display UI, button controls, and Dark/Light theme switch)
-- `esphome-altherma-atoms3.yaml` - M5Stack AtomS3 Lite
-
-Each includes `base.yaml` (shared component setup) and the model config from `confs/`.
-
-## Guides
-
-- **[ESPHome Altherma + Emoncms Setup Guide](https://jjohnsen.no/2026/esphome-altherma-emoncms-setup-guide/)**  
-  Long-term heat pump performance monitoring with the MyHeatpump dashboard in Home Assistant. Covers Emoncms installation, input/feed setup, and COP tracking.
-
-## Register Discovery (Experimental)
-
-> ⚠️ **This is an experimental feature, use at your own risk.**
-
-The component exposes a `query_register` Home Assistant action (service) that lets you query any register directly. This is useful for exploring what data your specific heat pump model supports, which you can then turn into proper sensor definitions.
-
-![Home Assistant Developer tools calling action query_register with register, offset, convid, and datasize fields](img/home-assistant-query-register-action-form.png)
-
-### Action Parameters
-
-| Parameter | Type | Description |
-| -- | -- | -- |
-| `register` | string | Register address as a hex (`0x60`) string |
-| `offset` | int | Byte offset within the register payload (0-based) |
-| `convid` | int | Converter ID from `converters.h`, determines how bytes are decoded |
-| `datasize` | int | Number of bytes to read for decoding |
-
-The result is published to the **Manual Query Registry Result** text sensor and also appears in the ESPHome device logs.
-
-![Home Assistant Manual Query Registry Result entity showing accepted, failed, and successful query states with full response buffer](img/home-assistant-manual-query-registry-result-state-history.png)
-
-### Example: Home Assistant action call
-
-```yaml
-action: esphome.esphome_altherma_query_register
-data:
-  register: "0x60"
-  offset: 11
-  convid: 105
-  datasize: 1
-```
-
-### Interpreting the result
-
-The **Manual Query Registry Result** sensor updates after every call and shows one of:
-
-- `Manual query accepted reg=0x.. offset=.. convid=.. datasize=..`: query queued
-- `Manual query result reg=0x.. value=.. buffer=..`: success, with decoded value and full raw frame as hex
-- `Manual query failed reg=0x..: <reason>`: failure with cause (timeout, CRC invalid, out-of-bounds, etc.)
-- `Manual query rejected: <reason>`: invalid parameters, not sent to device
-
-## Development
-
-### Setting Up a Dev Environment
-
-```sh
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip
-pip install esphome
-esphome compile esphome-altherma-esp32.yaml
-```
-
-### Mock UART Mode
-
-For development without physical hardware, enable mock UART mode by adding the build flag:
-
-```yaml
-esphome:
-  platformio_options:
-    build_flags:
-      - -DUSE_MOCK_UART
-```
-
-This provides simulated register responses so you can test the component logic without an actual Altherma connection.
-
-### Project Structure
-
-```
-base.yaml                          # Shared ESPHome config (logger, API, OTA, UART, hub)
-esphome-altherma-esp32.yaml        # Board config: ESP32 DevKit
-esphome-altherma-esp32-s3.yaml     # Board config: ESP32-S3
-esphome-altherma-m5stack.yaml      # Board config: M5Stack Core / Basic
-esphome-altherma-atoms3.yaml       # Board config: M5Stack AtomS3 Lite
-confs/
-  erga_eh_da_04_08.yaml            # Sensor definitions for ERGA-D series
-  erla_d_ebsh_11_16_ech2o.yaml     # Sensor definitions for ERLA D EBSH-X 11-16kW-ECH2O
-  altherma_ehvh_ehvx_cb.yaml       # Sensor definitions for Altherma LT CA/CB EHVH-CB / EHVX-CB 11-16kW
-  epra_d_etv_etb_etvz_14_18.yaml   # Sensor definitions for EPRA D 14-18kW / ETBX16E9W7 + EPRA18DW17
-common/
-  diagnostics.yaml                 # Optional ESP diagnostics package
-components/altherma_hub/
-  __init__.py                      # ESPHome component definition (Python)
-  altherma_hub.cpp                 # Hub implementation (C++)
-  altherma_hub.h                   # Hub header
-  sensor.py                        # Sensor platform
-  binary_sensor.py                 # Binary sensor platform
-  text_sensor.py                   # Text sensor platform
-  mock_uart.h                      # Mock UART for testing
-  converters.h                     # Vendored from ESPAltherma (guarded impl header)
-  labeldef.h                       # Vendored from ESPAltherma
-```
-
-### Vendored ESPAltherma Files
-
-This project vendors selected files from [ESPAltherma](https://github.com/raomin/ESPAltherma):
-
-| Source File | Local Path |
-| -- | -- |
-| `include/converters.h` | `components/altherma_hub/converters.h` |
-| `include/labeldef.h` | `components/altherma_hub/labeldef.h` |
-
-**To update vendored files from upstream:**
-
-```bash
-# Add ESPAltherma as a remote (one-time setup)
-git remote add espaltherma https://github.com/raomin/ESPAltherma.git
-
-git fetch espaltherma
-git checkout espaltherma/main -- include/converters.h
-git checkout espaltherma/main -- include/labeldef.h
-
-git mv -f include/converters.h components/altherma_hub/converters.h
-git mv -f include/labeldef.h components/altherma_hub/labeldef.h
-
-git commit -m "Update ESPAltherma vendored files"
-rmdir include
-```
-
-> **Note:** `converters.h` is an implementation header. ESPHome (>= 2026.7)
-> auto-includes every root component header into the generated `esphome.h`, so
-> after updating it from upstream you must re-wrap its body with the
-> `#ifdef ALTHERMA_HUB_IMPL` / `#endif` guard. `altherma_hub.cpp` defines
-> `ALTHERMA_HUB_IMPL` before including it. Without the guard the file is compiled
-> at global scope in `main.cpp` and fails (`labelDefs`/`LabelDef` not in scope).
-
-## Contributing
-
-Contributions are welcome! In particular:
-
-- **Sensor mappings for other Altherma models** - add a new file under `confs/` with the register definitions for your unit
-- **Bug reports and fixes** - open an issue or pull request
-
-If you have a successful install with a model not listed above, please share it in the [Discussions](https://github.com/jjohnsen/esphome-altherma/discussions).
-
-## License
-
-This project is provided as-is for educational and personal use.
-
-Please respect the licenses of the dependencies:
-- ESPAltherma files are subject to their [original license](https://github.com/raomin/ESPAltherma/blob/main/LICENSE)
-- ESPHome is licensed under the [MIT License](https://github.com/esphome/esphome/blob/dev/LICENSE)
+1. **Flash.** Open the **[web installer](https://skydoy.github.io/esphome-altherma/)** in Chrome or Edge on a computer,
+   pick your board and your heat pump model, plug the board in by USB → **Install**.
+   (Do this *before* wiring: never connect USB and the X10A 5 V at the same time.)
+2. **Wi-Fi.** Type your Wi-Fi in the same window. (Or later: join the `esphome-altherma…` hotspot from your phone.)
+3. **Wire and add.** Heat pump off at the breaker, connect the board to **X10A** (table below), breaker back on.
+   Home Assistant shows *ESPHome Altherma* under **Settings → Devices & services** → **Configure**.
+
+After that, updates come over the air from the **Firmware** entity in Home Assistant. No more USB.
+
+| X10A pin | Signal | ESP32 DevKit | ESP32-S3 DevKitC-1 | M5Stack AtomS3 | D1 mini (ESP8266) | M5Stack Core / Basic |
+|---|---|---|---|---|---|---|
+| 1 | 5 V | 5V / VIN | 5V | Grove 5V (red) | 5V | 5V (M-Bus) |
+| 2 | TX (pump → ESP) | GPIO16 | GPIO2 | Grove G2 | D1 (GPIO5) | GPIO16 |
+| 3 | RX (ESP → pump) | GPIO17 | GPIO1 | Grove G1 | D2 (GPIO4) | GPIO17 |
+| 4 | – | not connected | not connected | not connected | not connected | not connected |
+| 5 | GND | GND | GND | Grove GND (black) | GND | GND |
+
+TX goes to RX and RX to TX. Photos: [ESPAltherma wiring guide](https://github.com/raomin/ESPAltherma?tab=readme-ov-file#daikin-altherma-4-pin-x10a-connection).
+
+## What you get in Home Assistant
+| Entity | What it does |
+|---|---|
+| **Sensors** | Water and refrigerant temperatures, flow, pressures, compressor and fan speed, voltage, current, power (depends on the model file). |
+| **Operation** | Operation mode, defrost, pumps and valves status, error codes. |
+| **Firmware** | New versions in one click, over the air. |
+| **query_register** action | Read any X10A register by hand to map new sensors (experimental). |
+
+On the M5Stack Core / Basic the screen shows the live values (buttons to navigate, dark / light theme) and a short boot animation.
+
+<p align="center"><img src="docs/logo-animation.gif" alt="ESPHome Altherma animated logo" width="200"></p>
+
+## Boards
+| Board | Notes |
+|---|---|
+| [ESP32 DevKit](https://www.espboards.dev/esp32/esp32doit-devkit-v1/) | Cheapest, most tested. |
+| [ESP32-S3 DevKitC-1](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/) | Newer chip. |
+| [M5Stack AtomS3 / AtomS3 Lite](https://docs.m5stack.com/en/core/AtomS3%20Lite) | Tiny, wires on the Grove port. |
+| [D1 mini (ESP8266)](https://docs.wemos.cc/en/latest/d1/d1_mini.html) | Works, but less memory. |
+| [M5Stack Core / Basic](https://docs.m5stack.com/en/core/basic) | Screen + buttons. |
+
+> ⚠️ Some units can't power the board from the X10A 5 V pin. If it keeps rebooting, power it from a USB charger
+> instead (and connect only TX, RX and GND).
+
+## Heat pump models
+| Pick in the installer | Unit |
+|---|---|
+| `erga_eh_da_04_08` (default) | Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA (4–8 kW), also Altherma 3 R MT (ERRA + ELVH/ELVX) |
+| `erga_eh_e_ej_04_08` | Altherma 3 R · ERGA E + EHV/EHB/EHVZ E/EJ (4–8 kW) |
+| `erla_d_ebv_ebb_ebvz_11_16` | Altherma 3 R · ERLA D + EBV/EBB/EBVZ D (11–16 kW) |
+| `erla_d_ebsh_11_16_ech2o` | Altherma 3 R ECH₂O · ERLA D + EBSH-X D (11–16 kW) |
+| `epra_d_etv_etb_etvz_14_18` | Altherma 3 H HT · EPRA D + ETV/ETB/ETVZ (14–18 kW) |
+| `altherma_ehvh_ehvx_cb` | Altherma LT · EHVH/EHVX CB (11–16 kW) |
+
+> **Status:** pick the model by hand; automatic detection ([upstream PR #51](https://github.com/jjohnsen/esphome-altherma/pull/51))
+> is still experimental. Your model isn't listed? Share it in the
+> [upstream discussions](https://github.com/jjohnsen/esphome-altherma/discussions).
+
+## Advanced / manual YAML
+Own build or Device Builder: board configs `esphome-altherma-<board>.yaml`, shared `base.yaml`, sensor maps in
+[`confs/`](confs/). Run `esphome run esphome-altherma-esp32.yaml` with your Wi-Fi in `secrets.yaml`.
+Relays (thermostat / Smart Grid), mock UART, register discovery and vendored ESPAltherma files:
+see the [upstream README](https://github.com/jjohnsen/esphome-altherma#readme).
+
+## Docs
+[Upstream README](https://github.com/jjohnsen/esphome-altherma#readme) ·
+[Register discovery](https://github.com/jjohnsen/esphome-altherma#register-discovery-experimental) ·
+[Emoncms guide](https://jjohnsen.no/2026/esphome-altherma-emoncms-setup-guide/) ·
+[HA Community](https://community.home-assistant.io/t/esphome-altherma-monitor-your-daikin-altherma-3-heat-pump-via-x10a/1000476) ·
+[Report a problem](https://github.com/skydoy/esphome-altherma/issues/new) ·
+[Releases](https://github.com/skydoy/esphome-altherma/releases)
 
 ## Credits
+- Component, sensors and model files: [jjohnsen/esphome-altherma](https://github.com/jjohnsen/esphome-altherma)
+  and its contributors, based on [ESPAltherma](https://github.com/raomin/ESPAltherma) by raomin.
+- Web installer, builds, logo and boot animation: [skydoy](https://github.com/skydoy). Board pictures are illustrations.
 
-- Based on [ESPAltherma](https://github.com/raomin/ESPAltherma) by raomin
-- Built with [ESPHome](https://esphome.io/)
-- Integrates with [Home Assistant](https://www.home-assistant.io/)
+Provided as-is for personal and educational use, like upstream; ESPAltherma files keep their
+[original license](https://github.com/raomin/ESPAltherma/blob/main/LICENSE). Use at your own risk: work on the
+heat pump with the breaker off. Daikin and Altherma are trademarks of their owner; this is an independent
+community project, not affiliated with it.
