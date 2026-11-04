@@ -12,7 +12,7 @@ body:
 
         Obrigado! Cada relato, bom ou mau, entra na
         [lista de compatibilidade](https://github.com/skydoy/esphome-altherma/blob/main/docs/compatibilidade.md).
-        Pode escrever em português ou inglês. **Nunca publique palavras-passe do Wi-Fi, chaves da API nem palavras-passe OTA.**
+        Podes escrever em português ou inglês. **Nunca publiques palavras-passe do Wi-Fi, chaves da API nem palavras-passe OTA.**
   - type: input
     id: outdoor_unit
     attributes:
