@@ -69,13 +69,6 @@ sensor:
     convid: 105
     datasize: 2
 
-  - <<: *temp
-    name: "Liquid Pipe Temp (R6T)"
-    register: 0x20
-    offset: 10
-    convid: 105
-    datasize: 2
-
   - <<: *pressure
     name: "High Pressure"
     register: 0x20
@@ -239,6 +232,11 @@ text_sensor:
     offset: 0
     convid: 217
     datasize: 1
+    # On ERLA D, value 0 of this register means the unit is stopped, not "Fan Only"
+    # (the shared label table in converters.h is left unchanged for the other models).
+    filters:
+      - substitute:
+          - "Fan Only -> Stopped"
 
   - <<: *text
     name: "Indoor Unit Operation Mode"
