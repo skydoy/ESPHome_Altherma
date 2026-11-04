@@ -20,7 +20,7 @@
   </script>
   <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
   <style>
-    :root { --bg:#f4f8fc; --card:#fff; --text:#0b1b3f; --muted:#52647a; --line:#dce5ef; --g1:#0FE3FA; --g2:#1784F7; --accent:#1784F7; --hot:#FF6A2B; --warn-bg:#fff6e5; --warn:#e69500; --ok-bg:#e8f4fe; --ok:#1784F7; }
+    :root { --bg:#f4f8fc; --card:#fff; --text:#0b1b3f; --muted:#52647a; --line:#dce5ef; --g1:#0FE3FA; --g2:#1784F7; --accent:#1784F7; --warn-bg:#fff6e5; --warn:#e69500; --ok-bg:#e8f4fe; --ok:#1784F7; }
     :root { color-scheme: light; }
     html[data-theme=dark] { color-scheme: dark; --bg:#0b1220; --card:#131c2e; --text:#e6edf3; --muted:#9aa9bd; --line:#26334a; --accent:#4fb3ff; --warn-bg:#2b2111; --ok-bg:#0f2238; --ok:#4fb3ff; }
     html[data-theme=dark] .boards img { background:#fff; }
@@ -33,13 +33,6 @@
     a { color: var(--accent); }
     html[data-lang=pt] .en, html[data-lang=en] .pt { display:none !important; }
     [hidden] { display:none !important; }
-    .donate { display:flex; flex-wrap:wrap; align-items:center; gap:.75rem 1rem; border-left:4px solid var(--hot); }
-    .donate p { margin:0; flex:1 1 18rem; }
-    .donate .btns { display:flex; gap:.5rem; flex-wrap:wrap; }
-    .donate .btns a { display:inline-flex; align-items:center; gap:.4rem; padding:.5rem .9rem; border-radius:999px; font-weight:700; text-decoration:none; }
-    .donate .kofi { background:#F16061; color:#fff; }
-    .donate .bmc { background:#FFDD00; color:#000; }
-    .donate .btns a:hover { filter:brightness(1.07); }
     header { background: linear-gradient(135deg, var(--g1), var(--g2)); color:#fff; padding: 1.25rem 1rem 3.5rem; }
     .wrap { max-width: 52rem; margin: 0 auto; padding: 0 1rem; }
     .top { display:flex; align-items:center; gap:.9rem; }
@@ -69,7 +62,7 @@
     .models label:has(input:checked) { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
     .models input { margin-top:.35rem; }
     .models code { font-size:.8rem; }
-    .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#fff; background:var(--hot); border-radius:999px; padding:0 .45rem; margin-left:.3rem; vertical-align:middle; }
+    .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#fff; background:var(--accent); border-radius:999px; padding:0 .45rem; margin-left:.3rem; vertical-align:middle; }
     .brandline { color:var(--muted); font-size:.92rem; margin:.8rem 0 .2rem; }
     .install { text-align:center; padding:.5rem 0 .25rem; }
     .btn { font: inherit; font-size:1.15rem; font-weight:700; color:#fff; border:0; border-radius:12px; padding:.85rem 2.2rem; cursor:pointer; background: linear-gradient(135deg, var(--g1), var(--g2)); box-shadow: 0 4px 14px rgba(23,132,247,.35); }
@@ -100,6 +93,13 @@
     details p { margin:.4rem 0 0; }
     footer { color:var(--muted); font-size:.88rem; padding: 1rem 0 2.5rem; }
     #nosupport { display:none; }
+    .support { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem .6rem; margin:.9rem 0 0; font-size:.95rem; }
+    .support b { font-weight:600; margin-right:.2rem; }
+    .support a { display:inline-flex; align-items:center; gap:.35rem; text-decoration:none; font-weight:700; font-size:.88rem; padding:.3rem .8rem; border-radius:999px; box-shadow:0 1px 4px rgba(0,0,0,.18); }
+    .support a:hover { filter:brightness(1.07); }
+    .support .kofi { background:#FF5E5B; color:#fff; }
+    .support .bmc { background:#FFDD00; color:#0b1b3f; }
+    html[data-theme=dark] .support a { box-shadow:0 1px 4px rgba(0,0,0,.5); }
     @media (max-width: 38rem) { .boards, .models { grid-template-columns:1fr; } .top h1 { font-size:1.3rem; } }
     /* Animated logo: the thermometer fills up and the heat waves rise (off with reduced motion). */
     .hg{transform-box:fill-box;transform-origin:50% 100%;animation:hg 4s ease-in-out infinite}
@@ -123,8 +123,8 @@
 <path class="wv" stroke-width="13" d="M206 404c-14-16 14-32 0-48s14-32 0-48s14-32 0-48M236 404c-14-16 14-32 0-48s14-32 0-48s14-32 0-48"/>
 </g>
 <g fill="#fff"><rect x="262" y="196" width="76" height="230" rx="38"/><circle cx="300" cy="430" r="56"/></g>
-<circle cx="300" cy="430" r="36" fill="#FF6A2B"/>
-<rect class="hg" x="288" y="283.1" width="24" height="146.9" rx="12" fill="#FF6A2B"/></svg>
+<circle cx="300" cy="430" r="36" fill="#1784F7"/>
+<rect class="hg" x="288" y="283.1" width="24" height="146.9" rx="12" fill="#1784F7"/></svg>
       <div>
         <h1>ESPHome Altherma</h1>
         <small><span class="pt">Instalador web</span><span class="en">Web installer</span></small>
@@ -139,17 +139,15 @@
       <span class="pt">A tua bomba de calor Daikin Altherma no Home Assistant, pela ficha X10A. Escolhe a placa e o modelo, carrega em Instalar, feito. Sem YAML, sem nuvem, sem app.</span>
       <span class="en">Your Daikin Altherma heat pump in Home Assistant, through the X10A port. Pick your board and model, click Install, done. No YAML, no cloud, no app.</span>
     </p>
+    <p class="support">
+      <b><span class="pt">Gostas? Ajuda-me a fazer algo ainda melhor.</span><span class="en">Like it? Help me build something better.</span></b>
+      <a class="kofi" href="https://ko-fi.com/skydoy" target="_blank" rel="noopener">☕ Ko-fi</a>
+      <a class="bmc" href="https://buymeacoffee.com/skydoy" target="_blank" rel="noopener">🍪 Buy Me a Coffee</a>
+    </p>
   </div>
 </header>
 
 <main class="wrap">
-  <section class="card donate" aria-label="Donativos / Donations">
-    <p><span class="pt">☕ <b>Gostas deste projeto?</b> Ajuda-me a trazer algo ainda melhor: hardware para testes, novas placas e modelos de bomba de calor.</span><span class="en">☕ <b>Like it?</b> Help me bring something even better: test hardware, new boards and more heat pump models.</span></p>
-    <div class="btns">
-      <a class="kofi" href="https://ko-fi.com/skydoy" target="_blank" rel="noopener">Ko-fi</a>
-      <a class="bmc" href="https://buymeacoffee.com/skydoy" target="_blank" rel="noopener">Buy Me a Coffee</a>
-    </div>
-  </section>
   <div id="nosupport" class="card note warn">
     <span class="pt"><b>Este browser não consegue instalar.</b> Abre esta página no <b>Chrome</b> ou <b>Edge</b> num computador (não funciona no telemóvel, Safari nem Firefox).</span>
     <span class="en"><b>This browser can't install.</b> Open this page in <b>Chrome</b> or <b>Edge</b> on a computer (phones, Safari and Firefox don't work).</span>
