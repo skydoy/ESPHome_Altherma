@@ -10,7 +10,7 @@
 - Se alimentar a placa por um carregador USB (veja [Alimentação](#alimentação)), ligue **só o TX, o RX e o GND**,
   nunca o pino de 5 V.
 - Não toque no conector nem nos fios com a unidade ligada. Feche a tampa antes de voltar a ligar o disjuntor.
-- Abrir a unidade pode afetar a garantia. Este projeto não tem ligação à Daikin; faz isto por sua conta e risco.
+- Abrir a unidade pode afetar a garantia. Este projeto não tem ligação à Daikin; faça-o por sua conta e risco.
 
 ## O que precisa
 - Uma das placas suportadas, já com o firmware do [instalador web](https://skydoy.github.io/esphome-altherma/).
