@@ -73,7 +73,7 @@ jobs:
           path: site
       - name: Assemble Pages site
         run: |
-          # Only the installer files: static/index.md + _config.yml belong to upstream's Jekyll site.
+          # The web installer page and its images.
           cp static/*.html static/*.svg static/*.png static/*.ico site/
           ls -R site
           for b in esp32 esp32-s3 atoms3 esp8266 m5stack; do

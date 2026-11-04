@@ -12,7 +12,7 @@ substitutions:
 
   # Default to GitHub for Take Control.
   # Override with "components" for local and factory builds.
-  altherma_component_source: github://jjohnsen/esphome-altherma@main
+  altherma_component_source: github://skydoy/esphome-altherma@main
 
 esphome:
   name: esphome-altherma
