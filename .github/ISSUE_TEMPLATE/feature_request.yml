@@ -1,0 +1,22 @@
+name: Feature request
+description: Suggest an improvement.
+title: "[Feature] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like to do?
+      description: The problem or use case, not only the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Idea
+      description: How you think it could work.
+  - type: input
+    id: heat_pump
+    attributes:
+      label: Heat pump and board (if relevant)
+      placeholder: ERLA11D2V3 / EBBH11DF6V, ESP32 DevKit
