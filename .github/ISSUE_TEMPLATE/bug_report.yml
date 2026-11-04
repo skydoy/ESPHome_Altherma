@@ -1,0 +1,100 @@
+name: Bug report
+description: Something does not work as documented.
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. Please check the
+        [wiring guide](https://github.com/skydoy/esphome-altherma/blob/main/docs/wiring.md) and the
+        [existing issues](https://github.com/skydoy/esphome-altherma/issues?q=is%3Aissue) first.
+        If your heat pump is simply not supported or values are wrong for your model, use
+        **Report my heat pump** instead. **Never post Wi-Fi passwords, API keys or OTA passwords.**
+  - type: input
+    id: heat_pump
+    attributes:
+      label: Heat pump (outdoor / indoor unit)
+      placeholder: ERLA11D2V3 / EBBH11DF6V
+    validations:
+      required: true
+  - type: dropdown
+    id: model_file
+    attributes:
+      label: Model file
+      options:
+        - erga_eh_da_04_08
+        - erga_eh_e_ej_04_08
+        - erla_d_ebv_ebb_ebvz_11_16
+        - erla_d_ebsh_11_16_ech2o
+        - epra_d_etv_etb_etvz_14_18
+        - altherma_ehvh_ehvx_cb
+        - Own / modified file
+    validations:
+      required: true
+  - type: dropdown
+    id: board
+    attributes:
+      label: Board
+      options:
+        - esp32 (ESP32 DevKit)
+        - esp32-s3 (ESP32-S3 DevKitC-1)
+        - atoms3 (M5Stack AtomS3 / AtomS3 Lite)
+        - esp8266 (D1 mini)
+        - m5stack (M5Stack Core / Basic)
+        - Other (describe below)
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware / ESPHome version
+      description: The **Firmware** entity in Home Assistant, or the ESPHome version you build with.
+      placeholder: "v2.0.1 / ESPHome 2026.10.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How was it installed?
+      options:
+        - Web installer (prebuilt firmware)
+        - Device Builder (adopted)
+        - Own build (command line)
+    validations:
+      required: true
+  - type: dropdown
+    id: power
+    attributes:
+      label: Power
+      options:
+        - From X10A 5 V
+        - From a USB charger
+    validations:
+      required: true
+  - type: textarea
+    id: what_happened
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the web installer, pick ...
+        2. ...
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: "ESPHome logs from boot, ideally with `logger: level: DEBUG`."
+      render: text
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I removed passwords and keys from everything above.
+          required: true

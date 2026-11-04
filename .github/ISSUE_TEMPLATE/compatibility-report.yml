@@ -1,0 +1,110 @@
+name: Report my heat pump / Reportar a minha bomba
+description: Tell us whether ESPHome Altherma works with your Daikin Altherma (also when it works).
+title: "[Compatibility] "
+labels: [compatibility]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! Every report, good or bad, ends up in the
+        [compatibility list](https://github.com/skydoy/esphome-altherma/blob/main/docs/compatibility.md).
+        English or Portuguese is fine. **Never post Wi-Fi passwords, API keys or OTA passwords.**
+  - type: input
+    id: outdoor_unit
+    attributes:
+      label: Outdoor unit / Unidade exterior
+      description: Model from the label on the outdoor unit. / Modelo na etiqueta da unidade exterior.
+      placeholder: ERLA11D2V3
+    validations:
+      required: true
+  - type: input
+    id: indoor_unit
+    attributes:
+      label: Indoor unit / Unidade interior
+      description: Model from the label on the indoor unit (hydrobox). / Modelo na etiqueta da unidade interior.
+      placeholder: EBBH11DF6V
+    validations:
+      required: true
+  - type: dropdown
+    id: model_file
+    attributes:
+      label: Model file / Ficheiro de modelo
+      description: The heat pump model you picked in the installer (or in `altherma_model`).
+      options:
+        - erga_eh_da_04_08
+        - erga_eh_e_ej_04_08
+        - erla_d_ebv_ebb_ebvz_11_16
+        - erla_d_ebsh_11_16_ech2o
+        - epra_d_etv_etb_etvz_14_18
+        - altherma_ehvh_ehvx_cb
+        - Own / modified file (attach below)
+    validations:
+      required: true
+  - type: dropdown
+    id: board
+    attributes:
+      label: Board / Placa
+      options:
+        - esp32 (ESP32 DevKit)
+        - esp32-s3 (ESP32-S3 DevKitC-1)
+        - atoms3 (M5Stack AtomS3 / AtomS3 Lite)
+        - esp8266 (D1 mini)
+        - m5stack (M5Stack Core / Basic)
+        - Other (describe below) / Outra (descreva abaixo)
+    validations:
+      required: true
+  - type: dropdown
+    id: works
+    attributes:
+      label: Does it work? / Funciona?
+      options:
+        - "Yes, all values look right / Sim, os valores parecem certos"
+        - "Partly, some sensors are wrong or missing / Em parte, há sensores errados ou em falta"
+        - "No, no data / Não, sem dados"
+    validations:
+      required: true
+  - type: textarea
+    id: sensors
+    attributes:
+      label: Sensors wrong or missing / Sensores errados ou em falta
+      description: |
+        Which entities show wrong values (and what the heat pump display shows instead), or which values you miss.
+        Quais as entidades com valores errados (e o que mostra o ecrã da bomba), ou que valores faltam.
+      placeholder: |
+        "Leaving Water Temp" shows 0.0, display says 35 °C.
+  - type: input
+    id: esphome_version
+    attributes:
+      label: ESPHome / firmware version / Versão
+      description: The **Firmware** entity in Home Assistant, or the ESPHome version you build with.
+      placeholder: "v2.0.1 (web installer) / ESPHome 2026.10.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How was it installed? / Como foi instalado?
+      options:
+        - Web installer / Instalador web
+        - Device Builder (adopted) / Device Builder (adotado)
+        - Own build (command line) / Compilação própria
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log excerpt / Excerto dos registos
+      description: |
+        ESPHome logs from boot until a few readings (Device Builder → Logs, or the web installer → Logs).
+        Registos do ESPHome desde o arranque até algumas leituras.
+      render: text
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else / Mais alguma coisa
+      description: Wiring changes, power from USB, relays, your own model file (attach it), photos of the labels…
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I removed passwords and keys from everything above. / Retirei palavras-passe e chaves de tudo o que está acima.
+          required: true
