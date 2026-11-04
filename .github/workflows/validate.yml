@@ -1,0 +1,81 @@
+name: Validate
+# Fast checks on every push and pull request (same idea as skydoy/ESPHome_AC and ESPHOME_Hunter):
+# `esphome config` for every board x heat pump model pair the installer ships (30 pairs, seconds
+# each) and the plain board configs, plus ONE real compile as a smoke test. The full 30-image
+# build only runs on release tags, in publish.yml.
+on: [push, pull_request]
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  config:
+    name: config / ${{ matrix.board }} (6 models)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        board: [esp32, esp32-s3, atoms3, esp8266, m5stack]
+    env:
+      WRAPPER: installer/esphome-altherma-${{ matrix.board }}.installer.yaml
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: { python-version: "3.13" }
+      - run: pip install esphome==2026.10.1
+      - name: esphome config for every model, with its own OTA manifest URL
+        run: |
+          set -o pipefail
+          for f in confs/*.yaml; do
+            m=$(basename "$f" .yaml)
+            echo "::group::${{ matrix.board }} / $m"
+            esphome -s altherma_model "$m" config "$WRAPPER" | tee config.txt
+            grep -q "source: https://skydoy.github.io/esphome-altherma/firmware/${{ matrix.board }}/$m/manifest.json" config.txt \
+              || { echo "::error::$WRAPPER ($m) does not update from firmware/${{ matrix.board }}/$m/manifest.json"; exit 1; }
+            echo "::endgroup::"
+          done
+  board-configs:
+    # The plain board files (what the Device Builder adopts), built from this checkout.
+    name: config / ${{ matrix.file }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        file:
+          - esphome-altherma-esp32.yaml
+          - esphome-altherma-esp32-s3.yaml
+          - esphome-altherma-atoms3.yaml
+          - esphome-altherma-esp8266.yaml
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: { python-version: "3.13" }
+      - run: pip install esphome==2026.10.1
+      - run: esphome -s altherma_component_source components config ${{ matrix.file }} > /dev/null
+  site:
+    # The installer page, its model list and the build matrix must list the same confs/*.yaml.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Every model file is offered on the site and built on release
+        run: |
+          set -e
+          for f in confs/*.yaml; do
+            m=$(basename "$f" .yaml)
+            grep -q "key: '$m'" static/index.html || { echo "::error::$m missing from static/index.html MODELS"; exit 1; }
+            grep -q "^\s*- $m$" .github/workflows/publish.yml || { echo "::error::$m missing from the publish.yml matrix"; exit 1; }
+          done
+  compile:
+    # One real build (default board and model) so compiler errors show up before a release.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: { python-version: "3.13" }
+      - uses: actions/cache@v6
+        with:
+          path: ~/.platformio
+          key: pio-${{ runner.os }}-esphome-2026.10.1
+      - run: pip install esphome==2026.10.1
+      - run: esphome compile installer/esphome-altherma-esp32.installer.yaml
