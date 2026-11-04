@@ -11,6 +11,11 @@ body:
         [existing issues](https://github.com/skydoy/esphome-altherma/issues?q=is%3Aissue) first.
         If your heat pump is simply not supported or values are wrong for your model, use
         **Report my heat pump** instead. **Never post Wi-Fi passwords, API keys or OTA passwords.**
+
+        Pode escrever em português. Veja primeiro o
+        [guia de ligações](https://github.com/skydoy/esphome-altherma/blob/main/docs/ligacoes.md) e os problemas já abertos.
+        Se a sua bomba não é suportada ou os valores do seu modelo estão errados, use **Reportar a minha bomba**.
+        **Nunca publique palavras-passe do Wi-Fi, chaves da API nem palavras-passe OTA.**
   - type: input
     id: heat_pump
     attributes:
