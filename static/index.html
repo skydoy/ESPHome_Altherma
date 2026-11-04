@@ -74,6 +74,15 @@
     .install { text-align:center; padding:.5rem 0 .25rem; }
     .btn { font: inherit; font-size:1.15rem; font-weight:700; color:#fff; border:0; border-radius:12px; padding:.85rem 2.2rem; cursor:pointer; background: linear-gradient(135deg, var(--g1), var(--g2)); box-shadow: 0 4px 14px rgba(23,132,247,.35); }
     .btn:hover { filter: brightness(1.05); }
+    .btn2 { display:inline-block; font-weight:700; text-decoration:none; color:var(--accent); border:2px solid var(--accent); border-radius:12px; padding:.6rem 1.3rem; background:transparent; }
+    .btn2:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+    .report { text-align:center; margin:.9rem 0 .3rem; }
+    .report .d { color:var(--muted); font-size:.88rem; margin-top:.35rem; }
+    table.compat { font-size:.86rem; }
+    table.compat code { font-size:.76rem; word-break:break-all; }
+    table.compat td.st { text-align:center; white-space:nowrap; }
+    .scroll { overflow-x:auto; }
+    .diagram { display:block; max-width:100%; height:auto; margin:.6rem auto 0; border:1px solid var(--line); border-radius:12px; }
     .ver { color:var(--muted); font-size:.9rem; margin-top:.4rem; }
     .pick { color:var(--muted); font-size:.92rem; margin:.2rem 0 .6rem; text-align:center; }
     .note { border-radius:10px; padding:.6rem .85rem; margin:.7rem 0; }
@@ -178,9 +187,9 @@
     <p><span class="pt">Vê a etiqueta da unidade exterior (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) e da unidade interior (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Escolhe a linha que tem as duas.</span>
       <span class="en">Check the label on the outdoor unit (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) and the indoor unit (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Pick the row that matches both.</span></p>
     <form id="model-form" class="models"></form>
-    <p class="note warn">🧪 <span class="pt"><b>Deteção automática do modelo:</b> experimental, ainda não está neste instalador. Está a ser preparada no projeto original (<a href="https://github.com/jjohnsen/esphome-altherma/pull/51">jjohnsen/esphome-altherma #51</a>). Até lá, escolhe o modelo à mão; se errares, os valores ficam estranhos mas nada se estraga, basta reinstalar com outro modelo.</span>
-      <span class="en"><b>Automatic model detection:</b> experimental, not in this installer yet. It is being prepared upstream (<a href="https://github.com/jjohnsen/esphome-altherma/pull/51">jjohnsen/esphome-altherma #51</a>). Until then, pick the model by hand; a wrong pick only shows odd values and breaks nothing, just reinstall with another model.</span></p>
-    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> o teu modelo marcado. Não encontras o teu? <a href="https://github.com/jjohnsen/esphome-altherma/discussions">Pergunta nas Discussions</a>; o mais próximo costuma ser <code>erga_eh_da_04_08</code>.</span><span class="en"><b>You should see:</b> your model ticked. Not listed? <a href="https://github.com/jjohnsen/esphome-altherma/discussions">Ask in Discussions</a>; the closest is usually <code>erga_eh_da_04_08</code>.</span></p>
+    <p class="note warn">🧪 <span class="pt"><b>Deteção automática do modelo:</b> ainda não existe neste instalador. Escolhe o modelo à mão; se errares, os valores ficam estranhos mas nada se estraga, basta reinstalar com outro modelo.</span>
+      <span class="en"><b>Automatic model detection:</b> not in this installer yet. Pick the model by hand; a wrong pick only shows odd values and breaks nothing, just reinstall with another model.</span></p>
+    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> o teu modelo marcado. Não encontras o teu? Vê a <a href="#compat">lista de compatibilidade</a>; o mais próximo costuma ser <code>erga_eh_da_04_08</code>.</span><span class="en"><b>You should see:</b> your model ticked. Not listed? See the <a href="#compat">compatibility list</a>; the closest is usually <code>erga_eh_da_04_08</code>.</span></p>
   </section>
 
   <section class="card" id="wiring">
@@ -192,8 +201,10 @@
     <table class="wire" id="wire-table">
       <tr><th><span class="pt">Pino X10A</span><span class="en">X10A pin</span></th><th><span class="pt">Sinal</span><span class="en">Signal</span></th><th><span class="pt">Na placa</span><span class="en">On the board</span></th></tr>
     </table>
-    <p><span class="pt">O TX da bomba vai ao RX da placa e vice-versa (cruzado). Fotos e detalhes:</span><span class="en">The pump's TX goes to the board's RX and vice versa (crossed). Photos and details:</span>
-      <a href="https://github.com/raomin/ESPAltherma?tab=readme-ov-file#daikin-altherma-4-pin-x10a-connection"><span class="pt">guia de ligação do ESPAltherma</span><span class="en">ESPAltherma wiring guide</span></a>.</p>
+    <p><span class="pt">O TX da bomba vai ao RX da placa e vice-versa (cruzado). Onde fica a X10A, alimentação e segurança:</span><span class="en">The pump's TX goes to the board's RX and vice versa (crossed). Where the X10A is, power and safety:</span>
+      <a class="pt" href="https://github.com/skydoy/esphome-altherma/blob/main/docs/ligacoes.md">guia de ligações</a><a class="en" href="https://github.com/skydoy/esphome-altherma/blob/main/docs/wiring.md">wiring guide</a>.</p>
+    <details><summary><span class="pt">Ver o esquema (exemplo com ESP32 DevKit)</span><span class="en">See the diagram (ESP32 DevKit example)</span></summary>
+      <img class="diagram" src="wiring-x10a.svg" width="640" height="330" alt="X10A pin 1 5V to 5V/VIN, pin 2 TX to GPIO16 RX, pin 3 RX to GPIO17 TX, pin 4 not connected, pin 5 GND to GND" loading="lazy"></details>
     <p class="note warn">🔌 <span class="pt"><b>Alimentação de 5V:</b> o pino 1 da X10A dá pouca corrente. Chega para a maioria das placas, mas há instalações (ex. ESP32-WROOM-32U com antena externa) que reiniciam sozinhas; nesse caso deixa o pino 1 sem ligar e alimenta a placa por um carregador USB, mantendo o GND ligado. O ecrã do M5Stack também gasta mais.</span>
       <span class="en"><b>5V power:</b> X10A pin 1 supplies little current. It is enough for most boards, but some installs (e.g. ESP32-WROOM-32U with an external antenna) keep rebooting; then leave pin 1 unconnected and power the board from a USB charger, keeping GND connected. The M5Stack screen also draws more.</span></p>
     <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> 4 fios ligados (pino 4 livre) e, depois do passo 4, o LED da placa aceso quando a bomba está ligada.</span><span class="en"><b>You should see:</b> 4 wires connected (pin 4 free) and, after step 4, the board's LED on while the heat pump is powered.</span></p>
@@ -242,6 +253,26 @@
     <p class="en"><b>Updates:</b> the <b>Firmware</b> entity tells you when a new version exists for your board and model; install it in one click.</p>
   </section>
 
+  <section class="card" id="compat">
+    <h2><span class="num">✓</span><span class="pt">Compatibilidade</span><span class="en">Compatibility</span></h2>
+    <p><span class="pt">Que modelos já foram testados. ✅ testado por um responsável · 🔶 reportado por um utilizador · 🧪 mapeado, sem relato · ❔ ainda ninguém reportou.</span>
+      <span class="en">Which models have been tested. ✅ tested by a maintainer · 🔶 reported by a user · 🧪 mapped, no report yet · ❔ nobody reported yet.</span></p>
+    <div class="scroll"><table class="compat" id="compat-models">
+      <tr><th><span class="pt">Modelo</span><span class="en">Model</span></th><th><span class="pt">Unidades</span><span class="en">Units</span></th><th><span class="pt">Estado</span><span class="en">Status</span></th></tr>
+    </table></div>
+    <details><summary><span class="pt">Instalações reportadas</span><span class="en">Reported installs</span> (<span id="compat-count"></span>)</summary>
+      <div class="scroll"><table class="compat" id="compat-installs">
+        <tr><th><span class="pt">Exterior / interior</span><span class="en">Outdoor / indoor</span></th><th><span class="pt">Modelo</span><span class="en">Model</span></th><th><span class="pt">Placa</span><span class="en">Board</span></th><th></th><th><span class="pt">Por</span><span class="en">By</span></th></tr>
+      </table></div>
+      <p><span class="pt">A maior parte dos relatos foi feita no projeto original (jjohnsen), com o mesmo componente e os mesmos ficheiros de modelo. Lista completa:</span><span class="en">Most reports were made in the original project (jjohnsen), with the same component and model files. Full list:</span>
+        <a class="pt" href="https://github.com/skydoy/esphome-altherma/blob/main/docs/compatibilidade.md">compatibilidade.md</a><a class="en" href="https://github.com/skydoy/esphome-altherma/blob/main/docs/compatibility.md">compatibility.md</a></p>
+    </details>
+    <div class="report">
+      <a class="btn2" id="report" href="https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml" target="_blank" rel="noopener"><span class="pt">📝 Reportar a minha bomba</span><span class="en">📝 Report my heat pump</span></a>
+      <div class="d"><span class="pt">Funciona, funciona em parte ou não funciona: conta-nos. Abre um formulário no GitHub com a placa e o modelo que escolheste já preenchidos (precisas de conta GitHub).</span><span class="en">Works, partly works or doesn't: tell us. Opens a GitHub form with the board and model you picked already filled in (needs a GitHub account).</span></div>
+    </div>
+  </section>
+
   <section class="card">
     <h2><span class="num">?</span><span class="pt">Problemas</span><span class="en">Troubleshooting</span></h2>
     <details><summary><span class="pt">Os sensores ficam <i>Indisponível</i> ou a 0</span><span class="en">Sensors stay <i>Unavailable</i> or 0</span></summary>
@@ -259,17 +290,18 @@
     <details><summary><span class="pt">Mudar de Wi-Fi</span><span class="en">Change Wi-Fi</span></summary>
       <p class="pt">Sem o Wi-Fi antigo, a placa abre a rede <code>esphome-altherma-…</code> após cerca de um minuto. Ou liga-a por USB aqui → <b>Change Wi-Fi</b>.</p>
       <p class="en">Without its old Wi-Fi, the board opens the <code>esphome-altherma-…</code> hotspot after about a minute. Or plug it in by USB here → <b>Change Wi-Fi</b>.</p></details>
-    <p><a href="https://github.com/skydoy/esphome-altherma#readme">README</a>
-      · <a href="https://community.home-assistant.io/t/esphome-altherma-monitor-your-daikin-altherma-3-heat-pump-via-x10a/1000476">HA Community</a>
-      · <a href="https://github.com/jjohnsen/esphome-altherma/discussions"><span class="pt">Pedir ajuda</span><span class="en">Ask for help</span></a></p>
+    <p><a class="pt" href="https://github.com/skydoy/esphome-altherma/blob/main/README.pt.md">README</a><a class="en" href="https://github.com/skydoy/esphome-altherma#readme">README</a>
+      · <a class="pt" href="https://github.com/skydoy/esphome-altherma/blob/main/docs/seguranca.md">Segurança e atualizações</a><a class="en" href="https://github.com/skydoy/esphome-altherma/blob/main/docs/security.md">Security and updates</a>
+      · <a class="pt" href="https://github.com/skydoy/esphome-altherma/blob/main/docs/avancado.md">Uso avançado</a><a class="en" href="https://github.com/skydoy/esphome-altherma/blob/main/docs/advanced.md">Advanced use</a>
+      · <a href="https://github.com/skydoy/esphome-altherma/issues/new/choose"><span class="pt">Reportar um problema</span><span class="en">Report a problem</span></a></p>
   </section>
 
   <footer>
     <p><span class="pt">Componente e configurações:</span><span class="en">Component and configs:</span>
-      <a href="https://github.com/jjohnsen/esphome-altherma">jjohnsen/esphome-altherma</a>
+      esphome-altherma
       (<span class="pt">por</span><span class="en">by</span> jjohnsen).
       <span class="pt">Mapas de registos baseados no</span><span class="en">Register maps based on</span>
-      <a href="https://github.com/raomin/ESPAltherma">ESPAltherma</a> (raomin).
+      ESPAltherma (raomin).
       <span class="pt">Instalador e logótipo:</span><span class="en">Installer and logo:</span>
       <a href="https://github.com/skydoy/esphome-altherma">skydoy/esphome-altherma</a>.
       <span class="pt">As imagens das placas são ilustrações.</span><span class="en">Board pictures are illustrations.</span></p>
@@ -288,13 +320,33 @@
     { key: 'epra_d_etv_etb_etvz_14_18', name: 'Altherma 3 H HT · EPRA D + ETV/ETB/ETVZ', d: '14–18 kW' },
     { key: 'altherma_ehvh_ehvx_cb', name: 'Altherma LT · EHVH/EHVX CB', d: '11–16 kW' },
   ];
-  // Pins from the board YAMLs (tx_pin / rx_pin of uart_bus).
+  // Compatibility (keep in sync with docs/compatibility.md). s: ✅ 🔶 🧪 ❌ ❔
+  const MODEL_STATUS = { erga_eh_da_04_08: '✅', erga_eh_e_ej_04_08: '🔶', erla_d_ebv_ebb_ebvz_11_16: '✅', erla_d_ebsh_11_16_ech2o: '🧪', epra_d_etv_etb_etvz_14_18: '🔶', altherma_ehvh_ehvx_cb: '❔' };
+  const INSTALLS = [ // [units, model file ('' = not stated, '*' = own mapping), board, status, reported by]
+    ['ERLA11D2V3 / EBBH11DF6V', 'erla_d_ebv_ebb_ebvz_11_16', 'ESP32 DevKit', '✅', '@skydoy'],
+    ['ERGA08DAV3 / EHVH08S23DA6V', 'erga_eh_da_04_08', 'ESP32 DevKit, M5Stack Basic', '✅', '@jjohnsen'],
+    ['ERRA08EV3 / ERRA08EAV37 + ELVH12S23E6V / ELVX12S23EJ6V', 'erga_eh_da_04_08', 'ESP32-S3 DevKit', '🔶', '@mathep34'],
+    ['ERGA04 E / EHVX04S18EJ6V', 'erga_eh_e_ej_04_08', 'ESP32 DevKit', '🔶', '@sh4jonny'],
+    ['EPRA18DW17 / ETBX16E9W7', 'epra_d_etv_etb_etvz_14_18', 'DOIT ESP32 DevKit V1', '🔶', '@kepten'],
+    ['ERLA16D2W17 / EBVX16S23DJ9W', '*', 'ESP32-S3 SuperMini', '🔶', '@hansiputz'],
+    ['EBSXB16P50DF', 'erla_d_ebsh_11_16_ech2o', '–', '🧪', ''],
+    ['EHSXB08P30EF', '', 'M5Stack AtomS3 Lite', '🔶', '@maromme'],
+    ['EHSX08P50BB', '', 'M5Stack Stamp S3', '🔶', '@smdx2'],
+    ['EHVX08S26CB9W', '*', 'DOIT ESP32 DevKit V1', '🔶', '@MaBeniu'],
+    ['ERLQ011CAV3 / EHBX11CB9W', '', 'ESP32 DevKit', '🔶', ''],
+    ['EHBH16C9W', '', 'ESP32-C6-WROOM-1', '🔶', '@AndriesMuylaert'],
+    ['EDLA09DA3V3', '', 'Freenove ESP32', '🔶', '@jandenouden2'],
+    ['ERLQ016CAW1', '', 'ESP32-WROOM-32U DevKit', '🔶', '@ezfrag2021'],
+    ['EHBH08CA3V', '', 'ESP32', '🔶', '@papayou66'],
+  ];
+  const REPORT = 'https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml';
+  // Pins from the board YAMLs (tx_pin / rx_pin of uart_bus). opt: option text in the issue form.
   const BOARDS = {
-    'esp32':   { name: 'ESP32 DevKit', v5: ['5V / VIN', '5V / VIN'], rx: 'GPIO16 (RX2)', tx: 'GPIO17 (TX2)' },
-    'esp32-s3': { name: 'ESP32-S3 DevKitC-1', v5: ['5V', '5V'], rx: 'GPIO2', tx: 'GPIO1' },
-    'atoms3':  { name: 'M5Stack AtomS3', v5: ['Grove 5V (vermelho)', 'Grove 5V (red)'], rx: 'Grove G2', tx: 'Grove G1', gnd: ['Grove GND (preto)', 'Grove GND (black)'] },
-    'esp8266': { name: 'D1 mini (ESP8266)', v5: ['5V', '5V'], rx: 'D1 (GPIO5)', tx: 'D2 (GPIO4)' },
-    'm5stack': { name: 'M5Stack Core / Basic', v5: ['5V (M-Bus)', '5V (M-Bus)'], rx: 'GPIO16', tx: 'GPIO17' },
+    'esp32':   { name: 'ESP32 DevKit', opt: 'esp32 (ESP32 DevKit)', v5: ['5V / VIN', '5V / VIN'], rx: 'GPIO16 (RX2)', tx: 'GPIO17 (TX2)' },
+    'esp32-s3': { name: 'ESP32-S3 DevKitC-1', opt: 'esp32-s3 (ESP32-S3 DevKitC-1)', v5: ['5V', '5V'], rx: 'GPIO2', tx: 'GPIO1' },
+    'atoms3':  { name: 'M5Stack AtomS3', opt: 'atoms3 (M5Stack AtomS3 / AtomS3 Lite)', v5: ['Grove 5V (vermelho)', 'Grove 5V (red)'], rx: 'Grove G2', tx: 'Grove G1', gnd: ['Grove GND (preto)', 'Grove GND (black)'] },
+    'esp8266': { name: 'D1 mini (ESP8266)', opt: 'esp8266 (D1 mini)', v5: ['5V', '5V'], rx: 'D1 (GPIO5)', tx: 'D2 (GPIO4)' },
+    'm5stack': { name: 'M5Stack Core / Basic', opt: 'm5stack (M5Stack Core / Basic)', v5: ['5V (M-Bus)', '5V (M-Bus)'], rx: 'GPIO16', tx: 'GPIO17' },
   };
   const root = document.documentElement;
   const button = document.getElementById('install');
@@ -305,6 +357,11 @@
     '<label><input type="radio" name="model" value="' + m.key + '"' + (m.def ? ' checked' : '') + '><span><span class="t">' + esc(m.name) + '</span>' +
     (m.def ? '<span class="tag">' + bi('padrão', 'default') + '</span>' : '') +
     '<div class="d">' + esc(m.d) + ' · <code>' + m.key + '</code></div></span></label>').join('');
+  document.getElementById('compat-models').insertAdjacentHTML('beforeend', MODELS.map(m =>
+    '<tr><td><code>' + m.key + '</code></td><td>' + esc(m.name) + ' (' + esc(m.d) + ')</td><td class="st">' + (MODEL_STATUS[m.key] || '❔') + '</td></tr>').join(''));
+  document.getElementById('compat-installs').insertAdjacentHTML('beforeend', INSTALLS.map(r =>
+    '<tr><td>' + esc(r[0]).replace(/ \/ | \+ /g, m => m.trim() + '<br>') + '</td><td>' + (r[1] === '*' ? bi('mapa próprio', 'own mapping') : r[1] ? '<code>' + r[1] + '</code>' : bi('não indicado', 'not stated')) + '</td><td>' + esc(r[2]) + '</td><td class="st">' + r[3] + '</td><td>' + esc(r[4]) + '</td></tr>').join(''));
+  document.getElementById('compat-count').textContent = INSTALLS.length;
   let manifest = null;
   async function showVersion() {
     const url = button.getAttribute('manifest');
@@ -339,6 +396,9 @@
     t.querySelectorAll('tr.r').forEach(r => r.remove());
     rows.forEach(r => t.insertAdjacentHTML('beforeend', '<tr class="r"><td>' + r[0] + '</td><td>' + r[1] + '</td><td' + (r[3] ? ' class="nc"' : '') + '>' + r[2] + '</td></tr>'));
     document.getElementById('pick').innerHTML = bi('Vais instalar:', 'You will install:') + ' <b>' + esc(b.name) + '</b> · <b>' + esc(m.name) + '</b>';
+    // Prefill the compatibility report with the current pick (field ids of compatibility-report.yml).
+    document.getElementById('report').href = REPORT + '&board=' + encodeURIComponent(b.opt) + '&model_file=' + encodeURIComponent(model) +
+      '&install=' + encodeURIComponent('Web installer / Instalador web') + '&title=' + encodeURIComponent('[Compatibility] ' + m.name + ' · ' + b.name);
     try { localStorage.setItem('altherma-pick', JSON.stringify({ board, model })); } catch (e) {}
     showVersion();
   }
