@@ -3,11 +3,11 @@ name: Build firmware & publish installer
 # as skydoy/ESPHome_AC: one firmware per board x heat pump model, each in its own Pages folder
 # firmware/<board>/<model>/ with an ESP Web Tools manifest.json that is also the OTA source of
 # the "Firmware" update entity (see installer/*.installer.yaml).
+# Pushes and pull requests are checked by validate.yml (config checks + one compile); the full
+# 30-image build runs only here, for release tags (v*) or a manual run.
 on:
   push:
-    branches: [main]
     tags: ["v*"]
-  pull_request:
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,8 +16,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    # Every push / PR builds the whole matrix (that is the validation); only tags and manual
-    # runs deploy (see "deploy"). Keep "model" in sync with confs/*.yaml and static/index.html.
+    # Keep "model" in sync with confs/*.yaml and static/index.html (validate.yml checks it).
     name: ${{ matrix.board }} / ${{ matrix.model }}
     runs-on: ubuntu-latest
     strategy:
@@ -44,11 +43,8 @@ jobs:
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then v="${GITHUB_REF_NAME#v}"; else v="dev-${GITHUB_SHA::7}"; fi
           sed -i "s|^\(\s*altherma_model:\).*|\1 $MODEL|; s|^\(\s*altherma_version:\).*|\1 \"$v\"|" "$WRAPPER"
           grep -n "altherma_model:\|altherma_version:\|altherma_board:" "$WRAPPER"
-      - name: Placeholder secrets (esphome-altherma-m5stack.yaml uses !secret; the wrapper drops Wi-Fi)
-        run: |
-          printf 'wifi_ssid: ""\nwifi_password: ""\nota_password: ""\n' > secrets.yaml
       - id: esphome
-        uses: esphome/build-action@v8.1.0   # consider pinning to the release commit SHA
+        uses: esphome/build-action@ae5408cdbc4f70692bf8e345c4982bca05a93667 # v8.1.0
         with:
           yaml-file: ${{ env.WRAPPER }}
           version: "2026.10.1"
@@ -91,7 +87,7 @@ jobs:
           path: site
   deploy:
     # Publish the installer and the OTA manifests only for release tags (or a manual run).
-    if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch')
+    # The github-pages environment must allow v* tags (Settings -> Environments).
     needs: pages
     runs-on: ubuntu-latest
     permissions:
