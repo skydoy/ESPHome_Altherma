@@ -19,6 +19,9 @@ CONFIG_SCHEMA = (
         {
             cv.GenerateID(): cv.declare_id(AlthermaHub),
             cv.Optional("query_result_text_sensor"): cv.use_id(text_sensor.TextSensor),
+            # Experimental, read-only: adds the identify_controller API service
+            # (X10A 0x4C software ID + 0x56 Micon ID). Off by default.
+            cv.Optional("enable_identify", default=False): cv.boolean,
         }
     )
     .extend(cv.polling_component_schema("30s"))
@@ -34,6 +37,9 @@ async def to_code(config):
     if "query_result_text_sensor" in config:
         query_sensor = await cg.get_variable(config["query_result_text_sensor"])
         cg.add(var.set_query_result_text_sensor(query_sensor))
+
+    if config["enable_identify"]:
+        cg.add(var.set_enable_identify(True))
 
 
 # Shared configuration constants
