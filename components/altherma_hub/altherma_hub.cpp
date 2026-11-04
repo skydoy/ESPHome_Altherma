@@ -2,6 +2,7 @@
 #include "esphome/core/log.h"
 #include "mock_uart.h"
 #include "labeldef.h"
+#include "x10a_read_protocol.h"
 #include <cstdarg>
 #include <cstdio>
 LabelDef labelDefs[] = {};
@@ -49,6 +50,10 @@ void AlthermaHub::setup() {
 
   this->register_service(&AlthermaHub::queue_manual_query, "query_register",
                          {"register", "offset", "convid", "datasize"});
+  if (this->enable_identify_) {
+    this->register_service(&AlthermaHub::queue_identify_controller, "identify_controller");
+    ESP_LOGW(TAG, "Experimental read-only identify enabled (service identify_controller)");
+  }
 }
 
 AlthermaHub::~AlthermaHub() {
@@ -86,7 +91,31 @@ void AlthermaHub::update() {
 }
 
 void AlthermaHub::loop() {
-  if (!this->poll_active_ && !this->manual_query_pending_) {
+  if (!this->poll_active_ && !this->manual_query_pending_ && !this->identify_pending_) {
+    return;
+  }
+
+  if (!this->poll_active_ && this->identify_pending_) {
+    // Take the UART only between poll cycles, never in the middle of one.
+    this->identify_pending_ = false;
+    this->identify_active_ = true;
+    this->identify_step_ = 0;
+    this->poll_active_ = true;
+    this->query_state_ = QueryState::SEND_QUERY;
+    this->cycle_started_at_ = millis();
+  }
+
+  if (this->identify_active_) {
+    if (this->query_state_ == QueryState::SEND_QUERY) {
+      if (this->backoff_active_) {
+        if (millis() - this->backoff_started_at_ < ERROR_BACKOFF_MS)
+          return;
+        this->backoff_active_ = false;
+      }
+      this->start_identify_query_();
+    } else if (this->query_state_ == QueryState::READ_RESPONSE) {
+      this->read_identify_response_();
+    }
     return;
   }
 
@@ -437,6 +466,105 @@ void AlthermaHub::advance_register_() {
   }
 
   this->query_state_ = QueryState::SEND_QUERY;
+}
+
+void AlthermaHub::queue_identify_controller() {
+  if (this->identify_pending_ || this->identify_active_) {
+    this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_WARN, "X10A identify already queued/running");
+    return;
+  }
+  this->identify_pending_ = true;
+  this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_INFO,
+                                      "X10A identify queued (read-only: 0x4C software ID, then 0x56 Micon ID)");
+}
+
+void AlthermaHub::start_identify_query_() {
+  auto uart = this->parent_;
+#ifdef USE_MOCK_UART
+  uart = mock_uart_();
+#endif
+  const uint8_t cmd = this->identify_step_ == 0 ? 0x4C : 0x56;
+  uint8_t frame[4] = {};
+  const size_t n = x10a::build_frame(cmd, nullptr, 0, frame, sizeof(frame));  // 02 4C B1 / 02 56 A7
+
+  uint8_t stale;
+  while (uart->available() && uart->read_byte(&stale)) {
+  }
+  this->current_register_ = cmd;
+  this->rx_len_ = 0;
+  this->query_started_at_ = millis();
+  this->identify_last_byte_at_ = this->query_started_at_;
+  ESP_LOGI(TAG, "X10A identify: sending %02X %02X %02X", frame[0], frame[1], frame[2]);
+  uart->flush();
+  uart->write_array(frame, n);
+  this->query_state_ = QueryState::READ_RESPONSE;
+}
+
+void AlthermaHub::read_identify_response_() {
+  auto uart = this->parent_;
+#ifdef USE_MOCK_UART
+  uart = mock_uart_();
+#endif
+  const uint32_t now = millis();
+  uint8_t byte;
+  while (this->rx_len_ < 32 && uart->available() && uart->read_byte(&byte)) {
+    this->rx_buffer_[this->rx_len_++] = byte;
+    this->identify_last_byte_at_ = now;
+  }
+  const bool gap = this->rx_len_ > 0 && now - this->identify_last_byte_at_ >= IDENTIFY_GAP_MS;
+  const bool timeout = now - this->query_started_at_ >= IDENTIFY_TIMEOUT_MS;
+  if (!gap && !timeout && this->rx_len_ < 32)
+    return;
+  this->report_identify_step_();
+}
+
+void AlthermaHub::report_identify_step_() {
+  const uint8_t cmd = this->current_register_;
+  char hex[32 * 3 + 1] = {0};
+  size_t pos = 0;
+  for (size_t i = 0; i < this->rx_len_ && pos + 4 < sizeof(hex); i++)
+    pos += snprintf(hex + pos, sizeof(hex) - pos, i ? " %02X" : "%02X", this->rx_buffer_[i]);
+
+  if (this->rx_len_ == 0) {
+    this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_WARN, "X10A 0x%02X: no reply (timeout)", cmd);
+  } else if (x10a::nack(this->rx_buffer_, this->rx_len_)) {
+    this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_WARN, "X10A 0x%02X: NACK (15 EA)", cmd);
+  } else if (!x10a::valid_reply(this->rx_buffer_, this->rx_len_, cmd)) {
+    this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_WARN, "X10A 0x%02X: unexpected reply (%u bytes) raw=%s",
+                                        cmd, (unsigned) this->rx_len_, hex);
+  } else if (cmd == 0x4C && this->rx_len_ == 6) {
+    this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_INFO, "X10A hydro software ID=%02X%02X%02X%02X raw=%s",
+                                        this->rx_buffer_[4], this->rx_buffer_[3], this->rx_buffer_[2],
+                                        this->rx_buffer_[1], hex);
+  } else if (cmd == 0x56) {
+    uint16_t id = 0;
+    if (x10a::decode_micon_id(this->rx_buffer_, this->rx_len_, id))
+      this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_INFO, "X10A hydro Micon ID=ID%04X raw=%s", id, hex);
+    else
+      this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_INFO, "X10A 0x56 valid CRC, %u bytes raw=%s",
+                                          (unsigned) this->rx_len_, hex);
+  } else {
+    this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_INFO, "X10A 0x%02X valid CRC, %u bytes raw=%s", cmd,
+                                        (unsigned) this->rx_len_, hex);
+  }
+
+  // Pause before the next request, like after a failed read.
+  this->backoff_active_ = true;
+  this->backoff_started_at_ = millis();
+  if (this->identify_step_ == 0) {
+    this->identify_step_ = 1;
+    this->query_state_ = QueryState::SEND_QUERY;
+    return;
+  }
+  this->finish_identify_();
+}
+
+void AlthermaHub::finish_identify_() {
+  this->identify_active_ = false;
+  this->poll_active_ = false;
+  this->rx_len_ = 0;
+  this->query_state_ = QueryState::IDLE;
+  ESP_LOGI(TAG, "X10A identify done (%u ms)", (unsigned) (millis() - this->cycle_started_at_));
 }
 
 unsigned char AlthermaHub::calculate_crc(unsigned char *src, size_t len) {

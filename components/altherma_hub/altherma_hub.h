@@ -114,6 +114,8 @@ namespace esphome
       void update() override;
       void loop() override;
       void queue_manual_query(std::string registry_id, int32_t offset, int32_t convid, int32_t datasize);
+      void set_enable_identify(bool v) { this->enable_identify_ = v; }
+      void queue_identify_controller();
 
     protected:
       enum class ManualQueryStatusLevel : uint8_t {
@@ -131,6 +133,10 @@ namespace esphome
       void handle_complete_frame_();
       void fail_query_(const char *fmt, ...) __attribute__((format(printf, 2, 3)));
       void advance_register_();
+      void start_identify_query_();
+      void read_identify_response_();
+      void report_identify_step_();
+      void finish_identify_();
 
       enum class QueryState : uint8_t {
         IDLE,
@@ -171,6 +177,15 @@ namespace esphome
       int32_t manual_datasize_{0};
 
       text_sensor::TextSensor *query_result_text_sensor_{nullptr};
+
+      // Experimental read-only identification (0x4C then 0x56)
+      static constexpr uint32_t IDENTIFY_GAP_MS = 100;       // silence that ends a reply
+      static constexpr uint32_t IDENTIFY_TIMEOUT_MS = 1000;  // no/partial reply
+      bool enable_identify_{false};
+      bool identify_pending_{false};
+      bool identify_active_{false};
+      uint8_t identify_step_{0};  // 0 = 0x4C software ID, 1 = 0x56 Micon ID
+      uint32_t identify_last_byte_at_{0};
     };
 
   } // namespace altherma_hub
