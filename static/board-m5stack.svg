@@ -3,7 +3,7 @@
   <rect width="360" height="200" rx="14" fill="#eef6fd"/>
   <rect x="124" y="44" width="112" height="112" rx="12" fill="#3a3f47" stroke="#15181d" stroke-width="2"/>
   <rect x="136" y="56" width="88" height="66" rx="3" fill="#081228"/>
-  <rect x="166" y="62" width="28" height="28" rx="6" fill="#1784f7"/><path d="M171 78l9-8 9 8M173 76v10h14v-10" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><rect x="179" y="74" width="2.4" height="10" fill="#ff6a2b"/>
+  <rect x="166" y="62" width="28" height="28" rx="6" fill="#1784f7"/><path d="M171 78l9-8 9 8M173 76v10h14v-10" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><rect x="179" y="74" width="2.4" height="10" fill="#1784F7"/>
   <rect x="150" y="96" width="60" height="6" rx="2" fill="#fff"/><rect x="164" y="106" width="32" height="4" rx="2" fill="#9aa9bd"/>
   <g fill="#c9d1db" stroke="#8a94a3"><rect x="142" y="134" width="20" height="8" rx="3"/><rect x="170" y="134" width="20" height="8" rx="3"/><rect x="198" y="134" width="20" height="8" rx="3"/></g>
   <text x="180" y="182" text-anchor="middle" font-size="13" font-weight="600" fill="#0b1b3f">M5Stack Core / Basic</text>
