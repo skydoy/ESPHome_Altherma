@@ -68,7 +68,7 @@ esphome -s altherma_model erla_d_ebv_ebb_ebvz_11_16 \
 
 - `-s altherma_model …` escolhe o [ficheiro de modelo](#ficheiros-de-modelo); também o pode definir em `substitutions:`.
 - `-s altherma_component_source components` compila o componente `altherma_hub` a partir da sua cópia. Sem isto, o
-  `base.yaml` descarrega o componente do GitHub.
+  `base.yaml` descarrega-o deste repositório (`github://skydoy/esphome-altherma@main`).
 - O `esphome-altherma.local.yaml` é um exemplo pronto, com componente local, Wi-Fi e palavra-passe OTA.
 
 Para obter o mesmo firmware do instalador web (entidade Firmware, Wi-Fi por Improv, manifesto OTA), compile antes o
@@ -83,7 +83,7 @@ ficheiro em [`installer/`](../installer/): `esphome -s altherma_model <modelo> r
 | `esphome-altherma-atoms3.yaml` | M5Stack AtomS3 / AtomS3 Lite (porta Grove). |
 | `esphome-altherma-esp8266.yaml` | D1 mini / ESP8266. |
 | `esphome-altherma-m5stack.yaml` | M5Stack Core / Basic, com ecrã, botões e tema escuro/claro. Usa `!secret` para o Wi-Fi e a OTA. |
-| `esphome-altherma-<placa>.factory.yaml` | Imagens de fábrica do projeto original (mantidas por compatibilidade). |
+| `esphome-altherma-<placa>.factory.yaml` | Imagens de fábrica simples (modelo predefinido, sem escolha de modelo); o instalador web usa `installer/`. |
 | `installer/*.installer.yaml` | O que o instalador web compila: ficheiro da placa + escolha do modelo + entidade Firmware. Veja [segurança](seguranca.md#configurações-do-instalador--de-fábrica). |
 | `confs/*.yaml` | [Ficheiros de modelo](#ficheiros-de-modelo). |
 | `common/diagnostics.yaml` | Diagnóstico opcional do ESP: estado, tempo ligado, Wi-Fi, temperatura interna, número de arranques, botão de reinício. |
@@ -246,7 +246,7 @@ esphome:
 ```
 base.yaml                       configuração ESPHome comum (logger, API, OTA, UART, hub)
 esphome-altherma-<placa>.yaml   configurações por placa (esp32, esp32-s3, atoms3, esp8266, m5stack)
-esphome-altherma-<placa>.factory.yaml   imagens de fábrica do projeto original
+esphome-altherma-<placa>.factory.yaml   imagens de fábrica simples
 esphome-altherma.local.yaml     exemplo para compilação local
 installer/                      ficheiros do instalador web (+ secrets.yaml de exemplo, animação de arranque M5Stack)
 confs/                          ficheiros de modelo (mapas de sensores)

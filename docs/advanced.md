@@ -69,7 +69,7 @@ esphome -s altherma_model erla_d_ebv_ebb_ebvz_11_16 \
 
 - `-s altherma_model …` picks the [model file](#model-files); you can also set it under `substitutions:`.
 - `-s altherma_component_source components` builds the `altherma_hub` component from your checkout. Without it,
-  `base.yaml` downloads the component from GitHub.
+  `base.yaml` downloads it from this repository (`github://skydoy/esphome-altherma@main`).
 - `esphome-altherma.local.yaml` is a ready-made example with local component, Wi-Fi and OTA password.
 
 To get the same firmware as the web installer (Firmware entity, Improv Wi-Fi, OTA manifest), build the wrapper in
@@ -84,7 +84,7 @@ To get the same firmware as the web installer (Firmware entity, Improv Wi-Fi, OT
 | `esphome-altherma-atoms3.yaml` | M5Stack AtomS3 / AtomS3 Lite (Grove port). |
 | `esphome-altherma-esp8266.yaml` | D1 mini / ESP8266. |
 | `esphome-altherma-m5stack.yaml` | M5Stack Core / Basic, with the display UI, buttons and dark/light theme. Uses `!secret` for Wi-Fi and OTA. |
-| `esphome-altherma-<board>.factory.yaml` | Upstream factory images (kept for compatibility). |
+| `esphome-altherma-<board>.factory.yaml` | Plain factory images (default model, no model choice); the web installer uses `installer/` instead. |
 | `installer/*.installer.yaml` | What the web installer builds: board file + model choice + Firmware entity. See [security](security.md#installer--factory-configurations). |
 | `confs/*.yaml` | [Model files](#model-files). |
 | `common/diagnostics.yaml` | Optional ESP diagnostics: status, uptime, Wi-Fi info, internal temperature, boot count, restart button. |
@@ -247,7 +247,7 @@ esphome:
 ```
 base.yaml                       shared ESPHome config (logger, API, OTA, UART, hub)
 esphome-altherma-<board>.yaml   board configs (esp32, esp32-s3, atoms3, esp8266, m5stack)
-esphome-altherma-<board>.factory.yaml   upstream factory images
+esphome-altherma-<board>.factory.yaml   plain factory images
 esphome-altherma.local.yaml     example for a local build
 installer/                      web installer wrappers (+ placeholder secrets.yaml, M5Stack boot animation)
 confs/                          model files (sensor maps)

@@ -1,6 +1,6 @@
-# Web installer build for the skydoy/esphome-altherma fork (board: esp8266).
-# Same as the upstream ../esphome-altherma-esp8266.factory.yaml (which is left untouched),
-# plus what the fork's installer needs: a selectable heat pump model, the fork's
+# Web installer build for skydoy/esphome-altherma (board: esp8266).
+# Same as ../esphome-altherma-esp8266.factory.yaml,
+# plus what the web installer needs: a selectable heat pump model, this project's
 # project name/version and a per-board, per-model OTA manifest URL.
 # CI (.github/workflows/publish.yml) rewrites altherma_model and altherma_version per build.
 substitutions:
@@ -18,7 +18,7 @@ esphome:
     name: skydoy.esphome-altherma
     version: ${altherma_version}
 
-# Adopting in the ESPHome Device Builder imports the plain board file from the fork.
+# Adopting in the ESPHome Device Builder imports the plain board file from skydoy/esphome-altherma.
 # Add "altherma_model: <model>" under substitutions in the adopted YAML to keep your model.
 dashboard_import:
   package_import_url: github://skydoy/esphome-altherma/esphome-altherma-esp8266.yaml@main
@@ -26,7 +26,7 @@ dashboard_import:
 # Wi-Fi provisioning over USB from the web installer.
 improv_serial:
 
-# OTA updates from the fork's GitHub Pages (same board and model you installed).
+# OTA updates from skydoy/esphome-altherma GitHub Pages (same board and model you installed).
 http_request:
   verify_ssl: false
 
