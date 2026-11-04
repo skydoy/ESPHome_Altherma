@@ -6,7 +6,7 @@
   </picture>
 </p>
 
-<p align="center"><b>Gosta? Ajude-me a fazer algo ainda melhor.</b><br>
+<p align="center"><b>Gostas? Ajuda-me a fazer algo ainda melhor.</b><br>
   <a href="https://ko-fi.com/skydoy"><img src="https://img.shields.io/badge/Ko--fi-Support%20me-FF5E5B?logo=ko-fi&logoColor=white" alt="Apoiar no Ko-fi"></a>
   <a href="https://buymeacoffee.com/skydoy"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20me-FFDD00?logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee"></a>
 </p>
@@ -18,28 +18,28 @@
   <img src="https://img.shields.io/badge/upstream-jjohnsen%2Fesphome--altherma-555" alt="Projeto original: jjohnsen/esphome-altherma">
 </p>
 
-<p align="center"><b>A sua Daikin Altherma 3 no Home Assistant. Ligar por USB, escolher a bomba de calor, carregar em Instalar. Sem YAML.</b><br>
+<p align="center"><b>A tua Daikin Altherma 3 no Home Assistant. Ligar por USB, escolher a bomba de calor, carregar em Instalar. Sem YAML.</b><br>
 🇬🇧 <a href="README.md">Read in English</a></p>
 
 <p align="center">
   <a href="https://skydoy.github.io/esphome-altherma/"><img src="https://img.shields.io/badge/Abrir%20o%20instalador%20web-1784F7?style=for-the-badge&logo=esphome&logoColor=white" alt="Abrir o instalador web" height="40"></a>
 </p>
 
-Ligue uma pequena placa ESP32 ao conector de serviço **X10A** da sua bomba de calor **Daikin Altherma** e veja
+Liga uma pequena placa ESP32 ao conector de serviço **X10A** da tua bomba de calor **Daikin Altherma** e vê
 temperaturas, caudal, potência e muito mais, localmente, no Home Assistant. Sem nuvem, sem MQTT, sem app.
 
-**A minha bomba de calor é compatível?** Veja os [modelos](#modelos-de-bomba-de-calor) abaixo e a
+**A minha bomba de calor é compatível?** Vê os [modelos](#modelos-de-bomba-de-calor) abaixo e a
 [lista de compatibilidade](docs/compatibilidade.md) · [**Reportar a minha bomba**](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
 
 ## Instalar em 3 passos
-1. **Instalar o firmware.** Abra o **[instalador web](https://skydoy.github.io/esphome-altherma/)** no Chrome ou Edge,
-   num computador, escolha a placa e o modelo da bomba de calor, ligue a placa por USB → **Instalar**.
-   (Faça isto *antes* de ligar os fios: nunca ligue o USB e os 5 V do X10A ao mesmo tempo.)
-2. **Wi-Fi.** Escreva o seu Wi-Fi na mesma janela. (Ou mais tarde: ligue-se à rede `esphome-altherma…` com o telemóvel.)
-3. **Ligar e adicionar.** Desligue a bomba de calor no disjuntor, ligue a placa ao **X10A** (tabela abaixo) e volte a
+1. **Instalar o firmware.** Abre o **[instalador web](https://skydoy.github.io/esphome-altherma/)** no Chrome ou Edge,
+   num computador, escolhe a placa e o modelo da bomba de calor, liga a placa por USB → **Instalar**.
+   (Faz isto *antes* de ligar os fios: nunca ligues o USB e os 5 V do X10A ao mesmo tempo.)
+2. **Wi-Fi.** Escreve o teu Wi-Fi na mesma janela. (Ou mais tarde: liga-te à rede `esphome-altherma…` com o telemóvel.)
+3. **Ligar e adicionar.** Desliga a bomba de calor no disjuntor, liga a placa ao **X10A** (tabela abaixo) e volta a
    ligar o disjuntor. O Home Assistant mostra *ESPHome Altherma* em **Definições → Dispositivos e serviços** → **Configurar**.
 
-A partir daí as atualizações chegam pelo ar, na entidade **Firmware** do Home Assistant. Não precisa de USB outra vez.
+A partir daí as atualizações chegam pelo ar, na entidade **Firmware** do Home Assistant. Não precisas de USB outra vez.
 
 | Pino X10A | Sinal | ESP32 DevKit | ESP32-S3 DevKitC-1 | M5Stack AtomS3 | D1 mini (ESP8266) | M5Stack Core / Basic |
 |---|---|---|---|---|---|---|
@@ -73,7 +73,7 @@ No M5Stack Core / Basic o ecrã mostra os valores em direto (botões para navega
 | [M5Stack Core / Basic](https://docs.m5stack.com/en/core/basic) | Ecrã + botões. |
 
 > ⚠️ Algumas máquinas não conseguem alimentar a placa pelo pino de 5 V do X10A. Se a placa estiver sempre a
-> reiniciar, alimente-a por um carregador USB (e ligue só o TX, o RX e o GND).
+> reiniciar, alimenta-a por um carregador USB (e liga só o TX, o RX e o GND).
 
 ## Modelos de bomba de calor
 | Escolher no instalador | Unidade |
@@ -85,18 +85,18 @@ No M5Stack Core / Basic o ecrã mostra os valores em direto (botões para navega
 | `epra_d_etv_etb_etvz_14_18` | Altherma 3 H HT · EPRA D + ETV/ETB/ETVZ (14–18 kW) |
 | `altherma_ehvh_ehvx_cb` | Altherma LT · EHVH/EHVX CB (11–16 kW) |
 
-> **Estado:** escolha o modelo à mão (ainda não há deteção automática). Quem testou cada unidade: veja a
-> [lista de compatibilidade](docs/compatibilidade.md). O seu modelo não está na lista, ou os valores parecem errados?
+> **Estado:** escolhe o modelo à mão (ainda não há deteção automática). Quem testou cada unidade: vê a
+> [lista de compatibilidade](docs/compatibilidade.md). O teu modelo não está na lista, ou os valores parecem errados?
 > [Reportar a minha bomba](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml).
 
 ## Segurança e atualizações
 O firmware pré-compilado não tem chave da API nem palavra-passe OTA, para que qualquer Home Assistant o possa adotar,
-e atualiza-se pela entidade **Firmware**. Para acrescentar uma chave e palavras-passe, adote-o no ESPHome Device
+e atualiza-se pela entidade **Firmware**. Para acrescentar uma chave e palavras-passe, adota-o no ESPHome Device
 Builder: [segurança e atualizações pelo ar](docs/seguranca.md).
 
 ## Avançado / YAML manual
 Compilação própria ou Device Builder: configurações por placa `esphome-altherma-<placa>.yaml`, `base.yaml` comum e
-mapas de sensores em [`confs/`](confs/). Corra `esphome run esphome-altherma-esp32.yaml` com o seu Wi-Fi em `secrets.yaml`.
+mapas de sensores em [`confs/`](confs/). Corre `esphome run esphome-altherma-esp32.yaml` com o teu Wi-Fi em `secrets.yaml`.
 Relés (termóstato / Smart Grid), descoberta de registos (`query_register`), UART simulada, Emoncms e os ficheiros
 copiados do ESPAltherma: [uso avançado](docs/avancado.md).
 
@@ -118,6 +118,6 @@ copiados do ESPAltherma: [uso avançado](docs/avancado.md).
   de ligações são ilustrações.
 
 Fornecido tal como está, para uso pessoal e educativo, como o projeto original; os ficheiros do ESPAltherma mantêm a
-[licença original](https://github.com/raomin/ESPAltherma/blob/main/LICENSE). Use por sua conta e risco: mexa na
+[licença original](https://github.com/raomin/ESPAltherma/blob/main/LICENSE). Usa por tua conta e risco: mexe na
 bomba de calor com o disjuntor desligado. Daikin e Altherma são marcas registadas do seu dono; este é um projeto
 independente da comunidade, sem ligação à marca.

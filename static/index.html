@@ -136,7 +136,7 @@
       </div>
     </div>
     <p class="pitch">
-      <span class="pt">A sua bomba de calor Daikin Altherma no Home Assistant, pela ficha X10A. Escolha a placa e o modelo, carregue em Instalar, feito. Sem YAML, sem nuvem, sem app.</span>
+      <span class="pt">A tua bomba de calor Daikin Altherma no Home Assistant, pela ficha X10A. Escolhe a placa e o modelo, carrega em Instalar, feito. Sem YAML, sem nuvem, sem app.</span>
       <span class="en">Your Daikin Altherma heat pump in Home Assistant, through the X10A port. Pick your board and model, click Install, done. No YAML, no cloud, no app.</span>
     </p>
   </div>
@@ -144,19 +144,19 @@
 
 <main class="wrap">
   <section class="card donate" aria-label="Donativos / Donations">
-    <p><span class="pt">☕ <b>Gosta deste projeto?</b> Ajude-me a trazer algo ainda melhor: hardware para testes, novas placas e modelos de bomba de calor.</span><span class="en">☕ <b>Like it?</b> Help me bring something even better: test hardware, new boards and more heat pump models.</span></p>
+    <p><span class="pt">☕ <b>Gostas deste projeto?</b> Ajuda-me a trazer algo ainda melhor: hardware para testes, novas placas e modelos de bomba de calor.</span><span class="en">☕ <b>Like it?</b> Help me bring something even better: test hardware, new boards and more heat pump models.</span></p>
     <div class="btns">
       <a class="kofi" href="https://ko-fi.com/skydoy" target="_blank" rel="noopener">Ko-fi</a>
       <a class="bmc" href="https://buymeacoffee.com/skydoy" target="_blank" rel="noopener">Buy Me a Coffee</a>
     </div>
   </section>
   <div id="nosupport" class="card note warn">
-    <span class="pt"><b>Este browser não consegue instalar.</b> Abra esta página no <b>Chrome</b> ou <b>Edge</b> num computador (não funciona no telemóvel, Safari nem Firefox).</span>
+    <span class="pt"><b>Este browser não consegue instalar.</b> Abre esta página no <b>Chrome</b> ou <b>Edge</b> num computador (não funciona no telemóvel, Safari nem Firefox).</span>
     <span class="en"><b>This browser can't install.</b> Open this page in <b>Chrome</b> or <b>Edge</b> on a computer (phones, Safari and Firefox don't work).</span>
   </div>
 
   <section class="card">
-    <h2><span class="num">1</span><span class="pt">Que placa comprou?</span><span class="en">Which board did you buy?</span></h2>
+    <h2><span class="num">1</span><span class="pt">Que placa compraste?</span><span class="en">Which board did you buy?</span></h2>
     <form id="board-form" class="boards">
       <label><input type="radio" name="board" value="esp32" checked>
         <span class="t">ESP32 DevKit</span>
@@ -179,24 +179,24 @@
         <div class="d"><span class="pt">Ecrã com os valores da bomba · três botões · animação no arranque</span><span class="en">Screen with the heat pump values · three buttons · boot animation</span></div>
         <img src="board-m5stack.svg" alt="Illustration of an M5Stack Core with its screen" loading="lazy"></label>
     </form>
-    <p class="note ok">✅ <span class="pt"><b>Deve ver:</b> a placa escolhida com contorno azul. Os passos seguintes mudam para essa placa.</span><span class="en"><b>You should see:</b> your board outlined in blue. The next steps change to match it.</span></p>
+    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> a placa escolhida com contorno azul. Os passos seguintes mudam para essa placa.</span><span class="en"><b>You should see:</b> your board outlined in blue. The next steps change to match it.</span></p>
   </section>
 
   <section class="card">
-    <h2><span class="num">2</span><span class="pt">Que bomba de calor tem?</span><span class="en">Which heat pump do you have?</span></h2>
-    <p><span class="pt">Veja a etiqueta da unidade exterior (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) e da unidade interior (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Escolha a linha que tem as duas.</span>
+    <h2><span class="num">2</span><span class="pt">Que bomba de calor tens?</span><span class="en">Which heat pump do you have?</span></h2>
+    <p><span class="pt">Vê a etiqueta da unidade exterior (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) e da unidade interior (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Escolhe a linha que tem as duas.</span>
       <span class="en">Check the label on the outdoor unit (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) and the indoor unit (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Pick the row that matches both.</span></p>
     <form id="model-form" class="models"></form>
-    <p class="note warn">🧪 <span class="pt"><b>Deteção automática do modelo:</b> ainda não existe neste instalador. Escolha o modelo à mão; se errar, os valores ficam estranhos mas nada se estraga, basta reinstalar com outro modelo.</span>
+    <p class="note warn">🧪 <span class="pt"><b>Deteção automática do modelo:</b> ainda não existe neste instalador. Escolhe o modelo à mão; se errares, os valores ficam estranhos mas nada se estraga, basta reinstalar com outro modelo.</span>
       <span class="en"><b>Automatic model detection:</b> not in this installer yet. Pick the model by hand; a wrong pick only shows odd values and breaks nothing, just reinstall with another model.</span></p>
-    <p class="note ok">✅ <span class="pt"><b>Deve ver:</b> o seu modelo marcado. Não encontra o seu? Veja a <a href="#compat">lista de compatibilidade</a>; o mais próximo costuma ser <code>erga_eh_da_04_08</code>.</span><span class="en"><b>You should see:</b> your model ticked. Not listed? See the <a href="#compat">compatibility list</a>; the closest is usually <code>erga_eh_da_04_08</code>.</span></p>
+    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> o teu modelo marcado. Não encontras o teu? Vê a <a href="#compat">lista de compatibilidade</a>; o mais próximo costuma ser <code>erga_eh_da_04_08</code>.</span><span class="en"><b>You should see:</b> your model ticked. Not listed? See the <a href="#compat">compatibility list</a>; the closest is usually <code>erga_eh_da_04_08</code>.</span></p>
   </section>
 
   <section class="card" id="wiring">
     <h2><span class="num">3</span><span class="pt">Ligar à ficha X10A</span><span class="en">Wire it to the X10A port</span></h2>
-    <p class="note warn">⚠️ <span class="pt"><b>Desligue a bomba de calor no disjuntor antes de abrir.</b> Há tensão da rede lá dentro. Prepare o cabo agora, mas faça a instalação (passo 4) por USB <b>com a placa desligada da X10A</b>: nunca ligue o USB e os 5V da bomba ao mesmo tempo.</span>
+    <p class="note warn">⚠️ <span class="pt"><b>Desliga a bomba de calor no disjuntor antes de abrir.</b> Há tensão da rede lá dentro. Prepara o cabo agora, mas faz a instalação (passo 4) por USB <b>com a placa desligada da X10A</b>: nunca ligues o USB e os 5V da bomba ao mesmo tempo.</span>
       <span class="en"><b>Switch the heat pump off at the breaker before opening it.</b> There is mains voltage inside. Prepare the cable now, but do the install (step 4) over USB <b>with the board unplugged from the X10A</b>: never connect USB and the pump's 5V at the same time.</span></p>
-    <p><span class="pt">A X10A fica na placa principal da unidade interior (ficha de 5 pinos JST EH 2,5 mm; servem 4 fios Dupont). Para a sua placa</span><span class="en">The X10A is on the indoor unit's main board (5-pin JST EH 2.5 mm; 4 Dupont wires also work). For your board</span>
+    <p><span class="pt">A X10A fica na placa principal da unidade interior (ficha de 5 pinos JST EH 2,5 mm; servem 4 fios Dupont). Para a tua placa</span><span class="en">The X10A is on the indoor unit's main board (5-pin JST EH 2.5 mm; 4 Dupont wires also work). For your board</span>
       (<b id="wire-board">ESP32 DevKit</b>):</p>
     <table class="wire" id="wire-table">
       <tr><th><span class="pt">Pino X10A</span><span class="en">X10A pin</span></th><th><span class="pt">Sinal</span><span class="en">Signal</span></th><th><span class="pt">Na placa</span><span class="en">On the board</span></th></tr>
@@ -205,18 +205,18 @@
       <a class="pt" href="https://github.com/skydoy/esphome-altherma/blob/main/docs/ligacoes.md">guia de ligações</a><a class="en" href="https://github.com/skydoy/esphome-altherma/blob/main/docs/wiring.md">wiring guide</a>.</p>
     <details><summary><span class="pt">Ver o esquema (exemplo com ESP32 DevKit)</span><span class="en">See the diagram (ESP32 DevKit example)</span></summary>
       <img class="diagram" src="wiring-x10a.svg" width="640" height="330" alt="X10A pin 1 5V to 5V/VIN, pin 2 TX to GPIO16 RX, pin 3 RX to GPIO17 TX, pin 4 not connected, pin 5 GND to GND" loading="lazy"></details>
-    <p class="note warn">🔌 <span class="pt"><b>Alimentação de 5V:</b> o pino 1 da X10A dá pouca corrente. Chega para a maioria das placas, mas há instalações (ex. ESP32-WROOM-32U com antena externa) que reiniciam sozinhas; nesse caso deixe o pino 1 sem ligar e alimente a placa por um carregador USB, mantendo o GND ligado. O ecrã do M5Stack também gasta mais.</span>
+    <p class="note warn">🔌 <span class="pt"><b>Alimentação de 5V:</b> o pino 1 da X10A dá pouca corrente. Chega para a maioria das placas, mas há instalações (ex. ESP32-WROOM-32U com antena externa) que reiniciam sozinhas; nesse caso deixa o pino 1 sem ligar e alimenta a placa por um carregador USB, mantendo o GND ligado. O ecrã do M5Stack também gasta mais.</span>
       <span class="en"><b>5V power:</b> X10A pin 1 supplies little current. It is enough for most boards, but some installs (e.g. ESP32-WROOM-32U with an external antenna) keep rebooting; then leave pin 1 unconnected and power the board from a USB charger, keeping GND connected. The M5Stack screen also draws more.</span></p>
-    <p class="note ok">✅ <span class="pt"><b>Deve ver:</b> 4 fios ligados (pino 4 livre) e, depois do passo 4, o LED da placa aceso quando a bomba está ligada.</span><span class="en"><b>You should see:</b> 4 wires connected (pin 4 free) and, after step 4, the board's LED on while the heat pump is powered.</span></p>
+    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> 4 fios ligados (pino 4 livre) e, depois do passo 4, o LED da placa aceso quando a bomba está ligada.</span><span class="en"><b>You should see:</b> 4 wires connected (pin 4 free) and, after step 4, the board's LED on while the heat pump is powered.</span></p>
   </section>
 
   <section class="card">
     <h2><span class="num">4</span><span class="pt">Instalar</span><span class="en">Install</span></h2>
     <ol class="pt">
-      <li>Ligue a placa ao computador por USB (desligada da X10A).</li>
-      <li>Carregue em <b>Instalar</b>, escolha a porta série e depois <b>Install</b>.</li>
-      <li>No fim, escolha a sua rede Wi-Fi (<b>2,4 GHz</b>) e escreva a palavra-passe. Saltou este passo? A placa abre a rede <code>esphome-altherma-…</code>: ligue-se a ela pelo telemóvel e escolha o Wi-Fi.</li>
-      <li>Desligue o USB e ligue a placa à X10A (passo 3).</li>
+      <li>Liga a placa ao computador por USB (desligada da X10A).</li>
+      <li>Carrega em <b>Instalar</b>, escolhe a porta série e depois <b>Install</b>.</li>
+      <li>No fim, escolhe a tua rede Wi-Fi (<b>2,4 GHz</b>) e escreve a palavra-passe. Saltaste este passo? A placa abre a rede <code>esphome-altherma-…</code>: liga-te a ela pelo telemóvel e escolhe o Wi-Fi.</li>
+      <li>Desliga o USB e liga a placa à X10A (passo 3).</li>
     </ol>
     <ol class="en">
       <li>Plug the board into your computer by USB (unplugged from the X10A).</li>
@@ -228,18 +228,18 @@
     <div class="install">
       <esp-web-install-button id="install" manifest="firmware/esp32/erga_eh_da_04_08/manifest.json">
         <button slot="activate" class="btn"><span class="pt">⚡ Instalar</span><span class="en">⚡ Install</span></button>
-        <span slot="unsupported"><span class="pt">Use o Chrome ou o Edge num computador.</span><span class="en">Use Chrome or Edge on a computer.</span></span>
+        <span slot="unsupported"><span class="pt">Usa o Chrome ou o Edge num computador.</span><span class="en">Use Chrome or Edge on a computer.</span></span>
         <span slot="not-allowed"><span class="pt">A página tem de abrir em https.</span><span class="en">The page must be opened over https.</span></span>
       </esp-web-install-button>
       <div class="ver" id="ver"></div>
     </div>
-    <p class="note ok">✅ <span class="pt"><b>Deve ver:</b> uma porta série nova na lista, uma barra de progresso (1 a 2 minutos) e <i>Installation complete</i>.</span><span class="en"><b>You should see:</b> a new serial port in the list, a progress bar (1 to 2 minutes) and <i>Installation complete</i>.</span>
+    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> uma porta série nova na lista, uma barra de progresso (1 a 2 minutos) e <i>Installation complete</i>.</span><span class="en"><b>You should see:</b> a new serial port in the list, a progress bar (1 to 2 minutes) and <i>Installation complete</i>.</span>
       <span data-board="m5stack"><span class="pt">No M5Stack aparece a animação do logótipo e a versão antes dos valores.</span><span class="en">On the M5Stack the logo animation and the version show before the values.</span></span></p>
     <details><summary><span class="pt">A placa não aparece na lista?</span><span class="en">Board not showing up?</span></summary>
-      <p class="pt">Instale o driver USB (CP210x ou CH340/CH9102, conforme o chip junto à ficha USB) e volte a ligar a placa. Experimente outro cabo: muitos só carregam. Nas ESP32-S3, mantenha o botão <b>BOOT</b> carregado ao ligar.</p>
+      <p class="pt">Instala o driver USB (CP210x ou CH340/CH9102, conforme o chip junto à ficha USB) e volta a ligar a placa. Experimenta outro cabo: muitos só carregam. Nas ESP32-S3, mantém o botão <b>BOOT</b> carregado ao ligar.</p>
       <p class="en">Install the USB driver (CP210x or CH340/CH9102, depending on the chip next to the USB port) and reconnect the board. Try another cable: many only charge. On ESP32-S3 boards, hold <b>BOOT</b> while plugging in.</p>
       <p><a href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers">CP210x</a> · <a href="https://www.wch-ic.com/downloads/CH341SER_ZIP.html">CH340</a> · <a href="https://docs.m5stack.com/en/download">M5Stack</a></p>
-      <p class="pt">Reinstalar mantém o Wi-Fi: numa placa que já tem este firmware o instalador oferece <b>Update</b>. Para mudar de modelo, reinstale com o novo modelo escolhido.</p>
+      <p class="pt">Reinstalar mantém o Wi-Fi: numa placa que já tem este firmware o instalador oferece <b>Update</b>. Para mudar de modelo, reinstala com o novo modelo escolhido.</p>
       <p class="en">Reinstalling keeps your Wi-Fi: on a board that already runs this firmware the installer offers <b>Update</b>. To change model, reinstall with the new model selected.</p>
     </details>
   </section>
@@ -248,8 +248,8 @@
     <h2><span class="num">5</span>Home Assistant</h2>
     <p class="pt"><b>Definições → Dispositivos e serviços</b>: aparece <b>ESPHome Altherma</b> (ESPHome) → <b>Configurar</b>.</p>
     <p class="en"><b>Settings → Devices &amp; services</b>: <b>ESPHome Altherma</b> (ESPHome) shows up → <b>Configure</b>.</p>
-    <p class="note ok">✅ <span class="pt"><b>Deve ver:</b> temperaturas (exterior, ida, retorno, AQS), caudal, compressor, potências e estados a mudar em segundos.</span><span class="en"><b>You should see:</b> temperatures (outdoor, leaving, return, DHW), flow, compressor, power and states updating every few seconds.</span></p>
-    <p class="pt"><b>Atualizações:</b> a entidade <b>Firmware</b> avisa quando há versão nova para a sua placa e modelo; instala-se com um clique.</p>
+    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> temperaturas (exterior, ida, retorno, AQS), caudal, compressor, potências e estados a mudar em segundos.</span><span class="en"><b>You should see:</b> temperatures (outdoor, leaving, return, DHW), flow, compressor, power and states updating every few seconds.</span></p>
+    <p class="pt"><b>Atualizações:</b> a entidade <b>Firmware</b> avisa quando há versão nova para a tua placa e modelo; instala-se com um clique.</p>
     <p class="en"><b>Updates:</b> the <b>Firmware</b> entity tells you when a new version exists for your board and model; install it in one click.</p>
   </section>
 
@@ -269,26 +269,26 @@
     </details>
     <div class="report">
       <a class="btn2" id="report" href="https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml" target="_blank" rel="noopener"><span class="pt">📝 Reportar a minha bomba</span><span class="en">📝 Report my heat pump</span></a>
-      <div class="d"><span class="pt">Funciona, funciona em parte ou não funciona: conte-nos. Abre um formulário no GitHub com a placa e o modelo que escolheu já preenchidos (precisa de uma conta GitHub).</span><span class="en">Works, partly works or doesn't: tell us. Opens a GitHub form with the board and model you picked already filled in (needs a GitHub account).</span></div>
+      <div class="d"><span class="pt">Funciona, funciona em parte ou não funciona: conta-nos. Abre um formulário no GitHub com a placa e o modelo que escolheste já preenchidos (precisas de uma conta GitHub).</span><span class="en">Works, partly works or doesn't: tell us. Opens a GitHub form with the board and model you picked already filled in (needs a GitHub account).</span></div>
     </div>
   </section>
 
   <section class="card">
     <h2><span class="num">?</span><span class="pt">Problemas</span><span class="en">Troubleshooting</span></h2>
     <details><summary><span class="pt">Os sensores ficam <i>Indisponível</i> ou a 0</span><span class="en">Sensors stay <i>Unavailable</i> or 0</span></summary>
-      <p class="pt">Troque o TX com o RX (é o erro mais comum), confirme o GND e o modelo escolhido no passo 2.</p>
+      <p class="pt">Troca o TX com o RX (é o erro mais comum), confirma o GND e o modelo escolhido no passo 2.</p>
       <p class="en">Swap TX and RX (the most common mistake), check GND and the model picked in step 2.</p></details>
     <details><summary><span class="pt">A placa reinicia sozinha</span><span class="en">The board keeps rebooting</span></summary>
-      <p class="pt">Falta de corrente no pino 5V da X10A. Alimente a placa por USB e deixe o pino 1 sem ligar (GND ligado).</p>
+      <p class="pt">Falta de corrente no pino 5V da X10A. Alimenta a placa por USB e deixa o pino 1 sem ligar (GND ligado).</p>
       <p class="en">Not enough current from the X10A 5V pin. Power the board over USB and leave pin 1 unconnected (GND connected).</p></details>
     <details><summary><span class="pt">Alguns valores parecem errados</span><span class="en">Some values look wrong</span></summary>
-      <p class="pt">Provavelmente o modelo não é o seu. Reinstale com outro modelo do passo 2.</p>
+      <p class="pt">Provavelmente o modelo não é o teu. Reinstala com outro modelo do passo 2.</p>
       <p class="en">The model is probably not yours. Reinstall with another model from step 2.</p></details>
     <details><summary><span class="pt">O Home Assistant não encontra a placa</span><span class="en">Home Assistant doesn't find the board</span></summary>
-      <p class="pt">Tem de estar na mesma rede (sem rede de convidados). Adicione-a à mão: integração ESPHome → o IP da placa, porta <code>6053</code>.</p>
+      <p class="pt">Tem de estar na mesma rede (sem rede de convidados). Adiciona-a à mão: integração ESPHome → o IP da placa, porta <code>6053</code>.</p>
       <p class="en">It must be on the same network (not a guest network). Add it by hand: ESPHome integration → the board's IP, port <code>6053</code>.</p></details>
     <details><summary><span class="pt">Mudar de Wi-Fi</span><span class="en">Change Wi-Fi</span></summary>
-      <p class="pt">Sem o Wi-Fi antigo, a placa abre a rede <code>esphome-altherma-…</code> após cerca de um minuto. Ou ligue-a por USB aqui → <b>Change Wi-Fi</b>.</p>
+      <p class="pt">Sem o Wi-Fi antigo, a placa abre a rede <code>esphome-altherma-…</code> após cerca de um minuto. Ou liga-a por USB aqui → <b>Change Wi-Fi</b>.</p>
       <p class="en">Without its old Wi-Fi, the board opens the <code>esphome-altherma-…</code> hotspot after about a minute. Or plug it in by USB here → <b>Change Wi-Fi</b>.</p></details>
     <p><a class="pt" href="https://github.com/skydoy/esphome-altherma/blob/main/README.pt.md">README</a><a class="en" href="https://github.com/skydoy/esphome-altherma#readme">README</a>
       · <a class="pt" href="https://github.com/skydoy/esphome-altherma/blob/main/docs/seguranca.md">Segurança e atualizações</a><a class="en" href="https://github.com/skydoy/esphome-altherma/blob/main/docs/security.md">Security and updates</a>
@@ -305,7 +305,7 @@
       <span class="pt">Instalador e logótipo:</span><span class="en">Installer and logo:</span>
       <a href="https://github.com/skydoy/esphome-altherma">skydoy/esphome-altherma</a>.
       <span class="pt">As imagens das placas são ilustrações.</span><span class="en">Board pictures are illustrations.</span></p>
-    <p><span class="pt">Daikin e Altherma são marcas dos respetivos donos. Projeto comunitário independente, sem ligação à Daikin. Use por sua conta e risco.</span>
+    <p><span class="pt">Daikin e Altherma são marcas dos respetivos donos. Projeto comunitário independente, sem ligação à Daikin. Usa por tua conta e risco.</span>
       <span class="en">Daikin and Altherma are trademarks of their owners. Independent community project, not affiliated with Daikin. Use at your own risk.</span></p>
   </footer>
 </main>
@@ -395,7 +395,7 @@
     const t = document.getElementById('wire-table');
     t.querySelectorAll('tr.r').forEach(r => r.remove());
     rows.forEach(r => t.insertAdjacentHTML('beforeend', '<tr class="r"><td>' + r[0] + '</td><td>' + r[1] + '</td><td' + (r[3] ? ' class="nc"' : '') + '>' + r[2] + '</td></tr>'));
-    document.getElementById('pick').innerHTML = bi('Vai instalar:', 'You will install:') + ' <b>' + esc(b.name) + '</b> · <b>' + esc(m.name) + '</b>';
+    document.getElementById('pick').innerHTML = bi('Vais instalar:', 'You will install:') + ' <b>' + esc(b.name) + '</b> · <b>' + esc(m.name) + '</b>';
     // Prefill the compatibility report with the current pick (field ids of compatibility-report.yml).
     document.getElementById('report').href = REPORT + '&board=' + encodeURIComponent(b.opt) + '&model_file=' + encodeURIComponent(model) +
       '&install=' + encodeURIComponent('Web installer / Instalador web') + '&title=' + encodeURIComponent('[Compatibility] ' + m.name + ' · ' + b.name);

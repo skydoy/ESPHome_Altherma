@@ -4,7 +4,7 @@
 
 Que unidades Daikin Altherma e que placas funcionam, e com que ficheiro de modelo.
 
-**A sua unidade não está aqui, ou está e alguma coisa não bate certo?**
+**A tua unidade não está aqui, ou está e alguma coisa não bate certo?**
 [**Reportar a minha bomba**](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml),
 também quando funciona: cada relato ajuda a pessoa seguinte.
 
@@ -50,17 +50,17 @@ autor e o número da discussão ou do *pull request* original.
 | ERLQ016CAW1 | Altherma LT (16 kW) | não indicado | ESP32-WROOM-32U DevKit | 🔶 | @ezfrag2021 (discussão #25). Os 5 V do X10A não chegavam: alimentado por USB; antena externa fora da caixa. |
 | EHBH08CA3V | Altherma | não indicado | ESP32 | 🔶 | @papayou66 (discussão #63); painéis próprios. |
 
-¹ Não é uma das placas do instalador web; precisa de uma compilação própria ([Uso avançado](avancado.md#compilar-por-si)).
+¹ Não é uma das placas do instalador web; precisa de uma compilação própria ([Uso avançado](avancado.md#compilar-por-ti)).
 
-## Como verificar a sua unidade
-1. Leia o modelo na etiqueta da unidade **interior** (por exemplo EBBH11DF6V) e da unidade **exterior** (por exemplo
+## Como verificar a tua unidade
+1. Lê o modelo na etiqueta da unidade **interior** (por exemplo EBBH11DF6V) e da unidade **exterior** (por exemplo
    ERLA11D2V3).
-2. Procure a série na tabela de [ficheiros de modelo](#ficheiros-de-modelo): as letras antes da potência (ERGA, ERLA,
+2. Procura a série na tabela de [ficheiros de modelo](#ficheiros-de-modelo): as letras antes da potência (ERGA, ERLA,
    EPRA, EHV…) e a letra da geração a seguir (D, E, CB…).
-3. Instale com esse ficheiro de modelo e compare alguns valores no Home Assistant com o ecrã da bomba de calor:
+3. Instala com esse ficheiro de modelo e compara alguns valores no Home Assistant com o ecrã da bomba de calor:
    temperatura exterior, temperatura da água de saída, modo de funcionamento.
 4. Faltam valores ou estão claramente errados (por exemplo −3276,8, ou uma temperatura de 0 que nunca muda)?
-   Experimente o ficheiro de modelo mais próximo a seguir e depois
-   [reporte-o](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml) com um excerto
-   dos registos. Para mapear os valores em falta por si, veja a
+   Experimenta o ficheiro de modelo mais próximo a seguir e depois
+   [reporta-o](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml) com um excerto
+   dos registos. Para mapear os valores em falta por ti, vê a
    [descoberta de registos](avancado.md#descoberta-de-registos-experimental).
