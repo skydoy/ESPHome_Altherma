@@ -13,9 +13,9 @@
 
 <p align="center">
   <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml/badge.svg" alt="Build"></a>
-  <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/ci.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/validate.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/validate.yml/badge.svg" alt="Validate"></a>
   <a href="https://github.com/skydoy/esphome-altherma/releases/latest"><img src="https://img.shields.io/github/v/release/skydoy/esphome-altherma?sort=semver" alt="Release"></a>
-  <a href="https://github.com/jjohnsen/esphome-altherma"><img src="https://img.shields.io/badge/upstream-jjohnsen%2Fesphome--altherma-555" alt="Upstream"></a>
+  <img src="https://img.shields.io/badge/upstream-jjohnsen%2Fesphome--altherma-555" alt="Upstream: jjohnsen/esphome-altherma">
 </p>
 
 <p align="center"><b>Your Daikin Altherma 3 in Home Assistant. Plug in by USB, pick your heat pump, click Install. No YAML.</b><br>
@@ -28,8 +28,8 @@
 Connect a small ESP32 board to the **X10A** service connector of your **Daikin Altherma** heat pump and read
 temperatures, flow, power and more locally in Home Assistant. No cloud, no MQTT, no app.
 
-**Is my heat pump supported?** See the [models](#heat-pump-models) below ·
-[successful installs (upstream)](https://github.com/jjohnsen/esphome-altherma#successful-installs)
+**Is my heat pump supported?** See the [models](#heat-pump-models) below and the
+[compatibility list](docs/compatibility.md) · [**Report my heat pump**](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
 
 ## Install in 3 steps
 1. **Flash.** Open the **[web installer](https://skydoy.github.io/esphome-altherma/)** in Chrome or Edge on a computer,
@@ -49,7 +49,7 @@ After that, updates come over the air from the **Firmware** entity in Home Assis
 | 4 | – | not connected | not connected | not connected | not connected | not connected |
 | 5 | GND | GND | GND | Grove GND (black) | GND | GND |
 
-TX goes to RX and RX to TX. Photos: [ESPAltherma wiring guide](https://github.com/raomin/ESPAltherma?tab=readme-ov-file#daikin-altherma-4-pin-x10a-connection).
+TX goes to RX and RX to TX. Where X10A is, a diagram, power and safety: [wiring guide](docs/wiring.md).
 
 ## What you get in Home Assistant
 | Entity | What it does |
@@ -85,28 +85,36 @@ On the M5Stack Core / Basic the screen shows the live values (buttons to navigat
 | `epra_d_etv_etb_etvz_14_18` | Altherma 3 H HT · EPRA D + ETV/ETB/ETVZ (14–18 kW) |
 | `altherma_ehvh_ehvx_cb` | Altherma LT · EHVH/EHVX CB (11–16 kW) |
 
-> **Status:** pick the model by hand; automatic detection ([upstream PR #51](https://github.com/jjohnsen/esphome-altherma/pull/51))
-> is still experimental. Your model isn't listed? Share it in the
-> [upstream discussions](https://github.com/jjohnsen/esphome-altherma/discussions).
+> **Status:** pick the model by hand (there is no automatic detection yet). Who tested which unit: see the
+> [compatibility list](docs/compatibility.md). Your model isn't listed, or values look wrong?
+> [Report my heat pump](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml).
+
+## Security and updates
+The prebuilt firmware has no API key or OTA password, so any Home Assistant can adopt it, and it updates itself from
+the **Firmware** entity. To add a key and passwords, adopt it in the ESPHome Device Builder:
+[security and OTA updates](docs/security.md).
 
 ## Advanced / manual YAML
 Own build or Device Builder: board configs `esphome-altherma-<board>.yaml`, shared `base.yaml`, sensor maps in
 [`confs/`](confs/). Run `esphome run esphome-altherma-esp32.yaml` with your Wi-Fi in `secrets.yaml`.
-Relays (thermostat / Smart Grid), mock UART, register discovery and vendored ESPAltherma files:
-see the [upstream README](https://github.com/jjohnsen/esphome-altherma#readme).
+Relays (thermostat / Smart Grid), register discovery (`query_register`), mock UART, Emoncms and the vendored
+ESPAltherma files: [advanced use](docs/advanced.md).
 
 ## Docs
-[Upstream README](https://github.com/jjohnsen/esphome-altherma#readme) ·
-[Register discovery](https://github.com/jjohnsen/esphome-altherma#register-discovery-experimental) ·
-[Emoncms guide](https://jjohnsen.no/2026/esphome-altherma-emoncms-setup-guide/) ·
-[HA Community](https://community.home-assistant.io/t/esphome-altherma-monitor-your-daikin-altherma-3-heat-pump-via-x10a/1000476) ·
-[Report a problem](https://github.com/skydoy/esphome-altherma/issues/new) ·
-[Releases](https://github.com/skydoy/esphome-altherma/releases)
+[Wiring](docs/wiring.md) ·
+[Compatibility](docs/compatibility.md) ·
+[Security and OTA](docs/security.md) ·
+[Advanced use](docs/advanced.md) ·
+[Register discovery](docs/advanced.md#register-discovery-experimental) ·
+[Report my heat pump](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml) ·
+[Report a problem](https://github.com/skydoy/esphome-altherma/issues/new/choose) ·
+[Releases](https://github.com/skydoy/esphome-altherma/releases) ·
+[Security policy](SECURITY.md)
 
 ## Credits
-- Component, sensors and model files: [jjohnsen/esphome-altherma](https://github.com/jjohnsen/esphome-altherma)
-  and its contributors, based on [ESPAltherma](https://github.com/raomin/ESPAltherma) by raomin.
-- Web installer, builds, logo and boot animation: [skydoy](https://github.com/skydoy). Board pictures are illustrations.
+- Component, sensors and model files: esphome-altherma by jjohnsen and its contributors, based on ESPAltherma by
+  raomin.
+- Web installer, builds, docs, logo and boot animation: skydoy. Board pictures and the wiring diagram are illustrations.
 
 Provided as-is for personal and educational use, like upstream; ESPAltherma files keep their
 [original license](https://github.com/raomin/ESPAltherma/blob/main/LICENSE). Use at your own risk: work on the
