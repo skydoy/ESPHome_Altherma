@@ -4,7 +4,7 @@ name: Build firmware & publish installer
 # firmware/<board>/<model>/ with an ESP Web Tools manifest.json that is also the OTA source of
 # the "Firmware" update entity (see installer/*.installer.yaml).
 # Pushes and pull requests are checked by validate.yml (config checks + one compile); the full
-# 30-image build runs only here, for release tags (v*) or a manual run.
+# board x model build runs only here, for release tags (v*) or a manual run.
 on:
   push:
     tags: ["v*"]
@@ -15,22 +15,31 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  models:
+    # Firmware list from installer/models.yaml: "generic" (what the installer flashes first) + every
+    # confirmed model. Untested models are not built (manual pick: build it yourself).
+    runs-on: ubuntu-24.04
+    outputs:
+      models: ${{ steps.m.outputs.models }}
+      count: ${{ steps.m.outputs.count }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: m
+        run: |
+          python3 -c "import yaml" 2>/dev/null || sudo apt-get install -y python3-yaml
+          m=$(python3 installer/gen_models.py --matrix)
+          echo "models=$m" >> "$GITHUB_OUTPUT"
+          echo "count=$(python3 -c "import json,sys;print(5*len(json.loads(sys.argv[1])))" "$m")" >> "$GITHUB_OUTPUT"
+          echo "$m"
   build:
-    # "model" = the models offered in the web installer; keep in sync with static/index.html (validate.yml checks it).
-    # Other confs/*.yaml exist but are not built here (see docs/compatibility.md).
     name: ${{ matrix.board }} / ${{ matrix.model }}
+    needs: models
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
         board: [esp32, esp32-s3, atoms3, esp8266, m5stack]
-        model:
-          - erga_eh_da_04_08
-          - erga_eh_e_ej_04_08
-          - erla_d_ebv_ebb_ebvz_11_16
-          - erla_d_ebsh_11_16_ech2o
-          - epra_d_etv_etb_etvz_14_18
-          - altherma_ehvh_ehvx_cb
+        model: ${{ fromJSON(needs.models.outputs.models) }}
     env:
       BOARD: ${{ matrix.board }}
       MODEL: ${{ matrix.model }}
@@ -63,7 +72,7 @@ jobs:
           if-no-files-found: error
   pages:
     # Installer page + every firmware folder in one Pages artifact.
-    needs: build
+    needs: [models, build]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -74,15 +83,16 @@ jobs:
           path: site
       - name: Assemble Pages site
         run: |
+          python3 -c "import yaml" 2>/dev/null || sudo apt-get install -y python3-yaml
           # The web installer page and its images.
           cp static/*.html static/*.svg static/*.png static/*.ico site/
           ls -R site
           for b in esp32 esp32-s3 atoms3 esp8266 m5stack; do
-            for m in $(sed -n '/^        model:/,/^    env:/p' .github/workflows/publish.yml | sed -n 's/^ *- \([a-z0-9_]*\)$/\1/p'); do
+            for m in $(python3 installer/gen_models.py --matrix | tr -d '[]",'); do
               test -f "site/firmware/$b/$m/manifest.json" || { echo "::error::missing firmware/$b/$m/manifest.json"; exit 1; }
             done
           done
-          test "$(find site/firmware -name manifest.json | wc -l)" -eq 30
+          test "$(find site/firmware -name manifest.json | wc -l)" -eq ${{ needs.models.outputs.count }}
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site
@@ -104,7 +114,7 @@ jobs:
     # Create (or update) the GitHub Release for a v* tag: notes from CHANGELOG.md when it has
     # a "## [x.y.z]" section (otherwise GitHub's generated notes), every image attached.
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
+    needs: [models, build]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -129,7 +139,7 @@ jobs:
           {
             echo
             echo "---"
-            echo "**Install or update:** flash from the [web installer](https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/) (Chrome or Edge): pick your board and heat pump model."
+            echo "**Install or update:** flash from the [web installer](https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/) (Chrome or Edge): pick your board; the board finds the model and offers **Install the right firmware**."
             echo "Devices already running this firmware update over the air through the **Firmware** update entity."
             echo "Assets are named \`esphome-altherma-<board>-<model>-${TAG}\`; \`*.factory.bin\` is the full image for a first USB flash at offset 0x0, \`*.ota.bin\` is for manual OTA uploads."
           } >> notes.md
@@ -143,7 +153,7 @@ jobs:
               b=$(basename "$f"); cp "$f" "assets/esphome-altherma-${board}-${model}-${TAG}.${b#*.}"
             done
           done
-          test "$(ls assets | wc -l)" -ge 60   # factory + ota for 5 boards x 6 models
+          test "$(ls assets | wc -l)" -ge $(( 2 * ${{ needs.models.outputs.count }} ))   # factory + ota per firmware
           (cd assets && sha256sum * > SHA256SUMS.txt)
           ls -l assets
       - name: Create or update the release

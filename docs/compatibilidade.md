@@ -22,17 +22,17 @@ de jjohnsen); a maior parte dos relatos abaixo foi feita lá, antes de existir e
 autor e o número da discussão ou do *pull request* original.
 
 ## Ficheiros de modelo
-| Ficheiro de modelo (escolher no instalador) | Unidades | Estado |
+| Ficheiro de modelo (firmware pronto) | Unidades | Estado |
 |---|---|---|
-| `erga_eh_da_04_08` (predefinido) | Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA (4–8 kW); Altherma 3 R MT (ERRA + ELVH/ELVX) | ✅ |
+| `erga_eh_da_04_08` | Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA (4–8 kW); Altherma 3 R MT (ERRA + ELVH/ELVX) | ✅ |
 | `erga_eh_e_ej_04_08` | Altherma 3 R · ERGA E + EHV/EHB/EHVZ E/EJ (4–8 kW) | 🔶 |
 | `erla_d_ebv_ebb_ebvz_11_16` | Altherma 3 R · ERLA D + EBV/EBB/EBVZ D (11–16 kW) | ✅ |
 | `erla_d_ebsh_11_16_ech2o` | Altherma 3 R ECH₂O · ERLA D + EBSH-X 16P30-50 D (11–16 kW) | 🧪 |
 | `epra_d_etv_etb_etvz_14_18` | Altherma 3 H HT · EPRA D/D7 + ETV16/ETB16/ETVZ16 E/E7 (14–18 kW) | 🔶 |
 | `altherma_ehvh_ehvx_cb` | Altherma LT CA/CB · EHVH-CB / EHVX-CB (11–16 kW) | ❔ |
 
-### Ficheiros de modelo que ainda não estão no instalador web
-Convertidos a partir das definições de modelo do ESPAltherma (raomin e colaboradores, licença MIT). Todos passam no `esphome config`, mas ainda nenhum foi experimentado numa unidade real. Não estão no instalador web: usa-os na tua própria compilação ([Uso avançado](avancado.md#compilar-por-ti)) definindo `altherma_model`, e reporta como correu para o modelo poder entrar no instalador.
+### Ficheiros de modelo sem firmware pronto (escolha à mão)
+Convertidos a partir das definições de modelo do ESPAltherma (raomin e colaboradores, licença MIT). Todos passam no `esphome config`, mas ainda nenhum foi experimentado numa unidade real. No site do instalador aparecem na lista manual marcados com 🧪, sem firmware para instalar: usa-os na tua própria compilação ([Uso avançado](avancado.md#compilar-por-ti)) definindo `altherma_model`, e reporta como correu para o modelo poder ser confirmado (uma linha em `installer/models.yaml`) e ter o seu firmware.
 
 | Ficheiro de modelo | Definição do ESPAltherma | Entidades | Estado |
 |---|---|---|---|

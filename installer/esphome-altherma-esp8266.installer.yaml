@@ -1,10 +1,10 @@
 # Web installer build for skydoy/esphome-altherma (board: esp8266).
 # Same as ../boards/esphome-altherma-esp8266.factory.yaml,
-# plus what the web installer needs: a selectable heat pump model, this project's
+# plus what the web installer needs: the heat pump model ("generic" = identify first, see installer/models.yaml), this project's
 # project name/version and a per-board, per-model OTA manifest URL.
 # CI (.github/workflows/publish.yml) rewrites altherma_model and altherma_version per build.
 substitutions:
-  altherma_model: erga_eh_da_04_08
+  altherma_model: generic
   altherma_version: dev
   altherma_board: esp8266
   # Build the component from this checkout (path is relative to installer/).

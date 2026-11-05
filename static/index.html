@@ -10,7 +10,7 @@
   <link rel="icon" href="favicon.png" type="image/png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta property="og:title" content="ESPHome Altherma">
-  <meta property="og:description" content="Your Daikin Altherma heat pump in Home Assistant. Plug in, pick your model, click Install. No cloud, no app.">
+  <meta property="og:description" content="Your Daikin Altherma heat pump in Home Assistant. Plug in, pick your board, click Install. No cloud, no app.">
   <meta property="og:image" content="https://raw.githubusercontent.com/skydoy/esphome-altherma/main/docs/social-preview.png">
   <meta name="theme-color" content="#1784F7">
   <script>
@@ -62,6 +62,8 @@
     .models label:has(input:checked) { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
     .models input { margin-top:.35rem; }
     .models code { font-size:.8rem; }
+    .q { width:100%; box-sizing:border-box; padding:.5rem .7rem; margin:.3rem 0 .6rem; border:2px solid var(--line); border-radius:10px; background:transparent; color:inherit; font:inherit; }
+    .fam { grid-column:1/-1; font-weight:700; margin:.4rem 0 0; color:var(--muted); }
     .tag { display:inline-block; font-size:.75rem; font-weight:700; color:#fff; background:var(--accent); border-radius:999px; padding:0 .45rem; margin-left:.3rem; vertical-align:middle; }
     .brandline { color:var(--muted); font-size:.92rem; margin:.8rem 0 .2rem; }
     .install { text-align:center; padding:.5rem 0 .25rem; }
@@ -137,8 +139,8 @@
       </div>
     </div>
     <p class="pitch">
-      <span class="pt">A tua bomba de calor Daikin Altherma no Home Assistant, pela ficha X10A. Escolhe a placa e o modelo, carrega em Instalar, feito. Sem YAML, sem nuvem, sem app.</span>
-      <span class="en">Your Daikin Altherma heat pump in Home Assistant, through the X10A port. Pick your board and model, click Install, done. No YAML, no cloud, no app.</span>
+      <span class="pt">A tua bomba de calor Daikin Altherma no Home Assistant, pela ficha X10A. Escolhe a placa, carrega em Instalar, feito: a placa descobre o modelo. Sem YAML, sem nuvem, sem app.</span>
+      <span class="en">Your Daikin Altherma heat pump in Home Assistant, through the X10A port. Pick your board, click Install, done. No YAML, no cloud, no app.</span>
     </p>
     <p class="support">
       <b><span class="pt">Gostas? Ajuda-me a fazer algo ainda melhor.</span><span class="en">Like it? Help me build something better.</span></b>
@@ -182,17 +184,21 @@
   </section>
 
   <section class="card">
-    <h2><span class="num">2</span><span class="pt">Que bomba de calor tens?</span><span class="en">Which heat pump do you have?</span></h2>
-    <p><span class="pt">Vê a etiqueta da unidade exterior (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) e da unidade interior (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Escolhe a linha que tem as duas.</span>
-      <span class="en">Check the label on the outdoor unit (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) and the indoor unit (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Pick the row that matches both.</span></p>
-    <form id="model-form" class="models"></form>
-    <div class="note ok" id="identify">🔎 <span class="pt">Não sabes o modelo? Instala qualquer um. A página da placa mostra o modelo certo em “Suggested Model”. Se for diferente, reinstala esse. Se aparecer “unknown”, carrega em “Reportar a minha bomba” nessa página e os dois números já vão preenchidos.</span>
-      <span class="en">Don't know your model? Install any one. The board's page shows the right model under “Suggested Model”. If it's different, reinstall that one. If it says “unknown”, tap “Report my heat pump” on that page and both numbers are filled in for you.</span>
+    <h2><span class="num">2</span><span class="pt">O modelo: a placa descobre-o</span><span class="en">The model: the board finds it</span></h2>
+    <div class="note ok" id="identify">🔎 <span class="pt">Não precisas de escolher. Instalas o firmware genérico e a placa lê os números da tua bomba. Se o modelo for conhecido, carrega em <b>Instalar o firmware certo</b> na página da placa e ela atualiza-se sozinha, sem cabo. Se aparecer “unknown”, carrega em <b>Reportar a minha bomba</b> nessa página e escolhe o modelo aqui em baixo.</span>
+      <span class="en">No need to pick. Install the generic firmware and the board reads your heat pump's numbers. If the model is known, press <b>Install the right firmware</b> on the board's page and it updates itself, no cable. If it says “unknown”, press <b>Report my heat pump</b> on that page and pick the model below.</span></div>
+    <details id="manual"><summary><span class="pt">Escolher o modelo à mão</span><span class="en">Pick the model by hand</span></summary>
+      <p><span class="pt">Vê a etiqueta da unidade exterior (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) e da interior (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). 🧪 = ainda sem firmware pronto.</span>
+        <span class="en">Check the outdoor unit label (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) and the indoor one (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). 🧪 = no ready-made firmware yet.</span></p>
+      <input type="search" id="model-q" class="q" placeholder="ERLA, EHV, 11–16…" aria-label="Search model">
+      <form id="model-form" class="models"></form>
+      <p class="note warn" id="untested" hidden>🧪 <span class="pt">Este modelo ainda não tem firmware pronto. Instala o genérico e reporta a tua bomba, ou compila-o no ESPHome Builder com <code>altherma_model: <b class="mk"></b></code> (<a href="https://github.com/skydoy/esphome-altherma/blob/main/docs/avancado.md">uso avançado</a>).</span>
+        <span class="en">This model has no ready-made firmware yet. Install the generic one and report your heat pump, or build it in the ESPHome Builder with <code>altherma_model: <b class="mk"></b></code> (<a href="https://github.com/skydoy/esphome-altherma/blob/main/docs/advanced.md">advanced use</a>).</span></p>
       <div class="scroll"><table class="compat" id="known-ids">
-        <tr><th>Software ID</th><th>Micon ID</th><th><span class="pt">Modelo sugerido</span><span class="en">Suggested model</span></th></tr>
-      </table></div></div>
+        <tr><th>Software ID</th><th>Micon ID</th><th><span class="pt">Modelo</span><span class="en">Model</span></th></tr>
+      </table></div>
+    </details>
     <p class="privacy"><span class="pt">ℹ️ Na primeira instalação, a placa envia uma única vez o modelo, os números do controlador e as leituras dos sensores, sem dados pessoais nem de rede, para ajudar a lista de compatibilidade.</span><span class="en">ℹ️ On first install, the board sends once the model, controller numbers and sensor readings, with no personal or network data, to help the compatibility list.</span></p>
-    <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> o teu modelo marcado. Não encontras o teu? Vê a <a href="#compat">lista de compatibilidade</a>; o mais próximo costuma ser <code>erga_eh_da_04_08</code>.</span><span class="en"><b>You should see:</b> your model ticked. Not listed? See the <a href="#compat">compatibility list</a>; the closest is usually <code>erga_eh_da_04_08</code>.</span></p>
   </section>
 
   <section class="card" id="wiring">
@@ -242,8 +248,8 @@
       <p class="pt">Instala o driver USB (CP210x ou CH340/CH9102, conforme o chip junto à ficha USB) e volta a ligar a placa. Experimenta outro cabo: muitos só carregam. Nas ESP32-S3, mantém o botão <b>BOOT</b> carregado ao ligar.</p>
       <p class="en">Install the USB driver (CP210x or CH340/CH9102, depending on the chip next to the USB port) and reconnect the board. Try another cable: many only charge. On ESP32-S3 boards, hold <b>BOOT</b> while plugging in.</p>
       <p><a href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers">CP210x</a> · <a href="https://www.wch-ic.com/downloads/CH341SER_ZIP.html">CH340</a> · <a href="https://docs.m5stack.com/en/download">M5Stack</a></p>
-      <p class="pt">Reinstalar mantém o Wi-Fi: numa placa que já tem este firmware o instalador oferece <b>Update</b>. Para mudar de modelo, reinstala com o novo modelo escolhido.</p>
-      <p class="en">Reinstalling keeps your Wi-Fi: on a board that already runs this firmware the installer offers <b>Update</b>. To change model, reinstall with the new model selected.</p>
+      <p class="pt">Reinstalar mantém o Wi-Fi: numa placa que já tem este firmware o instalador oferece <b>Update</b>. Para mudar de modelo, usa <b>Instalar o firmware certo</b> na página da placa.</p>
+      <p class="en">Reinstalling keeps your Wi-Fi: on a board that already runs this firmware the installer offers <b>Update</b>. To change model, use <b>Install the right firmware</b> on the board's page.</p>
     </details>
   </section>
 
@@ -272,21 +278,21 @@
     </details>
     <div class="report">
       <a class="btn2" id="report" href="https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml" target="_blank" rel="noopener"><span class="pt">📝 Reportar a minha bomba</span><span class="en">📝 Report my heat pump</span></a>
-      <div class="d"><span class="pt">Funciona, funciona em parte ou não funciona: conta-nos. Abre um formulário no GitHub com a placa e o modelo que escolheste já preenchidos (precisas de uma conta GitHub).</span><span class="en">Works, partly works or doesn't: tell us. Opens a GitHub form with the board and model you picked already filled in (needs a GitHub account).</span></div>
+      <div class="d"><span class="pt">Funciona, funciona em parte ou não funciona: conta-nos. Abre um formulário no GitHub com a placa (e o modelo, se o escolheste) já preenchidos (precisas de uma conta GitHub).</span><span class="en">Works, partly works or doesn't: tell us. Opens a GitHub form with the board (and the model, if you picked one) already filled in (needs a GitHub account).</span></div>
     </div>
   </section>
 
   <section class="card">
     <h2><span class="num">?</span><span class="pt">Problemas</span><span class="en">Troubleshooting</span></h2>
     <details><summary><span class="pt">Os sensores ficam <i>Indisponível</i> ou a 0</span><span class="en">Sensors stay <i>Unavailable</i> or 0</span></summary>
-      <p class="pt">Troca o TX com o RX (é o erro mais comum), confirma o GND e o modelo escolhido no passo 2.</p>
-      <p class="en">Swap TX and RX (the most common mistake), check GND and the model picked in step 2.</p></details>
+      <p class="pt">Troca o TX com o RX (é o erro mais comum), confirma o GND e o modelo (passo 2).</p>
+      <p class="en">Swap TX and RX (the most common mistake), check GND and the model (step 2).</p></details>
     <details><summary><span class="pt">A placa reinicia sozinha</span><span class="en">The board keeps rebooting</span></summary>
       <p class="pt">Falta de corrente no pino 5V da X10A. Alimenta a placa por USB e deixa o pino 1 sem ligar (GND ligado).</p>
       <p class="en">Not enough current from the X10A 5V pin. Power the board over USB and leave pin 1 unconnected (GND connected).</p></details>
     <details><summary><span class="pt">Alguns valores parecem errados</span><span class="en">Some values look wrong</span></summary>
-      <p class="pt">Provavelmente o modelo não é o teu. Vê o sensor <b>Suggested Model</b> da placa e reinstala com esse modelo no passo 2.</p>
-      <p class="en">The model is probably not yours. Check the board's <b>Suggested Model</b> sensor and reinstall with that model in step 2.</p></details>
+      <p class="pt">Provavelmente o modelo não é o teu. Vê o sensor <b>Suggested Model</b> da placa e carrega em <b>Instalar o firmware certo</b>.</p>
+      <p class="en">The model is probably not yours. Check the board's <b>Suggested Model</b> sensor and press <b>Install the right firmware</b>.</p></details>
     <details><summary><span class="pt">O Home Assistant não encontra a placa</span><span class="en">Home Assistant doesn't find the board</span></summary>
       <p class="pt">Tem de estar na mesma rede (sem rede de convidados). Adiciona-a à mão: integração ESPHome → o IP da placa, porta <code>6053</code>.</p>
       <p class="en">It must be on the same network (not a guest network). Add it by hand: ESPHome integration → the board's IP, port <code>6053</code>.</p></details>
@@ -315,20 +321,47 @@
 
 <script>
   // Heat pump models: confs/<key>.yaml (keep in sync with boards/base.yaml and the publish.yml matrix).
-  // Controller IDs -> model, same table as installer/packages/identify.yaml (confirmed reports only).
+  // Heat pump models and controller IDs: generated from installer/models.yaml (installer/gen_models.py).
+  // ok: true = confirmed, a firmware is built for every board; the rest are manual pick / build it yourself.
+  // BEGIN GENERATED models
   const KNOWN_IDS = [
-    { sw: '20007902', micon: 'ID0792', model: 'erla_d_ebv_ebb_ebvz_11_16' },
+    { sw: "20007902", micon: "ID0792", model: "erla_d_ebv_ebb_ebvz_11_16" },
   ];
   const MODELS = [
-    { key: 'erga_eh_da_04_08', name: 'Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA', d: '4–8 kW', def: true },
-    { key: 'erga_eh_e_ej_04_08', name: 'Altherma 3 R · ERGA E + EHV/EHB/EHVZ E/EJ', d: '4–8 kW' },
-    { key: 'erla_d_ebv_ebb_ebvz_11_16', name: 'Altherma 3 R · ERLA D + EBV/EBB/EBVZ D', d: '11–16 kW' },
-    { key: 'erla_d_ebsh_11_16_ech2o', name: 'Altherma 3 R ECH₂O · ERLA D + EBSH-X D', d: '11–16 kW' },
-    { key: 'epra_d_etv_etb_etvz_14_18', name: 'Altherma 3 H HT · EPRA D + ETV/ETB/ETVZ', d: '14–18 kW' },
-    { key: 'altherma_ehvh_ehvx_cb', name: 'Altherma LT · EHVH/EHVX CB', d: '11–16 kW' },
+    { key: "erga_eh_da_04_08", family: "Altherma 3 R", name: "ERGA D + EHV/EHB/EHVZ DA", d: "4–8 kW", ok: true, s: "✅" },
+    { key: "erga_eh_e_ej_04_08", family: "Altherma 3 R", name: "ERGA E + EHV/EHB/EHVZ E/EJ", d: "4–8 kW", ok: true, s: "🔶" },
+    { key: "erla_d_ebv_ebb_ebvz_11_16", family: "Altherma 3 R", name: "ERLA D + EBV/EBB/EBVZ D", d: "11–16 kW", ok: true, s: "✅" },
+    { key: "erla_d_ebsh_11_16_ech2o", family: "Altherma 3 R ECH₂O", name: "ERLA D + EBSH-X D", d: "11–16 kW", ok: true, s: "🧪" },
+    { key: "epra_d_etv_etb_etvz_14_18", family: "Altherma 3 H HT", name: "EPRA D + ETV/ETB/ETVZ", d: "14–18 kW", ok: true, s: "🔶" },
+    { key: "altherma_ehvh_ehvx_cb", family: "Altherma LT", name: "EHVH/EHVX CB", d: "11–16 kW", ok: true, s: "❔" },
+    { key: "erga_d_ehv_ehb_ehvz_dj_04_08", family: "Altherma 3 R", name: "ERGA D + EHV/EHB/EHVZ DJ", d: "4–8 kW", ok: false, s: "🧪" },
+    { key: "erla03_d_ehfh_ehfz_dj_3", family: "Altherma 3 R", name: "ERLA03 D + EHFH/EHFZ DJ", d: "3 kW", ok: false, s: "🧪" },
+    { key: "erga_d_ehsh_x_p30_50_d_04_08_ech2o", family: "Altherma 3 R ECH₂O", name: "ERGA D + EHSH-X P30-50 D", d: "4–8 kW", ok: false, s: "🧪" },
+    { key: "erga_e_ehsh_x_p30_50_e_ef_04_08_ech2o", family: "Altherma 3 R ECH₂O", name: "ERGA E + EHSH-X P30-50 E/EF", d: "4–8 kW", ok: false, s: "🧪" },
+    { key: "epra_d_etv16_etb16_etvz16_d_14_16", family: "Altherma 3 H HT", name: "EPRA D + ETV16/ETB16/ETVZ16 D", d: "14–16 kW", ok: false, s: "🧪" },
+    { key: "epra_e_etv16_etb16_etvz16_e_ej_8_12", family: "Altherma 3 H HT", name: "EPRA E + ETV16/ETB16/ETVZ16 E/EJ", d: "8–12 kW", ok: false, s: "🧪" },
+    { key: "epra_d_etsh_x_16p30_50_d_14_16_ech2o", family: "Altherma 3 H HT ECH₂O", name: "EPRA D + ETSH-X 16P30-50 D", d: "14–16 kW", ok: false, s: "🧪" },
+    { key: "epra_d_d7_etsh_x_16p30_50_e_e7_14_18_ech2o", family: "Altherma 3 H HT ECH₂O", name: "EPRA D/D7 + ETSH-X 16P30-50 E/E7", d: "14–18 kW", ok: false, s: "🧪" },
+    { key: "epra_e_etsh_x_16p30_50_e_8_12_ech2o", family: "Altherma 3 H HT ECH₂O", name: "EPRA E + ETSH-X 16P30-50 E", d: "8–12 kW", ok: false, s: "🧪" },
+    { key: "ebla_edla_d_4_8_monobloc", family: "Altherma 3 M (monobloc)", name: "EBLA/EDLA D", d: "4–8 kW", ok: false, s: "🧪" },
+    { key: "ebla_edla_d_9_16_monobloc", family: "Altherma 3 M (monobloc)", name: "EBLA/EDLA D", d: "9–16 kW", ok: false, s: "🧪" },
+    { key: "altherma_lt_ca_cb_04_08", family: "Altherma LT", name: "LT CA/CB", d: "4–8 kW", ok: false, s: "🧪" },
+    { key: "altherma_lt_cb_04_08_bizone", family: "Altherma LT", name: "LT CB Bizone", d: "4–8 kW", ok: false, s: "🧪" },
+    { key: "altherma_lt_cb_11_16_bizone", family: "Altherma LT", name: "LT CB Bizone", d: "11–16 kW", ok: false, s: "🧪" },
+    { key: "altherma_lt_eblq_eblq_ca_5_7_monobloc", family: "Altherma LT", name: "EBLQ CA monobloc", d: "5–7 kW", ok: false, s: "🧪" },
+    { key: "altherma_lt_eblq_edlq_ca_11_16_monobloc", family: "Altherma LT", name: "EBLQ/EDLQ CA monobloc", d: "11–16 kW", ok: false, s: "🧪" },
+    { key: "altherma_hybrid", family: "Hybrid", name: "Altherma Hybrid", d: "", ok: false, s: "🧪" },
+    { key: "altherma_lt_multi_hybrid", family: "Hybrid", name: "LT Multi Hybrid", d: "", ok: false, s: "🧪" },
+    { key: "epga_d_eab_eav_eavz_d_j_11_16", family: "Hybrid", name: "EPGA D + EAB/EAV/EAVZ D(J)", d: "11–16 kW", ok: false, s: "🧪" },
+    { key: "altherma_lt_multi_dhwhp", family: "Multi", name: "LT Multi DHW heat pump", d: "", ok: false, s: "🧪" },
+    { key: "ekhwet_bav3_multi_dhw_tank", family: "Multi", name: "EKHWET-BAV3 DHW tank", d: "", ok: false, s: "🧪" },
+    { key: "egsah_x_ewsah_x_d_6_10_geo3", family: "Geo", name: "EGSAH-X/EWSAH-X D (GEO3)", d: "6–10 kW", ok: false, s: "🧪" },
+    { key: "egsqh_a_10_geo2", family: "Geo", name: "EGSQH-A (GEO2)", d: "10 kW", ok: false, s: "🧪" },
+    { key: "mini_chiller_ewaa_ewya_d_4_8", family: "Mini chiller", name: "EWAA/EWYA D", d: "4–8 kW", ok: false, s: "🧪" },
+    { key: "mini_chiller_ewaa_ewya_d_9_16", family: "Mini chiller", name: "EWAA/EWYA D", d: "9–16 kW", ok: false, s: "🧪" },
+    { key: "mini_chiller_ewaq_ewyq_b_4_8", family: "Mini chiller", name: "EWAQ/EWYQ B", d: "4–8 kW", ok: false, s: "🧪" },
   ];
-  // Compatibility (keep in sync with docs/compatibility.md). s: ✅ 🔶 🧪 ❌ ❔
-  const MODEL_STATUS = { erga_eh_da_04_08: '✅', erga_eh_e_ej_04_08: '🔶', erla_d_ebv_ebb_ebvz_11_16: '✅', erla_d_ebsh_11_16_ech2o: '🧪', epra_d_etv_etb_etvz_14_18: '🔶', altherma_ehvh_ehvx_cb: '❔' };
+  // END GENERATED models
   const INSTALLS = [ // [units, model file ('' = not stated, '*' = own mapping), board, status, reported by]
     ['ERLA11D2V3 / EBBH11DF6V', 'erla_d_ebv_ebb_ebvz_11_16', 'ESP32 DevKit', '✅', '@skydoy'],
     ['ERGA08DAV3 / EHVH08S23DA6V', 'erga_eh_da_04_08', 'ESP32 DevKit, M5Stack Basic', '✅', '@jjohnsen'],
@@ -362,12 +395,21 @@
   const bi = (pt, en) => '<span class="pt">' + pt + '</span><span class="en">' + en + '</span>';
   document.getElementById('known-ids').insertAdjacentHTML('beforeend', KNOWN_IDS.map(k =>
     `<tr><td><code>${k.sw}</code></td><td><code>${k.micon}</code></td><td><code>${k.model}</code></td></tr>`).join(''));
-  document.getElementById('model-form').innerHTML = MODELS.map(m =>
-    '<label><input type="radio" name="model" value="' + m.key + '"' + (m.def ? ' checked' : '') + '><span><span class="t">' + esc(m.name) + '</span>' +
-    (m.def ? '<span class="tag">' + bi('padrão', 'default') + '</span>' : '') +
-    '<div class="d">' + esc(m.d) + ' · <code>' + m.key + '</code></div></span></label>').join('');
+  // Manual pick, grouped by family. "generic" (the default) = let the board find the model.
+  const GENERIC = { key: 'generic', family: '', name: 'Genérico / Generic', d: '', ok: true, s: '' };
+  const fams = [...new Set(MODELS.map(m => m.family))];
+  document.getElementById('model-form').innerHTML =
+    '<label><input type="radio" name="model" value="generic" checked><span><span class="t">' + bi('Genérico: a placa descobre o modelo', 'Generic: the board finds the model') + '</span><span class="tag">' + bi('recomendado', 'recommended') + '</span></span></label>' +
+    fams.map(f => '<div class="fam" data-fam="' + esc(f) + '">' + esc(f) + '</div>' + MODELS.filter(m => m.family === f).map(m =>
+      '<label data-q="' + esc((m.family + ' ' + m.name + ' ' + m.d + ' ' + m.key).toLowerCase()) + '" data-fam="' + esc(f) + '"><input type="radio" name="model" value="' + m.key + '"><span><span class="t">' + esc(m.name) + (m.ok ? '' : ' 🧪') + '</span>' +
+      '<div class="d">' + (m.d ? esc(m.d) + ' · ' : '') + '<code>' + m.key + '</code></div></span></label>').join('')).join('');
+  document.getElementById('model-q').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase().trim();
+    document.querySelectorAll('#model-form label[data-q]').forEach(l => { l.hidden = q && !l.dataset.q.includes(q); });
+    document.querySelectorAll('#model-form .fam').forEach(h => { h.hidden = ![...document.querySelectorAll('#model-form label[data-fam="' + h.dataset.fam + '"]')].some(l => !l.hidden); });
+  });
   document.getElementById('compat-models').insertAdjacentHTML('beforeend', MODELS.map(m =>
-    '<tr><td><code>' + m.key + '</code></td><td>' + esc(m.name) + ' (' + esc(m.d) + ')</td><td class="st">' + (MODEL_STATUS[m.key] || '❔') + '</td></tr>').join(''));
+    '<tr><td><code>' + m.key + '</code></td><td>' + esc(m.name) + ' (' + esc(m.d) + ')</td><td class="st">' + m.s + '</td></tr>').join(''));
   document.getElementById('compat-installs').insertAdjacentHTML('beforeend', INSTALLS.map(r =>
     '<tr><td>' + esc(r[0]).replace(/ \/ | \+ /g, m => m.trim() + '<br>') + '</td><td>' + (r[1] === '*' ? bi('mapa próprio', 'own mapping') : r[1] ? '<code>' + r[1] + '</code>' : bi('não indicado', 'not stated')) + '</td><td>' + esc(r[2]) + '</td><td class="st">' + r[3] + '</td><td>' + esc(r[4]) + '</td></tr>').join(''));
   document.getElementById('compat-count').textContent = INSTALLS.length;
@@ -389,8 +431,10 @@
   function select() {
     const board = document.querySelector('input[name="board"]:checked').value;
     const model = document.querySelector('input[name="model"]:checked').value;
-    const b = BOARDS[board], m = MODELS.find(x => x.key === model);
-    button.setAttribute('manifest', 'firmware/' + board + '/' + model + '/manifest.json');
+    const b = BOARDS[board], m = MODELS.find(x => x.key === model) || GENERIC;
+    // Untested models have no firmware on the site: install the generic one.
+    button.setAttribute('manifest', 'firmware/' + board + '/' + (m.ok ? model : 'generic') + '/manifest.json');
+    const ut = document.getElementById('untested'); ut.hidden = m.ok; ut.querySelectorAll('.mk').forEach(x => { x.textContent = model; });
     document.querySelectorAll('[data-board]').forEach(el => { el.hidden = el.dataset.board !== board; });
     document.getElementById('wire-board').textContent = b.name;
     const gnd = b.gnd || ['GND', 'GND'];
@@ -406,8 +450,8 @@
     rows.forEach(r => t.insertAdjacentHTML('beforeend', '<tr class="r"><td>' + r[0] + '</td><td>' + r[1] + '</td><td' + (r[3] ? ' class="nc"' : '') + '>' + r[2] + '</td></tr>'));
     document.getElementById('pick').innerHTML = bi('Vais instalar:', 'You will install:') + ' <b>' + esc(b.name) + '</b> · <b>' + esc(m.name) + '</b>';
     // Prefill the compatibility report with the current pick (field ids of compatibility-report.yml).
-    document.getElementById('report').href = REPORT + '&board=' + encodeURIComponent(b.opt) + '&model_file=' + encodeURIComponent(model) +
-      '&install=' + encodeURIComponent('Web installer / Instalador web') + '&title=' + encodeURIComponent('[Compatibility] ' + m.name + ' · ' + b.name);
+    document.getElementById('report').href = REPORT + '&board=' + encodeURIComponent(b.opt) + (model === 'generic' ? '' : '&model_file=' + encodeURIComponent(model)) +
+      '&install=' + encodeURIComponent('Web installer / Instalador web') + '&title=' + encodeURIComponent('[Compatibility] ' + (model === 'generic' ? '' : m.name + ' · ') + b.name);
     try { localStorage.setItem('altherma-pick', JSON.stringify({ board, model })); } catch (e) {}
     showVersion();
   }

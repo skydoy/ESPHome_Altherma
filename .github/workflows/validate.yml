@@ -1,7 +1,7 @@
 name: Validate
 # Fast checks on every push and pull request (same idea as skydoy/ESPHome_AC and ESPHOME_Hunter):
-# `esphome config` for every board x heat pump model pair the installer ships (30 pairs, seconds
-# each) and the plain board configs, plus ONE real compile as a smoke test. The full 30-image
+# `esphome config` for every board x heat pump model (confs/*.yaml, including the generic
+# identify-first one; seconds each) and the plain board configs, plus ONE real compile as a smoke test. The full board x model
 # build only runs on release tags, in publish.yml.
 on: [push, pull_request]
 permissions:
@@ -54,24 +54,16 @@ jobs:
       - run: pip install esphome==2026.10.1
       - run: esphome -s altherma_component_source ../components config ${{ matrix.file }} > /dev/null
   site:
-    # The installer page, its model list and the build matrix must list the same confs/*.yaml.
+    # installer/models.yaml is the single model list: the board's ID table (identify.yaml), the board
+    # page buttons (report.js) and the site (index.html) are generated from it and must be up to date.
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
-      - name: Installer models match between the site and the release matrix
-        run: |
-          set -e
-          # Only the models in the publish.yml matrix are in the web installer; the other confs/*.yaml are
-          # "conf available, not in web installer yet" (docs/compatibility.md) and are checked by the config job.
-          models=$(sed -n '/^        model:/,/^    env:/p' .github/workflows/publish.yml | sed -n 's/^ *- \([a-z0-9_]*\)$/\1/p')
-          test -n "$models"
-          for m in $models; do
-            test -f "confs/$m.yaml" || { echo "::error::confs/$m.yaml missing (publish.yml matrix)"; exit 1; }
-            grep -q "key: '$m'" static/index.html || { echo "::error::$m missing from static/index.html MODELS"; exit 1; }
-          done
-          for k in $(grep -o "key: '[a-z0-9_]*'" static/index.html | cut -d"'" -f2); do
-            echo "$models" | grep -qx "$k" || { echo "::error::$k on the site but not in the publish.yml matrix"; exit 1; }
-          done
+      - uses: actions/setup-python@v7
+        with: { python-version: "3.13" }
+      - run: pip install pyyaml
+      - run: python installer/gen_models.py --check
+      - run: python installer/gen_models.py --matrix
   compile:
     # One real build (default board and model) so compiler errors show up before a release.
     runs-on: ubuntu-24.04
@@ -84,4 +76,5 @@ jobs:
           path: ~/.platformio
           key: pio-${{ runner.os }}-esphome-2026.10.1
       - run: pip install esphome==2026.10.1
+      # Default model = generic, the firmware the web installer flashes first.
       - run: esphome compile installer/esphome-altherma-esp32.installer.yaml

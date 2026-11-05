@@ -22,17 +22,17 @@ The firmware, the `altherma_hub` component and the model files are the same as i
 listed with their author and the original discussion or pull request number.
 
 ## Model files
-| Model file (pick in the installer) | Units | Status |
+| Model file (ready-made firmware) | Units | Status |
 |---|---|---|
-| `erga_eh_da_04_08` (default) | Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA (4–8 kW); Altherma 3 R MT (ERRA + ELVH/ELVX) | ✅ |
+| `erga_eh_da_04_08` | Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA (4–8 kW); Altherma 3 R MT (ERRA + ELVH/ELVX) | ✅ |
 | `erga_eh_e_ej_04_08` | Altherma 3 R · ERGA E + EHV/EHB/EHVZ E/EJ (4–8 kW) | 🔶 |
 | `erla_d_ebv_ebb_ebvz_11_16` | Altherma 3 R · ERLA D + EBV/EBB/EBVZ D (11–16 kW) | ✅ |
 | `erla_d_ebsh_11_16_ech2o` | Altherma 3 R ECH₂O · ERLA D + EBSH-X 16P30-50 D (11–16 kW) | 🧪 |
 | `epra_d_etv_etb_etvz_14_18` | Altherma 3 H HT · EPRA D/D7 + ETV16/ETB16/ETVZ16 E/E7 (14–18 kW) | 🔶 |
 | `altherma_ehvh_ehvx_cb` | Altherma LT CA/CB · EHVH-CB / EHVX-CB (11–16 kW) | ❔ |
 
-### Model files not in the web installer yet
-Converted from the ESPAltherma model definitions (raomin and contributors, MIT License). Every file passes `esphome config`, but none has been tried on a real unit yet. They are not in the web installer: use them with your own build ([Advanced use](advanced.md#build-it-yourself)) by setting `altherma_model`, and report how it goes so the model can be added to the installer.
+### Model files without ready-made firmware (manual pick)
+Converted from the ESPAltherma model definitions (raomin and contributors, MIT License). Every file passes `esphome config`, but none has been tried on a real unit yet. On the installer site they are in the manual list marked 🧪, with no firmware to flash: use them with your own build ([Advanced use](advanced.md#build-it-yourself)) by setting `altherma_model`, and report how it goes so the model can be confirmed (one line in `installer/models.yaml`) and get its own firmware.
 
 | Model file | ESPAltherma definition | Entities | Status |
 |---|---|---|---|

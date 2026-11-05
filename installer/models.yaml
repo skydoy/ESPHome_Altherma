@@ -1,0 +1,43 @@
+# Heat pump models of skydoy/esphome-altherma: ONE list for the web installer, the release build,
+# the board's "Suggested Model" table and the site. Run `python installer/gen_models.py` after an edit
+# (Validate fails when a generated block is out of date).
+#   key:       confs/<key>.yaml
+#   family:    group in the installer's model list
+#   confirmed: true = someone ran it on a real unit -> a firmware is built per board and the board can
+#              switch to it by itself ("Install the right firmware"). false = manual pick, build it yourself.
+#   status:    ✅ maintainer-tested · 🔶 user-reported · 🧪 mapped, untested · ❔ nobody reported yet
+#   ids:       [software_id, micon_id] pairs read by the board (confirmed reports only)
+# Adding a confirmed model = one line here + its ids.
+models:
+  - { key: erga_eh_da_04_08, family: Altherma 3 R, name: "ERGA D + EHV/EHB/EHVZ DA", kw: "4–8", confirmed: true, status: "✅" }
+  - { key: erga_eh_e_ej_04_08, family: Altherma 3 R, name: "ERGA E + EHV/EHB/EHVZ E/EJ", kw: "4–8", confirmed: true, status: "🔶" }
+  - { key: erla_d_ebv_ebb_ebvz_11_16, family: Altherma 3 R, name: "ERLA D + EBV/EBB/EBVZ D", kw: "11–16", confirmed: true, status: "✅", ids: [["20007902", "ID0792"]] }
+  - { key: erla_d_ebsh_11_16_ech2o, family: Altherma 3 R ECH₂O, name: "ERLA D + EBSH-X D", kw: "11–16", confirmed: true, status: "🧪" }
+  - { key: epra_d_etv_etb_etvz_14_18, family: Altherma 3 H HT, name: "EPRA D + ETV/ETB/ETVZ", kw: "14–18", confirmed: true, status: "🔶" }
+  - { key: altherma_ehvh_ehvx_cb, family: Altherma LT, name: "EHVH/EHVX CB", kw: "11–16", confirmed: true, status: "❔" }
+  - { key: erga_d_ehv_ehb_ehvz_dj_04_08, family: Altherma 3 R, name: "ERGA D + EHV/EHB/EHVZ DJ", kw: "4–8", confirmed: false, status: "🧪" }
+  - { key: erla03_d_ehfh_ehfz_dj_3, family: Altherma 3 R, name: "ERLA03 D + EHFH/EHFZ DJ", kw: "3", confirmed: false, status: "🧪" }
+  - { key: erga_d_ehsh_x_p30_50_d_04_08_ech2o, family: Altherma 3 R ECH₂O, name: "ERGA D + EHSH-X P30-50 D", kw: "4–8", confirmed: false, status: "🧪" }
+  - { key: erga_e_ehsh_x_p30_50_e_ef_04_08_ech2o, family: Altherma 3 R ECH₂O, name: "ERGA E + EHSH-X P30-50 E/EF", kw: "4–8", confirmed: false, status: "🧪" }
+  - { key: epra_d_etv16_etb16_etvz16_d_14_16, family: Altherma 3 H HT, name: "EPRA D + ETV16/ETB16/ETVZ16 D", kw: "14–16", confirmed: false, status: "🧪" }
+  - { key: epra_e_etv16_etb16_etvz16_e_ej_8_12, family: Altherma 3 H HT, name: "EPRA E + ETV16/ETB16/ETVZ16 E/EJ", kw: "8–12", confirmed: false, status: "🧪" }
+  - { key: epra_d_etsh_x_16p30_50_d_14_16_ech2o, family: Altherma 3 H HT ECH₂O, name: "EPRA D + ETSH-X 16P30-50 D", kw: "14–16", confirmed: false, status: "🧪" }
+  - { key: epra_d_d7_etsh_x_16p30_50_e_e7_14_18_ech2o, family: Altherma 3 H HT ECH₂O, name: "EPRA D/D7 + ETSH-X 16P30-50 E/E7", kw: "14–18", confirmed: false, status: "🧪" }
+  - { key: epra_e_etsh_x_16p30_50_e_8_12_ech2o, family: Altherma 3 H HT ECH₂O, name: "EPRA E + ETSH-X 16P30-50 E", kw: "8–12", confirmed: false, status: "🧪" }
+  - { key: ebla_edla_d_4_8_monobloc, family: Altherma 3 M (monobloc), name: "EBLA/EDLA D", kw: "4–8", confirmed: false, status: "🧪" }
+  - { key: ebla_edla_d_9_16_monobloc, family: Altherma 3 M (monobloc), name: "EBLA/EDLA D", kw: "9–16", confirmed: false, status: "🧪" }
+  - { key: altherma_lt_ca_cb_04_08, family: Altherma LT, name: "LT CA/CB", kw: "4–8", confirmed: false, status: "🧪" }
+  - { key: altherma_lt_cb_04_08_bizone, family: Altherma LT, name: "LT CB Bizone", kw: "4–8", confirmed: false, status: "🧪" }
+  - { key: altherma_lt_cb_11_16_bizone, family: Altherma LT, name: "LT CB Bizone", kw: "11–16", confirmed: false, status: "🧪" }
+  - { key: altherma_lt_eblq_eblq_ca_5_7_monobloc, family: Altherma LT, name: "EBLQ CA monobloc", kw: "5–7", confirmed: false, status: "🧪" }
+  - { key: altherma_lt_eblq_edlq_ca_11_16_monobloc, family: Altherma LT, name: "EBLQ/EDLQ CA monobloc", kw: "11–16", confirmed: false, status: "🧪" }
+  - { key: altherma_hybrid, family: Hybrid, name: "Altherma Hybrid", kw: "", confirmed: false, status: "🧪" }
+  - { key: altherma_lt_multi_hybrid, family: Hybrid, name: "LT Multi Hybrid", kw: "", confirmed: false, status: "🧪" }
+  - { key: epga_d_eab_eav_eavz_d_j_11_16, family: Hybrid, name: "EPGA D + EAB/EAV/EAVZ D(J)", kw: "11–16", confirmed: false, status: "🧪" }
+  - { key: altherma_lt_multi_dhwhp, family: Multi, name: "LT Multi DHW heat pump", kw: "", confirmed: false, status: "🧪" }
+  - { key: ekhwet_bav3_multi_dhw_tank, family: Multi, name: "EKHWET-BAV3 DHW tank", kw: "", confirmed: false, status: "🧪" }
+  - { key: egsah_x_ewsah_x_d_6_10_geo3, family: Geo, name: "EGSAH-X/EWSAH-X D (GEO3)", kw: "6–10", confirmed: false, status: "🧪" }
+  - { key: egsqh_a_10_geo2, family: Geo, name: "EGSQH-A (GEO2)", kw: "10", confirmed: false, status: "🧪" }
+  - { key: mini_chiller_ewaa_ewya_d_4_8, family: Mini chiller, name: "EWAA/EWYA D", kw: "4–8", confirmed: false, status: "🧪" }
+  - { key: mini_chiller_ewaa_ewya_d_9_16, family: Mini chiller, name: "EWAA/EWYA D", kw: "9–16", confirmed: false, status: "🧪" }
+  - { key: mini_chiller_ewaq_ewyq_b_4_8, family: Mini chiller, name: "EWAQ/EWYQ B", kw: "4–8", confirmed: false, status: "🧪" }
