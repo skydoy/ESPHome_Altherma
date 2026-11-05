@@ -14,6 +14,7 @@ packages:
   board: !include ../boards/esphome-altherma-esp32-s3.yaml
   identify: !include packages/identify.yaml
   firmware_update: !include packages/firmware-update.yaml
+  webui: !include packages/webui.yaml
 
 esphome:
   project:

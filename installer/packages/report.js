@@ -3,6 +3,21 @@
 // "Install the right firmware" button entity of installer/packages/identify.yaml).
 // Reads the live Controller Software ID / Micon ID / Suggested Model states and opens the
 // compatibility report form prefilled (field ids of .github/ISSUE_TEMPLATE/compatibility-report.yml).
+// Debug log panel size: the stock web_server v3 log grows to the full page height. Cap it and
+// scroll inside (newest lines stay visible at the top). Same fix as ESPHome_AC core/web-log.js.
+(function () {
+  var CSS = '.logs{max-height:min(45vh,420px);overflow-y:auto;overscroll-behavior:contain}';
+  function fix() {
+    var app = document.querySelector('esp-app'), log = app && app.shadowRoot && app.shadowRoot.querySelector('esp-log');
+    var root = log && log.shadowRoot;
+    if (!root) return false;
+    if (!root.getElementById('altherma-log-css')) {
+      var st = document.createElement('style'); st.id = 'altherma-log-css'; st.textContent = CSS; root.appendChild(st);
+    }
+    return true;
+  }
+  var n = 0, t = setInterval(function () { if (fix() || ++n > 120) clearInterval(t); }, 250);
+})();
 (function () {
   var R = 'https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml';
   // BEGIN GENERATED models (installer/models.yaml, run installer/gen_models.py)

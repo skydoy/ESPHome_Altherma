@@ -116,10 +116,6 @@ button:
 # "Instalar o firmware certo" / "Install the right firmware" when the model is known and not
 # installed, and "Reportar a minha bomba" / "Report my heat pump", which opens the skydoy compatibility
 # report form prefilled with the live Software ID, Micon ID and suggested model.
-web_server:
-  version: 3
-  js_include: packages/report.js
-
 # Automatic one-time compatibility report (see tools/report-worker/). On first boot, once the
 # Software ID, Micon ID and suggested model have values (waits up to 10 min), the board POSTs the
 # two IDs, suggested model, model check, board, firmware version and every non-internal sensor /
