@@ -184,8 +184,32 @@
     }
     return hit;
   }
+  // ESPAltherma binary: ON = DHW, OFF = Space.
+  function valveIsDhw(v) {
+    if (v == null) return null;
+    var s = String(v).toUpperCase();
+    if (s.indexOf('DHW') >= 0 || s.indexOf('AQS') >= 0 || s === 'ON' || s === 'TRUE' || s === '1') return true;
+    if (s.indexOf('SPACE') >= 0 || s.indexOf('AQUEC') >= 0 || s.indexOf('HEATING') >= 0 || s === 'OFF' || s === 'FALSE' || s === '0') return false;
+    return null;
+  }
+  function valveLabel(v) {
+    var dhw = valveIsDhw(v);
+    var L = window.althermaLang;
+    if (dhw === true) return L.t('AQS', 'DHW');
+    if (dhw === false) return L.t('Aquecimento', 'Heating');
+    return v || '—';
+  }
   function fmt(key, d) {
     var st = d.state == null ? '' : String(d.state);
+    if (key === 'valve') {
+      // Store canonical DHW/SPACE so paint/i18n can localise the chip value.
+      var raw = st;
+      if (!raw && d.value != null) raw = d.value ? 'ON' : 'OFF';
+      var dhw = valveIsDhw(raw);
+      if (dhw === true) return 'DHW';
+      if (dhw === false) return 'SPACE';
+      return raw;
+    }
     if (d.value != null && typeof d.value === 'number' && isFinite(d.value)) {
       var u = '';
       for (var i = 0; i < MAP.length; i++) if (MAP[i][0] === key) { u = MAP[i][2]; break; }
@@ -200,14 +224,14 @@
     var s = String(v).toUpperCase();
     return s === 'ON' || s === 'TRUE' || s === '1' || /^ON\b/.test(s);
   }
-  // ESPAltherma binary: ON = DHW, OFF = Space. Confirmed by sibling conf names
-  // "3way valve(On:DHW_Off:Space)" and ERLA "3-Way Valve (DHW/Space)".
-  function valveIsDhw(v) {
-    if (v == null) return null;
-    var s = String(v).toUpperCase();
-    if (s.indexOf('DHW') >= 0 || s === 'ON' || s === 'TRUE' || s === '1') return true;
-    if (s.indexOf('SPACE') >= 0 || s === 'OFF' || s === 'FALSE' || s === '0') return false;
-    return null;
+  function freqHz() {
+    var v = vals.freq;
+    if (v == null || v === '') return NaN;
+    return parseFloat(String(v).replace(/[^\d.+-eE]/g, ''));
+  }
+  function compressorRunning() {
+    var hz = freqHz();
+    return isFinite(hz) && hz > 0;
   }
 
   // Two-line chip: label on top, value below — avoids Desc./value overlap.
@@ -221,6 +245,52 @@
       + '</g>';
   }
 
+  function outdoorFanSvg() {
+    // Realistic axial fan: shroud + grille rings + 3 curved blades (rotor spins via CSS).
+    // Blade path is a sickle around origin; duplicated at 0/120/240°.
+    var blade = 'M0,-6 C12,-30 30,-18 10,-2 C6,0 2,-2 0,-6 Z';
+    return ''
+      + '<g class="ad-fan-assy" transform="translate(58,118)">'
+      // Outer shroud / grille ring (outdoor-unit style)
+      + '<circle r="40" class="ad-fan-shroud-outer"/>'
+      + '<circle r="36" class="ad-fan-shroud"/>'
+      + '<circle r="36" class="ad-fan-shroud-rim" fill="none"/>'
+      // Wire-guard rings + spokes (static)
+      + '<circle r="28" class="ad-fan-guard" fill="none"/>'
+      + '<circle r="20" class="ad-fan-guard" fill="none"/>'
+      + '<circle r="12" class="ad-fan-guard" fill="none"/>'
+      + '<g class="ad-fan-spokes" fill="none">'
+      + '<line x1="0" y1="-36" x2="0" y2="36"/><line x1="-36" y1="0" x2="36" y2="0"/>'
+      + '<line x1="-25.5" y1="-25.5" x2="25.5" y2="25.5"/><line x1="25.5" y1="-25.5" x2="-25.5" y2="25.5"/>'
+      + '</g>'
+      // Rotor (animated)
+      + '<g class="ad-fan-rotor">'
+      + '<path d="' + blade + '" class="ad-fan-blade" transform="rotate(0)"/>'
+      + '<path d="' + blade + '" class="ad-fan-blade" transform="rotate(120)"/>'
+      + '<path d="' + blade + '" class="ad-fan-blade" transform="rotate(240)"/>'
+      + '<circle r="6.5" class="ad-fan-hub"/>'
+      + '<circle r="2.2" class="ad-fan-hub-cap"/>'
+      + '</g>'
+      + '</g>';
+  }
+
+  function outdoorCompSvg() {
+    // Scroll / hermetic compressor: rounded vertical cylinder + pipe stubs.
+    return ''
+      + '<g class="ad-comp-assy" data-comp transform="translate(148,118)">'
+      + '<ellipse cx="0" cy="22" rx="15" ry="5.5" class="ad-comp-base"/>'
+      + '<rect x="-15" y="-20" width="30" height="42" rx="4" class="ad-comp-body"/>'
+      + '<ellipse cx="0" cy="-20" rx="15" ry="5.5" class="ad-comp-top"/>'
+      + '<ellipse cx="0" cy="-12" rx="10" ry="3.5" class="ad-comp-lid"/>'
+      // Pipe stubs (discharge top-right, suction mid-left)
+      + '<path d="M15,-6 H28 M28,-6 V2" class="ad-comp-pipe" fill="none"/>'
+      + '<circle cx="28" cy="2" r="2.4" class="ad-comp-pipe-end"/>'
+      + '<path d="M-15,6 H-28" class="ad-comp-pipe" fill="none"/>'
+      + '<circle cx="-28" cy="6" r="2.4" class="ad-comp-pipe-end"/>'
+      + '<text y="36" text-anchor="middle" class="ad-tiny ad-comp-label">comp</text>'
+      + '</g>';
+  }
+
   function buildSvg() {
     // Layout (viewBox 800×410):
     //  Outdoor --refrig-- Indoor (enlarged: water chips) --trunk--> 3-way
@@ -230,18 +300,20 @@
       + '<defs>'
       + '<linearGradient id="ad-tank" x1="0" y1="0" x2="0" y2="1">'
       + '<stop offset="0%" stop-color="#f4a261"/><stop offset="100%" stop-color="#e76f51"/></linearGradient>'
+      + '<linearGradient id="ad-odu" x1="0" y1="0" x2="0" y2="1">'
+      + '<stop offset="0%" stop-color="#cfd4da"/><stop offset="100%" stop-color="#aeb6bf"/></linearGradient>'
+      + '<linearGradient id="ad-odu-dark" x1="0" y1="0" x2="1" y2="0">'
+      + '<stop offset="0%" stop-color="#8b939c"/><stop offset="100%" stop-color="#b0b7bf"/></linearGradient>'
       + '</defs>'
 
       // --- Pipes (under blocks) ---
-      // Refrigerant pair outdoor <-> indoor
       + '<g class="ad-pipe ad-pipe-ref-hot" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M206 110 H250"/>'
+      + '<path d="M216 118 H250"/>'
       + '</g>'
       + '<g class="ad-pipe ad-pipe-ref-cold" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M206 160 H250"/>'
+      + '<path d="M216 158 H250"/>'
       + '</g>'
 
-      // Shared trunk (indoor <-> valve) — not a branch
       + '<g class="ad-pipe ad-pipe-warm ad-pipe-trunk" fill="none" stroke-linecap="round" stroke-linejoin="round">'
       + '<path d="M500 130 H528"/>'
       + '</g>'
@@ -249,7 +321,6 @@
       + '<path d="M500 170 H528"/>'
       + '</g>'
 
-      // DHW branch (supply + return)
       + '<g class="ad-pipe ad-pipe-warm ad-pipe-branch" data-branch="dhw" fill="none" stroke-linecap="round" stroke-linejoin="round">'
       + '<path d="M550 118 V50 H600"/>'
       + '</g>'
@@ -257,7 +328,6 @@
       + '<path d="M600 105 H575 V155 H550"/>'
       + '</g>'
 
-      // Heating branch (supply + return)
       + '<g class="ad-pipe ad-pipe-warm ad-pipe-branch" data-branch="heat" fill="none" stroke-linecap="round" stroke-linejoin="round">'
       + '<path d="M550 142 V255 H600"/>'
       + '</g>'
@@ -265,22 +335,33 @@
       + '<path d="M600 310 H575 V185 H550"/>'
       + '</g>'
 
-      // Outdoor unit
-      + '<g class="ad-block" transform="translate(16,40)">'
-      + '<rect width="190" height="230" rx="14" class="ad-box"/>'
-      + '<text x="95" y="22" text-anchor="middle" class="ad-title" data-i18n="outdoor">Unidade exterior</text>'
-      + '<circle cx="65" cy="105" r="34" class="ad-fan"/><circle cx="65" cy="105" r="7" class="ad-fan-hub"/>'
-      + '<path d="M65 77 L72 100 L65 105 L58 100 Z M65 133 L72 110 L65 105 L58 110 Z M38 105 L60 98 L65 105 L60 112 Z M92 105 L70 98 L65 105 L70 112 Z" class="ad-fan-blade"/>'
-      + '<rect x="115" y="83" width="55" height="44" rx="8" class="ad-comp"/>'
-      + '<text x="142" y="109" text-anchor="middle" class="ad-small">comp</text>'
-      + chip('tdis', 12, 32, 80, 34, 'ad-hot')
-      + chip('tsuc', 98, 32, 80, 34, 'ad-cold')
-      + chip('tout', 12, 158, 80, 34, '')
-      + chip('freq', 98, 158, 80, 34, '')
-      + chip('thx', 12, 198, 166, 34, '')
+      // Outdoor unit — casing + finned grille + axial fan + compressor
+      + '<g class="ad-block" data-block="outdoor" transform="translate(16,28)">'
+      + '<rect width="200" height="260" rx="12" class="ad-box ad-odu"/>'
+      // Left finned condenser grille strip (looks like a real ODU side)
+      + '<rect x="8" y="70" width="22" height="120" rx="3" class="ad-odu-fins-bg"/>'
+      + '<g class="ad-odu-fins" stroke-linecap="round">'
+      + '<line x1="11" y1="74" x2="11" y2="186"/><line x1="15" y1="74" x2="15" y2="186"/>'
+      + '<line x1="19" y1="74" x2="19" y2="186"/><line x1="23" y1="74" x2="23" y2="186"/>'
+      + '<line x1="27" y1="74" x2="27" y2="186"/>'
+      + '</g>'
+      // Top vent slits
+      + '<g class="ad-odu-vents">'
+      + '<rect x="40" y="8" width="28" height="4" rx="1"/><rect x="74" y="8" width="28" height="4" rx="1"/>'
+      + '<rect x="108" y="8" width="28" height="4" rx="1"/><rect x="142" y="8" width="28" height="4" rx="1"/>'
+      + '</g>'
+      + '<text x="100" y="30" text-anchor="middle" class="ad-title" data-i18n="outdoor">Unidade exterior</text>'
+      // Chip grid 2×3 (balanced; HX same width as siblings, not full-bleed)
+      + chip('tdis', 12, 38, 86, 32, 'ad-hot')
+      + chip('tsuc', 102, 38, 86, 32, 'ad-cold')
+      + outdoorFanSvg()
+      + outdoorCompSvg()
+      + chip('tout', 12, 178, 86, 32, '')
+      + chip('freq', 102, 178, 86, 32, '')
+      + chip('thx', 12, 216, 86, 32, '')
       + '</g>'
 
-      // Indoor unit — water-side data lives here (leaving/return, flow, BUH, pump, heating op)
+      // Indoor unit
       + '<g class="ad-block" data-block="indoor" transform="translate(250,20)">'
       + '<rect width="250" height="300" rx="14" class="ad-box ad-hx"/>'
       + '<text x="125" y="22" text-anchor="middle" class="ad-title" data-i18n="indoor">Unidade interior</text>'
@@ -301,7 +382,7 @@
       + '<text x="22" y="19" text-anchor="middle" class="ad-small" data-i18n="valveShort">3 vias</text>'
       + '<text x="22" y="31" text-anchor="middle" class="ad-tiny" data-i18n="valveHint">AQS/AQ</text>'
       + '</g>'
-      + chip('valve', 505, 168, 100, 34, '')
+      + chip('valve', 500, 168, 110, 34, '')
 
       // DHW tank
       + '<g class="ad-block" data-block="dhw" transform="translate(600,10)">'
@@ -312,7 +393,7 @@
       + chip('tdhw', 72, 52, 96, 34, 'ad-hot')
       + '</g>'
 
-      // Heating circuit — emitters only (radiator / floor); optional ON glow via .ad-emit-on
+      // Heating circuit — emitters only
       + '<g class="ad-block" data-block="heat" transform="translate(600,230)">'
       + '<rect width="180" height="110" rx="14" class="ad-box"/>'
       + '<text x="90" y="20" text-anchor="middle" class="ad-title" data-i18n="heat">Circuito de aquecimento</text>'
@@ -325,7 +406,6 @@
       + '<text x="90" y="100" text-anchor="middle" class="ad-tiny ad-emit-label" data-i18n="emitters">Emissores</text>'
       + '</g>'
 
-      // Status + pipe legend
       + '<g transform="translate(16,370)">'
       + chip('mode', 0, 0, 160, 32, '')
       + '</g>'
@@ -355,14 +435,37 @@
     + 'background:color-mix(in srgb,Canvas 85%,CanvasText 15%);color:inherit;font:700 11px/1 system-ui,sans-serif;cursor:pointer}'
     + '#altherma-diagram svg{width:100%;height:auto;display:block;max-height:460px}'
     + '#altherma-diagram .ad-box{fill:color-mix(in srgb,Canvas 88%,CanvasText 12%);stroke:color-mix(in srgb,CanvasText 22%,transparent);stroke-width:1.5}'
+    + '#altherma-diagram .ad-odu{fill:url(#ad-odu);stroke:#6b7280;stroke-width:1.8}'
     + '#altherma-diagram .ad-hx{fill:color-mix(in srgb,Canvas 80%,#4cc9f0 20%)}'
     + '#altherma-diagram .ad-title{font:600 11px system-ui,sans-serif;fill:currentColor;opacity:.85}'
     + '#altherma-diagram .ad-small{font:9px system-ui,sans-serif;fill:currentColor;opacity:.65}'
     + '#altherma-diagram .ad-tiny{font:8px system-ui,sans-serif;fill:currentColor;opacity:.55}'
-    + '#altherma-diagram .ad-fan{fill:none;stroke:currentColor;stroke-width:2;opacity:.45}'
-    + '#altherma-diagram .ad-fan-hub{fill:currentColor;opacity:.4}'
-    + '#altherma-diagram .ad-fan-blade{fill:currentColor;opacity:.35}'
-    + '#altherma-diagram .ad-comp{fill:color-mix(in srgb,Canvas 70%,CanvasText 30%);stroke:currentColor;stroke-width:1;opacity:.7}'
+    + '#altherma-diagram .ad-odu-fins-bg{fill:color-mix(in srgb,#4b5563 55%,#9ca3af 45%);opacity:.9}'
+    + '#altherma-diagram .ad-odu-fins{stroke:#d1d5db;stroke-width:1.2;opacity:.75}'
+    + '#altherma-diagram .ad-odu-vents rect{fill:color-mix(in srgb,CanvasText 35%,transparent)}'
+    // Fan
+    + '#altherma-diagram .ad-fan-shroud-outer{fill:color-mix(in srgb,#6b7280 70%,Canvas 30%);opacity:.95}'
+    + '#altherma-diagram .ad-fan-shroud{fill:color-mix(in srgb,#111827 55%,#4b5563 45%)}'
+    + '#altherma-diagram .ad-fan-shroud-rim{stroke:#e5e7eb;stroke-width:2;opacity:.55}'
+    + '#altherma-diagram .ad-fan-guard{stroke:#9ca3af;stroke-width:1.1;opacity:.55}'
+    + '#altherma-diagram .ad-fan-spokes{stroke:#9ca3af;stroke-width:1;opacity:.4}'
+    + '#altherma-diagram .ad-fan-blade{fill:#d1d5db;stroke:#6b7280;stroke-width:.6;opacity:.95}'
+    + '#altherma-diagram .ad-fan-hub{fill:#9ca3af;stroke:#4b5563;stroke-width:1}'
+    + '#altherma-diagram .ad-fan-hub-cap{fill:#e5e7eb}'
+    + '#altherma-diagram .ad-fan-rotor{transform-box:fill-box;transform-origin:center}'
+    + '#altherma-diagram .ad-fan-rotor.ad-spinning{animation:ad-fan-spin 1.15s linear infinite}'
+    + '@keyframes ad-fan-spin{to{transform:rotate(360deg)}}'
+    + '@media (prefers-reduced-motion:reduce){#altherma-diagram .ad-fan-rotor.ad-spinning{animation:none}}'
+    // Compressor
+    + '#altherma-diagram .ad-comp-body{fill:#9ca3af;stroke:#4b5563;stroke-width:1.2}'
+    + '#altherma-diagram .ad-comp-top,#altherma-diagram .ad-comp-base{fill:#b0b7bf;stroke:#4b5563;stroke-width:1}'
+    + '#altherma-diagram .ad-comp-lid{fill:#d1d5db;stroke:#6b7280;stroke-width:.8}'
+    + '#altherma-diagram .ad-comp-pipe{stroke:#6b7280;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}'
+    + '#altherma-diagram .ad-comp-pipe-end{fill:#6b7280}'
+    + '#altherma-diagram .ad-comp-assy.ad-running .ad-comp-body{fill:#f4a261;stroke:#c2410c}'
+    + '#altherma-diagram .ad-comp-assy.ad-running .ad-comp-top,'
+    + '#altherma-diagram .ad-comp-assy.ad-running .ad-comp-base{fill:#fdba74;stroke:#c2410c}'
+    + '#altherma-diagram .ad-comp-assy.ad-running .ad-comp-lid{fill:#fed7aa}'
     + '#altherma-diagram .ad-plates{stroke:currentColor;stroke-width:2;opacity:.35}'
     + '#altherma-diagram .ad-tank-stroke{fill:none;stroke:currentColor;stroke-width:1.5;opacity:.5}'
     + '#altherma-diagram .ad-emit rect{fill:currentColor;opacity:.35}'
@@ -431,13 +534,29 @@
     }
   }
 
+  function updateOutdoorMotion(root) {
+    if (!root) return;
+    var run = compressorRunning();
+    var rotor = root.querySelector('.ad-fan-rotor');
+    if (rotor) {
+      if (run) rotor.classList.add('ad-spinning');
+      else rotor.classList.remove('ad-spinning');
+    }
+    var comp = root.querySelector('[data-comp]');
+    if (comp) {
+      if (run) comp.classList.add('ad-running');
+      else comp.classList.remove('ad-running');
+    }
+  }
+
   function paint(root) {
     if (!root) return;
     Object.keys(vals).forEach(function (key) {
       var nodes = root.querySelectorAll('[data-v="' + key + '"]');
       var chipEls = root.querySelectorAll('[data-chip="' + key + '"]');
       var v = vals[key];
-      for (var i = 0; i < nodes.length; i++) nodes[i].textContent = v || '—';
+      var show = (key === 'valve') ? valveLabel(v) : (v || '—');
+      for (var i = 0; i < nodes.length; i++) nodes[i].textContent = show;
       for (var j = 0; j < chipEls.length; j++) {
         if (v) chipEls[j].classList.add('on'); else chipEls[j].classList.remove('on');
         if (key === 'buh1' || key === 'buh2' || key === 'pump' || key === 'space') {
@@ -456,6 +575,7 @@
       for (var j = 0; j < c.length; j++) c[j].classList.add('on');
     }
     updatePipes(root);
+    updateOutdoorMotion(root);
   }
 
   function applyI18n(root) {
@@ -482,6 +602,10 @@
       var k = el.getAttribute('data-i18n-chip');
       var pair = CHIP_L[k];
       if (pair) el.textContent = L.get() === 'pt' ? pair[0] : pair[1];
+    });
+    // Refresh valve chip value for the active language
+    root.querySelectorAll('[data-v="valve"]').forEach(function (el) {
+      el.textContent = valveLabel(vals.valve);
     });
     var h2 = root.querySelector('h2');
     var sub = root.querySelector('.ad-sub');
