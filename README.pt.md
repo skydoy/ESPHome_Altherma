@@ -97,8 +97,8 @@ e atualiza-se pela entidade **Firmware**. Para acrescentar uma chave e palavras-
 Builder: [segurança e atualizações pelo ar](docs/seguranca.md).
 
 ## Avançado / YAML manual
-Compilação própria ou Device Builder: configurações por placa `esphome-altherma-<placa>.yaml`, `base.yaml` comum e
-mapas de sensores em [`confs/`](confs/). Corre `esphome run esphome-altherma-esp32.yaml` com o teu Wi-Fi em `secrets.yaml`.
+Compilação própria ou Device Builder: configurações por placa `boards/esphome-altherma-<placa>.yaml`, `boards/base.yaml` comum e
+mapas de sensores em [`confs/`](confs/). Corre `esphome run boards/esphome-altherma-esp32.yaml` com o teu Wi-Fi em `boards/secrets.yaml`.
 Relés (termóstato / Smart Grid), descoberta de registos (`query_register`), UART simulada, Emoncms e os ficheiros
 copiados do ESPAltherma: [uso avançado](docs/avancado.md).
 

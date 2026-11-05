@@ -27,7 +27,7 @@ quem quer compilar o próprio firmware, acrescentar relés, mapear sensores novo
 ## Adotar no ESPHome Device Builder
 1. Instala com o instalador web e adiciona o dispositivo ao Home Assistant como habitualmente.
 2. Abre o add-on **ESPHome Device Builder**: o dispositivo aparece como descoberto → **Adopt** (ou **Take Control**).
-3. O Device Builder importa como pacote o ficheiro da tua placa deste repositório (`esphome-altherma-<placa>.yaml`).
+3. O Device Builder importa como pacote o ficheiro da tua placa deste repositório (`boards/esphome-altherma-<placa>.yaml`).
    **Acrescenta o modelo da tua bomba de calor**, senão volta ao predefinido `erga_eh_da_04_08`:
 
    ```yaml
@@ -50,7 +50,7 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install esphome
 ```
 
-Cria um `secrets.yaml` na pasta principal (é ignorado pelo git):
+Cria um `boards/secrets.yaml` (é ignorado pelo git):
 
 ```yaml
 wifi_ssid: "NomeDoTeuWiFi"
@@ -62,14 +62,14 @@ Liga a placa por USB e instala (a primeira vez por USB, depois por Wi-Fi):
 
 ```sh
 esphome -s altherma_model erla_d_ebv_ebb_ebvz_11_16 \
-        -s altherma_component_source components \
-        run esphome-altherma-esp32.yaml
+        -s altherma_component_source ../components \
+        run boards/esphome-altherma-esp32.yaml
 ```
 
 - `-s altherma_model …` escolhe o [ficheiro de modelo](#ficheiros-de-modelo); também o podes definir em `substitutions:`.
-- `-s altherma_component_source components` compila o componente `altherma_hub` a partir da tua cópia. Sem isto, o
-  `base.yaml` descarrega-o deste repositório (`github://skydoy/esphome-altherma@main`).
-- O `esphome-altherma.local.yaml` é um exemplo pronto, com componente local, Wi-Fi e palavra-passe OTA.
+- `-s altherma_component_source ../components` compila o componente `altherma_hub` a partir da tua cópia. Sem isto, o
+  `boards/base.yaml` descarrega-o deste repositório (`github://skydoy/esphome-altherma@main`).
+- O `boards/esphome-altherma.local.yaml` é um exemplo pronto, com componente local, Wi-Fi e palavra-passe OTA.
 
 Para obter o mesmo firmware do instalador web (entidade Firmware, Wi-Fi por Improv, manifesto OTA), compila antes o
 ficheiro em [`installer/`](../installer/): `esphome -s altherma_model <modelo> run installer/esphome-altherma-esp32.installer.yaml`.
@@ -77,22 +77,22 @@ ficheiro em [`installer/`](../installer/): `esphome -s altherma_model <modelo> r
 ## Ficheiros de configuração
 | Ficheiro | O que é |
 |---|---|
-| `base.yaml` | Configuração comum: logger, API, OTA, rede de recurso, UART (9600 8E1, TX GPIO17 / RX GPIO16), o componente `altherma_hub` e o pacote do modelo. |
-| `esphome-altherma-esp32.yaml` | ESP32 DevKit (esp-idf). |
-| `esphome-altherma-esp32-s3.yaml` | ESP32-S3 DevKitC-1 (TX GPIO1 / RX GPIO2). |
-| `esphome-altherma-atoms3.yaml` | M5Stack AtomS3 / AtomS3 Lite (porta Grove). |
-| `esphome-altherma-esp8266.yaml` | D1 mini / ESP8266. |
-| `esphome-altherma-m5stack.yaml` | M5Stack Core / Basic, com ecrã, botões e tema escuro/claro. Usa `!secret` para o Wi-Fi e a OTA. |
-| `esphome-altherma-<placa>.factory.yaml` | Imagens de fábrica simples (modelo predefinido, sem escolha de modelo); o instalador web usa `installer/`. |
+| `boards/base.yaml` | Configuração comum: logger, API, OTA, rede de recurso, UART (9600 8E1, TX GPIO17 / RX GPIO16), o componente `altherma_hub` e o pacote do modelo. |
+| `boards/esphome-altherma-esp32.yaml` | ESP32 DevKit (esp-idf). |
+| `boards/esphome-altherma-esp32-s3.yaml` | ESP32-S3 DevKitC-1 (TX GPIO1 / RX GPIO2). |
+| `boards/esphome-altherma-atoms3.yaml` | M5Stack AtomS3 / AtomS3 Lite (porta Grove). |
+| `boards/esphome-altherma-esp8266.yaml` | D1 mini / ESP8266. |
+| `boards/esphome-altherma-m5stack.yaml` | M5Stack Core / Basic, com ecrã, botões e tema escuro/claro. Usa `!secret` para o Wi-Fi e a OTA. |
+| `boards/esphome-altherma-<placa>.factory.yaml` | Imagens de fábrica simples (modelo predefinido, sem escolha de modelo); o instalador web usa `installer/`. |
 | `installer/*.installer.yaml` | O que o instalador web compila: ficheiro da placa + escolha do modelo + entidade Firmware. Vê [segurança](seguranca.md#configurações-do-instalador--de-fábrica). |
 | `confs/*.yaml` | [Ficheiros de modelo](#ficheiros-de-modelo). |
-| `common/diagnostics.yaml` | Diagnóstico opcional do ESP: estado, tempo ligado, Wi-Fi, temperatura interna, número de arranques, botão de reinício. |
+| `boards/common/diagnostics.yaml` | Diagnóstico opcional do ESP: estado, tempo ligado, Wi-Fi, temperatura interna, número de arranques, botão de reinício. |
 
 Para ativar o diagnóstico, acrescenta o pacote ao teu YAML:
 
 ```yaml
 packages:
-  diagnostics: !include common/diagnostics.yaml
+  diagnostics: !include common/diagnostics.yaml  # from boards/
 ```
 
 ## Ficheiros de modelo
@@ -174,7 +174,7 @@ Alimenta o módulo de relés pelos 5 V e GND da placa (ou por uma fonte de 5 V �
 Todos os firmwares (incluindo o pré-compilado) têm uma ação `query_register` que lê qualquer registo uma vez. Usa-a
 para descobrir o que a tua unidade devolve e transformar os resultados em entradas de um ficheiro de modelo.
 
-![Ferramentas de programador do Home Assistant a chamar a ação query_register](../img/home-assistant-query-register-action-form.png)
+![Ferramentas de programador do Home Assistant a chamar a ação query_register](img/home-assistant-query-register-action-form.png)
 
 No Home Assistant vai a **Ferramentas de programador → Ações** e executa:
 
@@ -200,7 +200,7 @@ A resposta vai para o sensor de diagnóstico **Manual Query Registry Result** e 
 | `Manual query failed reg=0x..: <motivo>` | enviado mas falhou (timeout, CRC inválido, fora dos limites, …) |
 | `Manual query rejected: <motivo>` | parâmetros inválidos, nada foi enviado |
 
-![Histórico do sensor Manual Query Registry Result](../img/home-assistant-manual-query-registry-result-state-history.png)
+![Histórico do sensor Manual Query Registry Result](img/home-assistant-manual-query-registry-result-state-history.png)
 
 Dicas:
 - A parte `buffer=` mostra o registo completo, por isso basta um pedido por registo para ver todos os bytes. Testa
@@ -214,7 +214,7 @@ Dicas:
 1. Parte do ficheiro de modelo mais parecido com a tua unidade e copia-o para `confs/<o_teu_modelo>.yaml`.
 2. Confirma cada entrada com a [descoberta de registos](#descoberta-de-registos-experimental); retira os sensores
    que a tua unidade não tem e corrige offsets ou conversores.
-3. Compila: `esphome -s altherma_model <o_teu_modelo> -s altherma_component_source components run esphome-altherma-esp32.yaml`.
+3. Compila: `esphome -s altherma_model <o_teu_modelo> -s altherma_component_source ../components run boards/esphome-altherma-esp32.yaml`.
 4. Para o incluir no instalador web, acrescenta-o a `MODELS` em `static/index.html` e à lista `model:` em
    `.github/workflows/publish.yml` (o workflow Validate confirma que os três coincidem).
 5. Abre um *pull request*, ou [reporta a tua bomba de calor](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
@@ -229,7 +229,7 @@ Para acompanhar o desempenho e o COP a longo prazo com o Emoncms (por exemplo o 
 - Em [`homeassistant/emoncms/`](../homeassistant/emoncms/README.md) há um script que copia o histórico de um *feed*
   do Emoncms para outro (em inglês).
 
-![Painel MyHeatpump no Home Assistant](../img/home-assistant-emoncms-myheatpump-dashboard.png)
+![Painel MyHeatpump no Home Assistant](img/home-assistant-emoncms-myheatpump-dashboard.png)
 
 ## Desenvolvimento
 ### UART simulada
@@ -244,13 +244,14 @@ esphome:
 
 ### Estrutura do projeto
 ```
-base.yaml                       configuração ESPHome comum (logger, API, OTA, UART, hub)
-esphome-altherma-<placa>.yaml   configurações por placa (esp32, esp32-s3, atoms3, esp8266, m5stack)
-esphome-altherma-<placa>.factory.yaml   imagens de fábrica simples
-esphome-altherma.local.yaml     exemplo para compilação local
+boards/
+  base.yaml                     configuração ESPHome comum (logger, API, OTA, UART, hub)
+  esphome-altherma-<placa>.yaml configurações por placa (esp32, esp32-s3, atoms3, esp8266, m5stack)
+  esphome-altherma-<placa>.factory.yaml   imagens de fábrica simples
+  esphome-altherma.local.yaml   exemplo para compilação local
+  common/diagnostics.yaml       pacote de diagnóstico opcional
 installer/                      ficheiros do instalador web (+ secrets.yaml de exemplo, animação de arranque M5Stack)
 confs/                          ficheiros de modelo (mapas de sensores)
-common/diagnostics.yaml         pacote de diagnóstico opcional
 components/altherma_hub/
   __init__.py                   componente ESPHome (Python)
   altherma_hub.cpp / .h         implementação do hub (C++)
@@ -259,7 +260,7 @@ components/altherma_hub/
   converters.h, labeldef.h      copiados do ESPAltherma (raomin)
 static/                         página do instalador web (GitHub Pages)
 homeassistant/                  blueprint e ferramentas Emoncms
-docs/                           esta documentação
+docs/                           esta documentação (imagens em docs/img/)
 .github/workflows/              validate.yml (verificações), publish.yml (compilações de versões)
 ```
 

@@ -16,7 +16,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
-    # Keep "model" in sync with confs/*.yaml and static/index.html (validate.yml checks it).
+    # "model" = the models offered in the web installer; keep in sync with static/index.html (validate.yml checks it).
+    # Other confs/*.yaml exist but are not built here (see docs/compatibility.md).
     name: ${{ matrix.board }} / ${{ matrix.model }}
     runs-on: ubuntu-24.04
     strategy:
@@ -77,7 +78,7 @@ jobs:
           cp static/*.html static/*.svg static/*.png static/*.ico site/
           ls -R site
           for b in esp32 esp32-s3 atoms3 esp8266 m5stack; do
-            for m in $(ls confs | sed 's/\.yaml$//'); do
+            for m in $(sed -n '/^        model:/,/^    env:/p' .github/workflows/publish.yml | sed -n 's/^ *- \([a-z0-9_]*\)$/\1/p'); do
               test -f "site/firmware/$b/$m/manifest.json" || { echo "::error::missing firmware/$b/$m/manifest.json"; exit 1; }
             done
           done

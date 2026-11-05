@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   config:
-    name: config / ${{ matrix.board }} (6 models)
+    name: config / ${{ matrix.board }} (all models)
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -43,28 +43,34 @@ jobs:
       fail-fast: false
       matrix:
         file:
-          - esphome-altherma-esp32.yaml
-          - esphome-altherma-esp32-s3.yaml
-          - esphome-altherma-atoms3.yaml
-          - esphome-altherma-esp8266.yaml
+          - boards/esphome-altherma-esp32.yaml
+          - boards/esphome-altherma-esp32-s3.yaml
+          - boards/esphome-altherma-atoms3.yaml
+          - boards/esphome-altherma-esp8266.yaml
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with: { python-version: "3.13" }
       - run: pip install esphome==2026.10.1
-      - run: esphome -s altherma_component_source components config ${{ matrix.file }} > /dev/null
+      - run: esphome -s altherma_component_source ../components config ${{ matrix.file }} > /dev/null
   site:
     # The installer page, its model list and the build matrix must list the same confs/*.yaml.
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
-      - name: Every model file is offered on the site and built on release
+      - name: Installer models match between the site and the release matrix
         run: |
           set -e
-          for f in confs/*.yaml; do
-            m=$(basename "$f" .yaml)
+          # Only the models in the publish.yml matrix are in the web installer; the other confs/*.yaml are
+          # "conf available, not in web installer yet" (docs/compatibility.md) and are checked by the config job.
+          models=$(sed -n '/^        model:/,/^    env:/p' .github/workflows/publish.yml | sed -n 's/^ *- \([a-z0-9_]*\)$/\1/p')
+          test -n "$models"
+          for m in $models; do
+            test -f "confs/$m.yaml" || { echo "::error::confs/$m.yaml missing (publish.yml matrix)"; exit 1; }
             grep -q "key: '$m'" static/index.html || { echo "::error::$m missing from static/index.html MODELS"; exit 1; }
-            grep -q "^\s*- $m$" .github/workflows/publish.yml || { echo "::error::$m missing from the publish.yml matrix"; exit 1; }
+          done
+          for k in $(grep -o "key: '[a-z0-9_]*'" static/index.html | cut -d"'" -f2); do
+            echo "$models" | grep -qx "$k" || { echo "::error::$k on the site but not in the publish.yml matrix"; exit 1; }
           done
   compile:
     # One real build (default board and model) so compiler errors show up before a release.

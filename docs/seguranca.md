@@ -9,7 +9,7 @@ O firmware do [instalador web](https://skydoy.github.io/esphome-altherma/) é a 
 | Item | Firmware pré-compilado | Porquê |
 |---|---|---|
 | Chave de encriptação da API do Home Assistant | nenhuma | Qualquer Home Assistant da tua rede o adota com um clique. |
-| Palavra-passe OTA (ESPHome) | nenhuma | A mesma imagem para todos. A imagem M5Stack inclui o `esphome-altherma-m5stack.yaml`, que pede `!secret ota_password`; na compilação do instalador esse segredo vem do [`installer/secrets.yaml`](../installer/secrets.yaml) e está vazio de propósito. |
+| Palavra-passe OTA (ESPHome) | nenhuma | A mesma imagem para todos. A imagem M5Stack inclui o `boards/esphome-altherma-m5stack.yaml`, que pede `!secret ota_password`; na compilação do instalador esse segredo vem do [`installer/secrets.yaml`](../installer/secrets.yaml) e está vazio de propósito. |
 | Rede de recurso (`esphome-altherma…`) | aberta, só enquanto o Wi-Fi não está ligado | Para poderes configurar o Wi-Fi com o telemóvel. Também tem uma página para enviar firmware (portal cativo). |
 | Atualizações de firmware | Entidade **Firmware** no Home Assistant | Descarregadas por HTTPS a partir do GitHub Pages deste projeto; o manifesto inclui uma soma MD5 que o dispositivo confirma antes de reiniciar. |
 
@@ -68,12 +68,12 @@ partilhada.
 4. O Home Assistant indica que o dispositivo precisa de atenção e pede a **chave de encriptação**: cola o mesmo
    `api_key`.
 
-Não coloques estes valores num ficheiro que partilhes ou envies para o git. Numa cópia do repositório, o `secrets.yaml`
-na raiz é ignorado (`.gitignore`); o `installer/secrets.yaml` **não** é, e só pode ter os valores vazios.
+Não coloques estes valores num ficheiro que partilhes ou envies para o git. Numa cópia do repositório, o `boards/secrets.yaml`
+é ignorado (`.gitignore`); o `installer/secrets.yaml` **não** é, e só pode ter os valores vazios.
 
 ### Compilação manual (linha de comandos)
 As mesmas chaves funcionam na linha de comandos do ESPHome. Coloca-as no `secrets.yaml` ao lado do
-`esphome-altherma-<placa>.yaml` e acrescenta os blocos `api:`, `ota:` e `wifi:` acima a esse ficheiro (ou a um
+`boards/esphome-altherma-<placa>.yaml` e acrescenta os blocos `api:`, `ota:` e `wifi:` acima a esse ficheiro (ou a um
 ficheiro teu que o inclua como pacote). Vê [Uso avançado](avancado.md#compilar-por-ti).
 
 ### Configurações do instalador / de fábrica

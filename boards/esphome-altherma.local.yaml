@@ -1,5 +1,5 @@
 substitutions:
-  altherma_component_source: components
+  altherma_component_source: ../components
 
 packages:
   base: !include base.yaml

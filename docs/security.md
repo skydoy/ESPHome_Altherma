@@ -9,7 +9,7 @@ so it **cannot contain your keys or passwords**. It ships:
 | Item | Prebuilt firmware | Why |
 |---|---|---|
 | Home Assistant API encryption key | none | Any Home Assistant on your network can adopt it with one click. |
-| OTA password (ESPHome) | none | Same image for all users. The M5Stack image includes `esphome-altherma-m5stack.yaml`, which asks for `!secret ota_password`; for the installer build that secret comes from [`installer/secrets.yaml`](../installer/secrets.yaml) and is intentionally empty. |
+| OTA password (ESPHome) | none | Same image for all users. The M5Stack image includes `boards/esphome-altherma-m5stack.yaml`, which asks for `!secret ota_password`; for the installer build that secret comes from [`installer/secrets.yaml`](../installer/secrets.yaml) and is intentionally empty. |
 | Fallback hotspot (`esphome-altherma…`) | open, only while Wi-Fi is not connected | So you can set up Wi-Fi from a phone. It also offers a firmware upload page (captive portal). |
 | Firmware updates | **Firmware** entity in Home Assistant | Downloaded over HTTPS from this project's GitHub Pages; the manifest carries an MD5 checksum that the device checks before it reboots. |
 
@@ -67,12 +67,12 @@ To add a key and passwords you need your own configuration, so the device is no 
 4. Home Assistant shows the device as needing attention and asks for the **encryption key**: paste the same
    `api_key`.
 
-Do not put these values in a file that you share or commit. In a git checkout `secrets.yaml` at the top level is
+Do not put these values in a file that you share or commit. In a git checkout `boards/secrets.yaml` is
 ignored (`.gitignore`); `installer/secrets.yaml` is **not** and must only hold the empty placeholders.
 
 ### Manual build (command line)
 The same keys work with the ESPHome command line. Put them in `secrets.yaml` next to
-`esphome-altherma-<board>.yaml` and add the `api:`, `ota:` and `wifi:` blocks above to that board file (or to a small
+`boards/esphome-altherma-<board>.yaml` and add the `api:`, `ota:` and `wifi:` blocks above to that board file (or to a small
 file of your own that includes it as a package). See [Advanced use](advanced.md#build-it-yourself).
 
 ### Installer / factory configurations

@@ -59,7 +59,7 @@ text_sensor:
     entity_category: diagnostic
 
 packages:
-  altherma_sensors: !include confs/${altherma_model}.yaml
+  altherma_sensors: !include ../confs/${altherma_model}.yaml
 
   # Optional ESP diagnostics
   # common_diagnostics: !include common/diagnostics.yaml

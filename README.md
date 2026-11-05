@@ -97,8 +97,8 @@ the **Firmware** entity. To add a key and passwords, adopt it in the ESPHome Dev
 [security and OTA updates](docs/security.md).
 
 ## Advanced / manual YAML
-Own build or Device Builder: board configs `esphome-altherma-<board>.yaml`, shared `base.yaml`, sensor maps in
-[`confs/`](confs/). Run `esphome run esphome-altherma-esp32.yaml` with your Wi-Fi in `secrets.yaml`.
+Own build or Device Builder: board configs `boards/esphome-altherma-<board>.yaml`, shared `boards/base.yaml`, sensor maps in
+[`confs/`](confs/). Run `esphome run boards/esphome-altherma-esp32.yaml` with your Wi-Fi in `boards/secrets.yaml`.
 Relays (thermostat / Smart Grid), register discovery (`query_register`), mock UART, Emoncms and the vendored
 ESPAltherma files: [advanced use](docs/advanced.md).
 

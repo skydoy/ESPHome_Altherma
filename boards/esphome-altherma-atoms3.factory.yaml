@@ -1,8 +1,8 @@
 substitutions:
-  altherma_component_source: components
+  altherma_component_source: ../components
 
 packages:
-  board: !include esphome-altherma-esp32.yaml
+  board: !include esphome-altherma-atoms3.yaml
 
 esphome:
   # This will allow for project identification,
@@ -15,7 +15,7 @@ esphome:
 # In this case it is the core yaml file that does not contain the extra things
 # that are provided by this factory yaml file as the user does not need these once adopted.
 dashboard_import:
-  package_import_url: github://skydoy/esphome-altherma/esphome-altherma-esp32.yaml@main
+  package_import_url: github://skydoy/esphome-altherma/boards/esphome-altherma-atoms3.yaml@main
 
 # Sets up the improv via serial client for Wi-Fi provisioning.
 # Handy if your device has a usb port for the user to add credentials when they first get it.
@@ -33,4 +33,4 @@ update:
     id: update_http_request
     # Firmware published by skydoy/esphome-altherma (GitHub Pages) for this board and the
     # altherma_model substitution (default from base.yaml).
-    source: https://skydoy.github.io/esphome-altherma/firmware/esp32/${altherma_model}/manifest.json
+    source: https://skydoy.github.io/esphome-altherma/firmware/atoms3/${altherma_model}/manifest.json
