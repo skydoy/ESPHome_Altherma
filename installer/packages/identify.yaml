@@ -55,3 +55,10 @@ text_sensor:
       if (s == "unknown") return std::string("Unknown IDs - keep your manual choice and send a report");
       if (s == "${altherma_model}") return std::string("OK - installed model matches");
       return std::string("Different - install " + s);
+
+# Board web page (http://esphome-altherma-….local/) with one extra button,
+# "Reportar a minha bomba" / "Report my heat pump": it opens the skydoy compatibility
+# report form prefilled with the live Software ID, Micon ID and suggested model.
+web_server:
+  version: 3
+  js_include: packages/report.js
