@@ -12,6 +12,7 @@ substitutions:
 
 packages:
   board: !include ../esphome-altherma-atoms3.yaml
+  identify: !include packages/identify.yaml
 
 esphome:
   project:

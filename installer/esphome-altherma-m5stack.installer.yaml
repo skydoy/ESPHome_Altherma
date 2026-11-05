@@ -13,6 +13,7 @@ substitutions:
 
 packages:
   board: !include ../esphome-altherma-m5stack.yaml
+  identify: !include packages/identify.yaml
   # Optional: animated ESPHome Altherma splash at boot. Remove this line to disable.
   boot_animation: !include packages/boot-animation-m5stack.yaml
 

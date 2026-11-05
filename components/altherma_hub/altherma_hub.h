@@ -116,6 +116,9 @@ namespace esphome
       void queue_manual_query(std::string registry_id, int32_t offset, int32_t convid, int32_t datasize);
       void set_enable_identify(bool v) { this->enable_identify_ = v; }
       void queue_identify_controller();
+      void set_identify_on_boot(bool v) { this->identify_pending_ = v; }
+      void set_software_id_text_sensor(text_sensor::TextSensor *s) { this->software_id_text_sensor_ = s; }
+      void set_micon_id_text_sensor(text_sensor::TextSensor *s) { this->micon_id_text_sensor_ = s; }
 
     protected:
       enum class ManualQueryStatusLevel : uint8_t {
@@ -186,6 +189,8 @@ namespace esphome
       bool identify_active_{false};
       uint8_t identify_step_{0};  // 0 = 0x4C software ID, 1 = 0x56 Micon ID
       uint32_t identify_last_byte_at_{0};
+      text_sensor::TextSensor *software_id_text_sensor_{nullptr};
+      text_sensor::TextSensor *micon_id_text_sensor_{nullptr};
     };
 
   } // namespace altherma_hub

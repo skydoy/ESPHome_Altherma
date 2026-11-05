@@ -185,8 +185,11 @@
     <p><span class="pt">Vê a etiqueta da unidade exterior (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) e da unidade interior (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Escolhe a linha que tem as duas.</span>
       <span class="en">Check the label on the outdoor unit (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) and the indoor unit (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Pick the row that matches both.</span></p>
     <form id="model-form" class="models"></form>
-    <p class="note warn">🧪 <span class="pt"><b>Deteção automática do modelo:</b> ainda não existe neste instalador. Escolhe o modelo à mão; se errares, os valores ficam estranhos mas nada se estraga, basta reinstalar com outro modelo.</span>
-      <span class="en"><b>Automatic model detection:</b> not in this installer yet. Pick the model by hand; a wrong pick only shows odd values and breaks nothing, just reinstall with another model.</span></p>
+    <div class="note ok" id="identify">🔎 <span class="pt"><b>Não sabes qual é? A placa diz-te.</b> Todas as versões do firmware leem, só em leitura, o <b>Software ID</b> e o <b>Micon ID</b> da unidade interior logo a seguir a arrancar e sugerem o modelo. Se não tens a certeza, instala o modelo da lista que achas mais próximo e, depois do passo 5, abre a página da placa (<code>http://esphome-altherma-….local/</code>) ou o dispositivo no Home Assistant: <b>Suggested Model</b> mostra o modelo certo e <b>Model Check</b> diz se tens de reinstalar com outro. Se aparecer <i>unknown</i>, continua com a tua escolha à mão e manda-nos os dois IDs no <a href="#compat">reporte</a>.</span>
+      <span class="en"><b>Not sure which one? The board tells you.</b> Every firmware reads (read-only) the indoor unit's <b>Software ID</b> and <b>Micon ID</b> right after boot and suggests the model. If you're not sure, install the closest model from the list and, after step 5, open the board's page (<code>http://esphome-altherma-….local/</code>) or the device in Home Assistant: <b>Suggested Model</b> shows the right model and <b>Model Check</b> tells you whether to reinstall with another one. If it says <i>unknown</i>, keep your manual pick and send us both IDs in a <a href="#compat">report</a>.</span>
+      <div class="scroll"><table class="compat" id="known-ids">
+        <tr><th>Software ID</th><th>Micon ID</th><th><span class="pt">Modelo sugerido</span><span class="en">Suggested model</span></th></tr>
+      </table></div></div>
     <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> o teu modelo marcado. Não encontras o teu? Vê a <a href="#compat">lista de compatibilidade</a>; o mais próximo costuma ser <code>erga_eh_da_04_08</code>.</span><span class="en"><b>You should see:</b> your model ticked. Not listed? See the <a href="#compat">compatibility list</a>; the closest is usually <code>erga_eh_da_04_08</code>.</span></p>
   </section>
 
@@ -280,8 +283,8 @@
       <p class="pt">Falta de corrente no pino 5V da X10A. Alimenta a placa por USB e deixa o pino 1 sem ligar (GND ligado).</p>
       <p class="en">Not enough current from the X10A 5V pin. Power the board over USB and leave pin 1 unconnected (GND connected).</p></details>
     <details><summary><span class="pt">Alguns valores parecem errados</span><span class="en">Some values look wrong</span></summary>
-      <p class="pt">Provavelmente o modelo não é o teu. Reinstala com outro modelo do passo 2.</p>
-      <p class="en">The model is probably not yours. Reinstall with another model from step 2.</p></details>
+      <p class="pt">Provavelmente o modelo não é o teu. Vê o sensor <b>Suggested Model</b> da placa e reinstala com esse modelo no passo 2.</p>
+      <p class="en">The model is probably not yours. Check the board's <b>Suggested Model</b> sensor and reinstall with that model in step 2.</p></details>
     <details><summary><span class="pt">O Home Assistant não encontra a placa</span><span class="en">Home Assistant doesn't find the board</span></summary>
       <p class="pt">Tem de estar na mesma rede (sem rede de convidados). Adiciona-a à mão: integração ESPHome → o IP da placa, porta <code>6053</code>.</p>
       <p class="en">It must be on the same network (not a guest network). Add it by hand: ESPHome integration → the board's IP, port <code>6053</code>.</p></details>
@@ -310,6 +313,10 @@
 
 <script>
   // Heat pump models: confs/<key>.yaml (keep in sync with base.yaml and the publish.yml matrix).
+  // Controller IDs -> model, same table as installer/packages/identify.yaml (confirmed reports only).
+  const KNOWN_IDS = [
+    { sw: '20007902', micon: 'ID0792', model: 'erla_d_ebv_ebb_ebvz_11_16' },
+  ];
   const MODELS = [
     { key: 'erga_eh_da_04_08', name: 'Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA', d: '4–8 kW', def: true },
     { key: 'erga_eh_e_ej_04_08', name: 'Altherma 3 R · ERGA E + EHV/EHB/EHVZ E/EJ', d: '4–8 kW' },
@@ -351,6 +358,8 @@
   const ver = document.getElementById('ver');
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const bi = (pt, en) => '<span class="pt">' + pt + '</span><span class="en">' + en + '</span>';
+  document.getElementById('known-ids').insertAdjacentHTML('beforeend', KNOWN_IDS.map(k =>
+    `<tr><td><code>${k.sw}</code></td><td><code>${k.micon}</code></td><td><code>${k.model}</code></td></tr>`).join(''));
   document.getElementById('model-form').innerHTML = MODELS.map(m =>
     '<label><input type="radio" name="model" value="' + m.key + '"' + (m.def ? ' checked' : '') + '><span><span class="t">' + esc(m.name) + '</span>' +
     (m.def ? '<span class="tag">' + bi('padrão', 'default') + '</span>' : '') +

@@ -29,6 +29,25 @@ body:
       placeholder: EBBH11DF6V
     validations:
       required: true
+  - type: input
+    id: software_id
+    attributes:
+      label: Controller Software ID
+      description: |
+        The **Controller Software ID** sensor (board web page or Home Assistant, firmware v2.2.0 or later). Write "none" if it stays empty.
+        O sensor **Controller Software ID** (página da placa ou Home Assistant, firmware v2.2.0 ou mais recente). Escreve "none" se ficar vazio.
+      placeholder: "20007902"
+    validations:
+      required: true
+  - type: input
+    id: micon_id
+    attributes:
+      label: Controller Micon ID
+      description: |
+        The **Controller Micon ID** sensor, same place. / O sensor **Controller Micon ID**, no mesmo sítio.
+      placeholder: ID0792
+    validations:
+      required: true
   - type: dropdown
     id: model_file
     attributes:
@@ -54,7 +73,7 @@ body:
         - atoms3 (M5Stack AtomS3 / AtomS3 Lite)
         - esp8266 (D1 mini)
         - m5stack (M5Stack Core / Basic)
-        - Other (describe below) / Outra (descreva abaixo)
+        - Other (describe below) / Outra (descreve abaixo)
     validations:
       required: true
   - type: dropdown

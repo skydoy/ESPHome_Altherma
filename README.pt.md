@@ -85,7 +85,9 @@ No M5Stack Core / Basic o ecrã mostra os valores em direto (botões para navega
 | `epra_d_etv_etb_etvz_14_18` | Altherma 3 H HT · EPRA D + ETV/ETB/ETVZ (14–18 kW) |
 | `altherma_ehvh_ehvx_cb` | Altherma LT · EHVH/EHVX CB (11–16 kW) |
 
-> **Estado:** escolhe o modelo à mão (ainda não há deteção automática). Quem testou cada unidade: vê a
+> **Não sabes o modelo?** Desde a v2.2.0 a placa lê o Software ID e o Micon ID da unidade interior (só leitura) e
+> mostra-os com o sensor **Suggested Model**; **Model Check** diz-te se tens de reinstalar com outro. Se aparecer
+> `unknown`, escolhe à mão e manda os dois IDs no reporte. Quem testou cada unidade: vê a
 > [lista de compatibilidade](docs/compatibilidade.md). O teu modelo não está na lista, ou os valores parecem errados?
 > [Reportar a minha bomba](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml).
 

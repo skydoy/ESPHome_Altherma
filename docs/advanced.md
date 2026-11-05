@@ -278,3 +278,14 @@ docs/                           this documentation
 > generated `esphome.h`, so wrap the body of `converters.h` in `#ifdef ALTHERMA_HUB_IMPL` / `#endif` again after an
 > update. `altherma_hub.cpp` defines `ALTHERMA_HUB_IMPL` before it includes the file. Without the guard the file is
 > compiled at global scope in `main.cpp` and fails (`labelDefs` / `LabelDef` not in scope).
+
+## Model identification (read-only)
+The web installer firmware reads the indoor unit's software ID (X10A `0x4C`) and Micon ID (`0x56`) once after boot
+and suggests a model (`installer/packages/identify.yaml`). In your own YAML:
+
+```yaml
+altherma_hub:
+  identify_on_boot: true                      # or enable_identify: true for the identify_controller service only
+  software_id_text_sensor: altherma_software_id
+  micon_id_text_sensor: altherma_micon_id
+```

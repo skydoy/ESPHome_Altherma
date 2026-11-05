@@ -22,6 +22,10 @@ CONFIG_SCHEMA = (
             # Experimental, read-only: adds the identify_controller API service
             # (X10A 0x4C software ID + 0x56 Micon ID). Off by default.
             cv.Optional("enable_identify", default=False): cv.boolean,
+            # Read the two IDs once after boot (implies enable_identify) and publish them.
+            cv.Optional("identify_on_boot", default=False): cv.boolean,
+            cv.Optional("software_id_text_sensor"): cv.use_id(text_sensor.TextSensor),
+            cv.Optional("micon_id_text_sensor"): cv.use_id(text_sensor.TextSensor),
         }
     )
     .extend(cv.polling_component_schema("30s"))
@@ -38,8 +42,14 @@ async def to_code(config):
         query_sensor = await cg.get_variable(config["query_result_text_sensor"])
         cg.add(var.set_query_result_text_sensor(query_sensor))
 
-    if config["enable_identify"]:
+    if config["enable_identify"] or config["identify_on_boot"]:
         cg.add(var.set_enable_identify(True))
+    if config["identify_on_boot"]:
+        cg.add(var.set_identify_on_boot(True))
+    if "software_id_text_sensor" in config:
+        cg.add(var.set_software_id_text_sensor(await cg.get_variable(config["software_id_text_sensor"])))
+    if "micon_id_text_sensor" in config:
+        cg.add(var.set_micon_id_text_sensor(await cg.get_variable(config["micon_id_text_sensor"])))
 
 
 # Shared configuration constants

@@ -280,3 +280,14 @@ proteção:
 > `#ifdef ALTHERMA_HUB_IMPL` / `#endif`. O `altherma_hub.cpp` define `ALTHERMA_HUB_IMPL` antes de incluir o ficheiro.
 > Sem esta proteção o ficheiro é compilado no âmbito global do `main.cpp` e falha (`labelDefs` / `LabelDef` não
 > definidos).
+
+## Identificação do modelo (só leitura)
+O firmware do instalador web lê o software ID (X10A `0x4C`) e o Micon ID (`0x56`) da unidade interior uma vez depois
+de arrancar e sugere um modelo (`installer/packages/identify.yaml`). No teu YAML:
+
+```yaml
+altherma_hub:
+  identify_on_boot: true                      # ou enable_identify: true só para o serviço identify_controller
+  software_id_text_sensor: altherma_software_id
+  micon_id_text_sensor: altherma_micon_id
+```
