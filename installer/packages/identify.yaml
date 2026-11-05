@@ -1,0 +1,57 @@
+# Model identification for the web installer firmware (read-only).
+# After boot the hub asks the indoor unit for its software ID (X10A 0x4C) and Micon ID (0x56),
+# shows both, and suggests the matching confs/<model>.yaml from the table below.
+# Unknown IDs: pick the model by hand, as before, and send the two IDs in a compatibility
+# report so they can be added here. Add an entry only after it has been confirmed.
+# (merged into the altherma_hub block of base.yaml)
+altherma_hub:
+  identify_on_boot: true
+  software_id_text_sensor: altherma_software_id
+  micon_id_text_sensor: altherma_micon_id
+
+text_sensor:
+  - platform: template
+    id: altherma_software_id
+    name: "Controller Software ID"
+    icon: mdi:identifier
+    entity_category: diagnostic
+    on_value:
+      - component.update: altherma_suggested_model
+      - component.update: altherma_model_check
+  - platform: template
+    id: altherma_micon_id
+    name: "Controller Micon ID"
+    icon: mdi:identifier
+    entity_category: diagnostic
+    on_value:
+      - component.update: altherma_suggested_model
+      - component.update: altherma_model_check
+  - platform: template
+    id: altherma_suggested_model
+    name: "Suggested Model"
+    icon: mdi:heat-pump-outline
+    entity_category: diagnostic
+    update_interval: never
+    lambda: |-
+      struct Known { const char *software_id; const char *micon_id; const char *model; };
+      static const Known KNOWN[] = {
+        {"20007902", "ID0792", "erla_d_ebv_ebb_ebvz_11_16"},  // ERLA D + EBVZ, confirmed
+      };
+      const std::string sw = id(altherma_software_id).has_state() ? id(altherma_software_id).state : "";
+      const std::string mi = id(altherma_micon_id).has_state() ? id(altherma_micon_id).state : "";
+      if (sw.empty() && mi.empty()) return {};
+      for (const auto &k : KNOWN)
+        if (sw == k.software_id && mi == k.micon_id) return std::string(k.model);
+      return std::string("unknown");
+  - platform: template
+    id: altherma_model_check
+    name: "Model Check"
+    icon: mdi:check-decagram-outline
+    entity_category: diagnostic
+    update_interval: never
+    lambda: |-
+      if (!id(altherma_suggested_model).has_state()) return {};
+      const std::string s = id(altherma_suggested_model).state;
+      if (s == "unknown") return std::string("Unknown IDs - keep your manual choice and send a report");
+      if (s == "${altherma_model}") return std::string("OK - installed model matches");
+      return std::string("Different - install " + s);

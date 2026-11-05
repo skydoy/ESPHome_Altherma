@@ -533,14 +533,21 @@ void AlthermaHub::report_identify_step_() {
     this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_WARN, "X10A 0x%02X: unexpected reply (%u bytes) raw=%s",
                                         cmd, (unsigned) this->rx_len_, hex);
   } else if (cmd == 0x4C && this->rx_len_ == 6) {
-    this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_INFO, "X10A hydro software ID=%02X%02X%02X%02X raw=%s",
-                                        this->rx_buffer_[4], this->rx_buffer_[3], this->rx_buffer_[2],
-                                        this->rx_buffer_[1], hex);
+    char sw[9];
+    snprintf(sw, sizeof(sw), "%02X%02X%02X%02X", this->rx_buffer_[4], this->rx_buffer_[3], this->rx_buffer_[2],
+             this->rx_buffer_[1]);
+    this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_INFO, "X10A hydro software ID=%s raw=%s", sw, hex);
+    if (this->software_id_text_sensor_ != nullptr)
+      this->software_id_text_sensor_->publish_state(sw);
   } else if (cmd == 0x56) {
     uint16_t id = 0;
-    if (x10a::decode_micon_id(this->rx_buffer_, this->rx_len_, id))
-      this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_INFO, "X10A hydro Micon ID=ID%04X raw=%s", id, hex);
-    else
+    if (x10a::decode_micon_id(this->rx_buffer_, this->rx_len_, id)) {
+      char mid[8];
+      snprintf(mid, sizeof(mid), "ID%04X", id);
+      this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_INFO, "X10A hydro Micon ID=%s raw=%s", mid, hex);
+      if (this->micon_id_text_sensor_ != nullptr)
+        this->micon_id_text_sensor_->publish_state(mid);
+    } else
       this->publish_manual_query_statusf_(ESPHOME_LOG_LEVEL_INFO, "X10A 0x56 valid CRC, %u bytes raw=%s",
                                           (unsigned) this->rx_len_, hex);
   } else {

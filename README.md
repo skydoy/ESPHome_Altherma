@@ -85,7 +85,9 @@ On the M5Stack Core / Basic the screen shows the live values (buttons to navigat
 | `epra_d_etv_etb_etvz_14_18` | Altherma 3 H HT · EPRA D + ETV/ETB/ETVZ (14–18 kW) |
 | `altherma_ehvh_ehvx_cb` | Altherma LT · EHVH/EHVX CB (11–16 kW) |
 
-> **Status:** pick the model by hand (there is no automatic detection yet). Who tested which unit: see the
+> **Not sure of the model?** Since v2.2.0 the board reads the indoor unit's Software ID and Micon ID (read-only) and
+> shows them with a **Suggested Model** sensor; **Model Check** tells you whether to reinstall with another one. If it
+> says `unknown`, pick by hand and send both IDs in a report. Who tested which unit: see the
 > [compatibility list](docs/compatibility.md). Your model isn't listed, or values look wrong?
 > [Report my heat pump](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml).
 
