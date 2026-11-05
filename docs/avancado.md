@@ -69,7 +69,6 @@ esphome -s altherma_model erla_d_ebv_ebb_ebvz_11_16 \
 - `-s altherma_model …` escolhe o [ficheiro de modelo](#ficheiros-de-modelo); também o podes definir em `substitutions:`.
 - `-s altherma_component_source ../components` compila o componente `altherma_hub` a partir da tua cópia. Sem isto, o
   `boards/base.yaml` descarrega-o deste repositório (`github://skydoy/esphome-altherma@main`).
-- O `boards/esphome-altherma.local.yaml` é um exemplo pronto, com componente local, Wi-Fi e palavra-passe OTA.
 
 Para obter o mesmo firmware do instalador web (entidade Firmware, Wi-Fi por Improv, manifesto OTA), compila antes o
 ficheiro em [`installer/`](../installer/): `esphome -s altherma_model <modelo> run installer/esphome-altherma-esp32.installer.yaml`.
@@ -248,7 +247,6 @@ boards/
   base.yaml                     configuração ESPHome comum (logger, API, OTA, UART, hub)
   esphome-altherma-<placa>.yaml configurações por placa (esp32, esp32-s3, atoms3, esp8266, m5stack)
   esphome-altherma-<placa>.factory.yaml   imagens de fábrica simples
-  esphome-altherma.local.yaml   exemplo para compilação local
   common/diagnostics.yaml       pacote de diagnóstico opcional
 installer/                      ficheiros do instalador web (+ secrets.yaml de exemplo, animação de arranque M5Stack)
 confs/                          ficheiros de modelo (mapas de sensores)
