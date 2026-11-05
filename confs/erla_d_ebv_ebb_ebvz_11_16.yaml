@@ -179,6 +179,56 @@ sensor:
     convid: 105
     datasize: 2
 
+  - <<: *temp
+    name: "Heat Exchanger Mid Temp (R5T)"
+    register: 0x20
+    offset: 8
+    convid: 105
+    datasize: 2
+
+  - <<: *altherma_base
+    name: "Expansion Valve 1"
+    unit_of_measurement: "pls"
+    state_class: measurement
+    accuracy_decimals: 0
+    icon: mdi:valve
+    register: 0x30
+    offset: 3
+    convid: 151
+    datasize: 2
+
+  - <<: *altherma_base
+    name: "Outdoor Fan Step"
+    state_class: measurement
+    accuracy_decimals: 0
+    icon: mdi:fan
+    register: 0x30
+    offset: 1
+    convid: 211
+    datasize: 1
+
+  - <<: *altherma_base
+    name: "Water Pump Signal"
+    unit_of_measurement: "%"
+    state_class: measurement
+    accuracy_decimals: 0
+    icon: mdi:pump
+    # 0 = maximum speed, 100 = stopped
+    register: 0x62
+    offset: 12
+    convid: 152
+    datasize: 1
+
+  - <<: *altherma_base
+    name: "Indoor Error Detail Code"
+    entity_category: diagnostic
+    accuracy_decimals: 0
+    icon: mdi:alert-circle-outline
+    register: 0x60
+    offset: 4
+    convid: 152
+    datasize: 1
+
 # Sensores Binários
 binary_sensor:
   - <<: *binary
@@ -223,6 +273,48 @@ binary_sensor:
     convid: 303
     datasize: 1
 
+  - <<: *binary
+    name: "Space Heating Operation"
+    register: 0x62
+    offset: 2
+    convid: 303
+    datasize: 1
+
+  - <<: *binary
+    name: "Powerful DHW Operation"
+    register: 0x62
+    offset: 2
+    convid: 304
+    datasize: 1
+
+  - <<: *binary
+    name: "Space Heating Output"
+    register: 0x62
+    offset: 8
+    convid: 300
+    datasize: 1
+
+  - <<: *binary
+    name: "Silent Mode"
+    register: 0x60
+    offset: 2
+    convid: 301
+    datasize: 1
+
+  - <<: *binary
+    name: "Water Flow Switch"
+    register: 0x60
+    offset: 11
+    convid: 307
+    datasize: 1
+
+  - <<: *binary
+    name: "4-Way Valve"
+    register: 0x30
+    offset: 11
+    convid: 307
+    datasize: 1
+
 # Sensores de Texto / Estados
 text_sensor:
   - <<: *text
@@ -260,4 +352,12 @@ text_sensor:
     register: 0x60
     offset: 3
     convid: 204
+    datasize: 1
+
+  - <<: *text
+    name: "Indoor Error Type"
+    icon: mdi:alert-circle-outline
+    register: 0x60
+    offset: 5
+    convid: 203
     datasize: 1
