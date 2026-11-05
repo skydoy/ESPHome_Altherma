@@ -13,6 +13,7 @@ substitutions:
 packages:
   board: !include ../boards/esphome-altherma-esp32.yaml
   identify: !include packages/identify.yaml
+  firmware_update: !include packages/firmware-update.yaml
 
 esphome:
   project:
@@ -32,9 +33,22 @@ http_request:
 
 ota:
   - platform: http_request
+    id: ota_http
+    on_begin:
+      - logger.log: "Firmware update download started (do not unplug)"
+    on_end:
+      - logger.log: "Firmware update installed, rebooting"
+    on_error:
+      - logger.log:
+          level: WARN
+          format: "Firmware update failed (error %u), still running the old firmware"
+          args: [x]
 
 update:
   - platform: http_request
     id: update_http_request
-    name: None
+    name: "Firmware Update"
+    device_class: firmware
+    entity_category: config
+    update_interval: 6h
     source: https://skydoy.github.io/esphome-altherma/firmware/${altherma_board}/${altherma_model}/manifest.json

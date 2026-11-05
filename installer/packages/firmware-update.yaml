@@ -1,0 +1,123 @@
+# Firmware update controls for the web installer firmwares, same set and names as skydoy/ESPHome_AC
+# (core/auto-update.yaml): "Firmware Update" entity (in each installer/*.installer.yaml),
+# "Check for Update" and "Install Update" buttons, and the "Auto Update" switch (default on), which
+# checks once a night at 03:MM (random minute, SNTP time, UTC) and installs a newer release.
+# Updates always come from THIS firmware's own manifest (firmware/<board>/<model>/manifest.json).
+# "Install the right firmware" (identify.yaml) repoints the update entity at another model only for
+# that switch; every check below first points it back at the installed model's manifest.
+substitutions:
+  altherma_manifest_url: https://skydoy.github.io/esphome-altherma/firmware/${altherma_board}/${altherma_model}/manifest.json
+
+time:
+  - platform: sntp
+    id: altherma_sntp_time
+
+switch:
+  - platform: template
+    id: auto_update_enabled
+    name: "Auto Update"
+    icon: mdi:update
+    entity_category: config
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+button:
+  - platform: template
+    id: firmware_check_update
+    name: "Check for Update"
+    icon: mdi:cloud-search
+    entity_category: config
+    on_press:
+      - logger.log:
+          tag: firmware_update
+          format: "Check for Update pressed"
+      - lambda: 'id(update_http_request).set_source_url("${altherma_manifest_url}");'
+      - component.update: update_http_request
+  - platform: template
+    id: firmware_install_update
+    name: "Install Update"
+    icon: mdi:download
+    entity_category: config
+    on_press:
+      - logger.log:
+          tag: firmware_update
+          format: "Install Update pressed (force_update=false)"
+      - if:
+          condition:
+            lambda: 'return id(update_http_request).update_info.firmware_url.find("/${altherma_board}/${altherma_model}/") != std::string::npos;'
+          then:
+            - update.perform:
+                id: update_http_request
+                force_update: false
+          else:
+            - logger.log:
+                tag: firmware_update
+                level: WARN
+                format: "Press Check for Update first"
+
+globals:
+  - id: auto_update_minute       # 0-59, picked at random on the first tick; 255 = not yet
+    type: uint8_t
+    initial_value: "255"
+  - id: auto_update_last_day     # day of the year of the last nightly check
+    type: int
+    initial_value: "-1"
+  - id: auto_update_uptime_min   # minutes since boot (saturates)
+    type: uint32_t
+    initial_value: "0"
+
+interval:
+  - id: auto_update_interval
+    interval: 60s
+    then:
+      - if:
+          condition:
+            lambda: |-
+              if (id(auto_update_uptime_min) < 0xFFFFFFFF) id(auto_update_uptime_min)++;
+              if (id(auto_update_minute) > 59) {
+                id(auto_update_minute) = random_uint32() % 60;
+                ESP_LOGI("auto_update", "Nightly update check at 03:%02u", (unsigned) id(auto_update_minute));
+              }
+              auto t = id(altherma_sntp_time).now();
+              if (!t.is_valid() || t.hour != 3 || t.minute != id(auto_update_minute) ||
+                  t.day_of_year == id(auto_update_last_day))
+                return false;
+              id(auto_update_last_day) = t.day_of_year;
+              if (!id(auto_update_enabled).state) {
+                ESP_LOGI("auto_update", "Skipped: the Auto Update switch is off");
+                return false;
+              }
+              if (id(auto_update_uptime_min) < 10) {
+                ESP_LOGI("auto_update", "Skipped: less than 10 minutes since boot");
+                return false;
+              }
+              return true;
+          then:
+            - script.execute: auto_update_run
+
+script:
+  - id: auto_update_run
+    mode: single
+    then:
+      - logger.log:
+          tag: auto_update
+          format: "Checking ${altherma_manifest_url}"
+      - lambda: 'id(update_http_request).set_source_url("${altherma_manifest_url}");'
+      - component.update: update_http_request
+      - delay: 30s
+      - if:
+          condition:
+            lambda: return id(update_http_request).state == update::UPDATE_STATE_AVAILABLE;
+          then:
+            - logger.log:
+                tag: auto_update
+                level: WARN
+                format: "Installing %s (running %s)"
+                args:
+                  - id(update_http_request).update_info.latest_version.c_str()
+                  - id(update_http_request).update_info.current_version.c_str()
+            - update.perform: update_http_request
+          else:
+            - logger.log:
+                tag: auto_update
+                format: "No update installed (up to date, or the check failed)"

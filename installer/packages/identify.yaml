@@ -106,6 +106,9 @@ button:
                       level: WARN
                       format: "Could not read the manifest for %s"
                       args: ['id(altherma_suggested_model).state.c_str()']
+                  - lambda: |-
+                      id(update_http_request).set_source_url(
+                          "https://skydoy.github.io/esphome-altherma/firmware/${altherma_board}/${altherma_model}/manifest.json");
           else:
             - logger.log: "Nothing to install: model unknown or already installed"
 
