@@ -1,7 +1,7 @@
 # Device web page (http://<board-ip>/), same setup as ESPHome_AC (core/web-server.yaml): ESPHome
 # web_server v3 (JS/CSS from the ESPHome CDN), port 80, live log, NO authentication. report.js adds
-# the "Report my heat pump" / "Install the right firmware" buttons, caps the debug log panel height
-# (style injected into esp-log's shadowRoot), and draws a live heat-pump schematic from /events.
+# the report / install-firmware buttons, caps the debug log panel height (style injected into
+# esp-log's shadowRoot), draws a live heat-pump schematic with pipe-style flows, and a PT/EN toggle.
 # Reusable from your own config:
 #   packages:
 #     altherma_webui: github://skydoy/esphome-altherma/installer/packages/webui.yaml@main
