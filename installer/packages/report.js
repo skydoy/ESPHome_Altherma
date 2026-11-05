@@ -162,7 +162,6 @@
     flow:  ['Caudal', 'Flow'],
     buh1:  ['BUH1', 'BUH1'],
     buh2:  ['BUH2', 'BUH2'],
-    valve: ['3 vias', '3-way'],
     pump:  ['Bomba', 'Pump'],
     mode:  ['Modo', 'Mode'],
     space: ['Aquecimento', 'Heating']
@@ -293,8 +292,8 @@
 
   function buildSvg() {
     // Layout (viewBox 800×410):
-    //  Outdoor --refrig-- Indoor (enlarged: water chips) --trunk--> 3-way
-    //  3-way branches: DHW (top-right) / Heating emitters (bottom-right)
+    //  Outdoor --refrig-- Indoor --warm--> 3-way --> DHW / Heating
+    //  DHW + Heating returns merge at a tee --> cool trunk --> Indoor
     return ''
       + '<svg viewBox="0 0 800 410" role="img" aria-label="Heat pump diagram">'
       + '<defs>'
@@ -314,25 +313,32 @@
       + '<path d="M216 158 H250"/>'
       + '</g>'
 
+      // Water: 3-way only on hot supply; cold returns merge at a tee (no valve)
       + '<g class="ad-pipe ad-pipe-warm ad-pipe-trunk" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M500 130 H528"/>'
+      + '<path d="M500 128 H538"/>'
       + '</g>'
       + '<g class="ad-pipe ad-pipe-cool ad-pipe-trunk" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M500 170 H528"/>'
+      + '<path d="M500 186 H590"/>'
       + '</g>'
 
       + '<g class="ad-pipe ad-pipe-warm ad-pipe-branch" data-branch="dhw" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M550 118 V50 H600"/>'
+      + '<path d="M550 116 V50 H600"/>'
       + '</g>'
-      + '<g class="ad-pipe ad-pipe-cool ad-pipe-branch" data-branch="dhw" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M600 105 H575 V155 H550"/>'
+      // Heat supply doglegs right so the valve state label can sit under the valve
+      + '<g class="ad-pipe ad-pipe-warm ad-pipe-branch" data-branch="heat" fill="none" stroke-linecap="round" stroke-linejoin="round">'
+      + '<path d="M550 140 H585 V255 H600"/>'
       + '</g>'
 
-      + '<g class="ad-pipe ad-pipe-warm ad-pipe-branch" data-branch="heat" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M550 142 V255 H600"/>'
+      + '<g class="ad-pipe ad-pipe-cool ad-pipe-branch" data-branch="dhw" fill="none" stroke-linecap="round" stroke-linejoin="round">'
+      + '<path d="M600 105 H590 V186"/>'
       + '</g>'
       + '<g class="ad-pipe ad-pipe-cool ad-pipe-branch" data-branch="heat" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M600 310 H575 V185 H550"/>'
+      + '<path d="M600 310 H590 V186"/>'
+      + '</g>'
+
+      // Return tee (merge only — no valve on return)
+      + '<g class="ad-tee" transform="translate(590,186)">'
+      + '<circle r="5" class="ad-tee-node"/>'
       + '</g>'
 
       // Outdoor unit — casing + finned grille + axial fan + compressor
@@ -376,13 +382,16 @@
       + chip('liquid', 12, 216, 110, 34, '')
       + '</g>'
 
-      // 3-way valve node
-      + '<g class="ad-block" transform="translate(528,115)">'
-      + '<circle cx="22" cy="22" r="22" class="ad-valve-node"/>'
-      + '<text x="22" y="19" text-anchor="middle" class="ad-small" data-i18n="valveShort">3 vias</text>'
-      + '<text x="22" y="31" text-anchor="middle" class="ad-tiny" data-i18n="valveHint">AQS/AQ</text>'
+      // Single 3-way valve on the hot supply only (state label under symbol)
+      + '<g class="ad-valve" data-valve transform="translate(550,128)">'
+      + '<circle r="12" class="ad-valve-node"/>'
+      // Port stubs: inlet (left), DHW (up), Heating (down→dogleg)
+      + '<path d="M-12,0 H-17 M0,-12 V-17 M0,12 V17" class="ad-valve-ports" fill="none"/>'
+      + '<path d="M-6,0 H6 M0,-6 V6" class="ad-valve-t" fill="none"/>'
+      + '<text y="-20" text-anchor="middle" class="ad-tiny ad-valve-name" data-i18n="valveShort">3 vias</text>'
+      // State directly under the valve (heat leg doglegs right — no overlap)
+      + '<text y="30" text-anchor="middle" class="ad-valve-state" data-v="valve">—</text>'
       + '</g>'
-      + chip('valve', 500, 168, 110, 34, '')
 
       // DHW tank
       + '<g class="ad-block" data-block="dhw" transform="translate(600,10)">'
@@ -470,7 +479,14 @@
     + '#altherma-diagram .ad-tank-stroke{fill:none;stroke:currentColor;stroke-width:1.5;opacity:.5}'
     + '#altherma-diagram .ad-emit rect{fill:currentColor;opacity:.35}'
     + '#altherma-diagram .ad-emit-on .ad-emit rect{fill:#e76f51;opacity:.85}'
-    + '#altherma-diagram .ad-valve-node{fill:color-mix(in srgb,Canvas 75%,#2a9d8f 25%);stroke:color-mix(in srgb,CanvasText 35%,transparent);stroke-width:2}'
+    + '#altherma-diagram .ad-valve-node{fill:color-mix(in srgb,Canvas 78%,#2a9d8f 22%);stroke:color-mix(in srgb,CanvasText 40%,transparent);stroke-width:2}'
+    + '#altherma-diagram .ad-valve-ports{stroke:color-mix(in srgb,CanvasText 45%,transparent);stroke-width:3;stroke-linecap:round}'
+    + '#altherma-diagram .ad-valve-t{stroke:color-mix(in srgb,CanvasText 55%,transparent);stroke-width:2.2;stroke-linecap:round}'
+    + '#altherma-diagram .ad-valve-state{font:700 9px system-ui,sans-serif;fill:currentColor;opacity:.95}'
+    + '#altherma-diagram .ad-valve-name{opacity:.6}'
+    + '#altherma-diagram .ad-valve.ad-dhw .ad-valve-node{fill:color-mix(in srgb,#f4a261 35%,Canvas 65%);stroke:#e76f51}'
+    + '#altherma-diagram .ad-valve.ad-space .ad-valve-node{fill:color-mix(in srgb,#2a9d8f 30%,Canvas 70%);stroke:#2a9d8f}'
+    + '#altherma-diagram .ad-tee-node{fill:color-mix(in srgb,Canvas 70%,#4cc9f0 30%);stroke:color-mix(in srgb,CanvasText 35%,transparent);stroke-width:1.6}'
     + '#altherma-diagram .ad-pipe{stroke-width:7}'
     + '#altherma-diagram .ad-pipe-ref-hot{stroke:#e85d04;opacity:.85}'
     + '#altherma-diagram .ad-pipe-ref-cold{stroke:#219ebc;opacity:.85}'
@@ -528,6 +544,12 @@
     }
     setRoute(dhwBlock, dhw === true);
     setRoute(heatBlock, dhw === false);
+    var valveEl = root.querySelector('[data-valve]');
+    if (valveEl) {
+      valveEl.classList.remove('ad-dhw', 'ad-space');
+      if (pumpOn && dhw === true) valveEl.classList.add('ad-dhw');
+      else if (pumpOn && dhw === false) valveEl.classList.add('ad-space');
+    }
     if (heatBlock) {
       if (isOn(vals.space)) heatBlock.classList.add('ad-emit-on');
       else heatBlock.classList.remove('ad-emit-on');
@@ -562,10 +584,6 @@
         if (key === 'buh1' || key === 'buh2' || key === 'pump' || key === 'space') {
           if (isOn(v)) chipEls[j].classList.add('active'); else chipEls[j].classList.remove('active');
         }
-        if (key === 'valve') {
-          var dhw = valveIsDhw(v);
-          if (dhw === true) chipEls[j].classList.add('active'); else chipEls[j].classList.remove('active');
-        }
       }
     });
     if (vals.tlwb && !vals.tlw) {
@@ -588,7 +606,6 @@
       heat: L.t('Circuito de aquecimento', 'Heating circuit'),
       emitters: L.t('Emissores', 'Emitters'),
       valveShort: L.t('3 vias', '3-way'),
-      valveHint: L.t('AQS/AQ', 'DHW/Sp'),
       legRefHot: L.t('Refrig. quente', 'Hot refrigerant'),
       legRefCold: L.t('Refrig. frio', 'Cold refrigerant'),
       legWarm: L.t('Água saída', 'Leaving water'),
