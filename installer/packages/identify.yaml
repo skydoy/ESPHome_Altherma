@@ -116,3 +116,83 @@ button:
 web_server:
   version: 3
   js_include: packages/report.js
+
+# Automatic one-time compatibility report (see tools/report-worker/). On first boot, once the
+# Software ID, Micon ID and suggested model have values (waits up to 10 min), the board POSTs the
+# two IDs, suggested model, model check, board, firmware version and every non-internal sensor /
+# text sensor reading to the altherma-reports Worker. No Wi-Fi name, IP, hostname
+# or MAC is sent: device_hash is a salted SHA-256 of the MAC, only used to drop duplicates.
+# report_sent is saved to flash only after an HTTP 2xx, so a failed send retries on the next boot.
+sha256:
+
+globals:
+  - id: altherma_report_sent
+    type: bool
+    restore_value: yes
+    initial_value: "false"
+
+script:
+  - id: altherma_auto_report
+    mode: single
+    then:
+      - delay: 60s
+      - wait_until:
+          condition:
+            lambda: |-
+              return network::is_connected() && id(altherma_software_id).has_state() &&
+                     id(altherma_micon_id).has_state() && id(altherma_suggested_model).has_state() &&
+                     !id(altherma_software_id).state.empty() && !id(altherma_micon_id).state.empty();
+          timeout: 9min
+      - if:
+          condition:
+            lambda: 'return !id(altherma_report_sent) && id(altherma_software_id).has_state() && id(altherma_micon_id).has_state();'
+          then:
+            - http_request.post:
+                url: https://altherma-reports.esphome-ac-report.workers.dev/
+                request_headers:
+                  Content-Type: application/json
+                json: |-
+                  root["software_id"] = id(altherma_software_id).state;
+                  root["micon_id"] = id(altherma_micon_id).state;
+                  root["suggested_model"] = id(altherma_suggested_model).state;
+                  if (id(altherma_model_check).has_state()) root["model_check"] = id(altherma_model_check).state;
+                  root["board"] = "${altherma_board}";
+                  root["firmware_version"] = "${altherma_version} (${altherma_model})";
+                  esphome::sha256::SHA256 h;
+                  h.init();
+                  h.add(get_mac_address() + "|esphome-altherma-report-v1");
+                  h.calculate();
+                  char hex[65];
+                  h.get_hex(hex);
+                  root["device_hash"] = std::string(hex).substr(0, 32);
+                  JsonObject r = root["readings"].to<JsonObject>();
+                  int n = 0;
+                  for (auto *s : App.get_sensors()) {
+                    if (s->is_internal() || !s->has_state() || std::isnan(s->state) || ++n > 250) continue;
+                    r[s->get_name().str()] = str_sprintf("%.*f %s", s->get_accuracy_decimals() < 0 ? 2 : s->get_accuracy_decimals(), s->state, s->get_unit_of_measurement_ref().c_str());
+                  }
+                  for (auto *t : App.get_text_sensors()) {
+                    if (t->is_internal() || !t->has_state() || ++n > 250) continue;
+                    r[t->get_name().str()] = t->state.substr(0, 80);
+                  }
+                on_response:
+                  then:
+                    - lambda: |-
+                        ESP_LOGI("report", "Auto report: HTTP %d", response->status_code);
+                        if (response->status_code >= 200 && response->status_code < 300) {
+                          id(altherma_report_sent) = true;
+                          global_preferences->sync();
+                        }
+                on_error:
+                  then:
+                    - logger.log: "Auto report failed, will retry on next boot"
+
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - if:
+          condition:
+            lambda: 'return !id(altherma_report_sent);'
+          then:
+            - script.execute: altherma_auto_report
