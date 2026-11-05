@@ -204,15 +204,20 @@ binary_sensor:
     internal: true
 
 font:
+  # GF_Latin_Core covers PT accents (Termóstato ó, AQS, etc.) + default Kernel set
   - file: "gfonts://Roboto@700"
     id: font_small
     size: 16
+    glyphsets:
+      - GF_Latin_Core
     extras:
       - file: "gfonts://Roboto@700"
         glyphs: ["⁄", "●"]
   - file: "gfonts://Roboto@700"
     id: font_large
     size: 28
+    glyphsets:
+      - GF_Latin_Core
     extras:
       - file: "gfonts://Roboto@700"
         glyphs: ["⁄"]
