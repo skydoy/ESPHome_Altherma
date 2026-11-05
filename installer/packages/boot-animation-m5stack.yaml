@@ -25,13 +25,17 @@ image:
     transparency: alpha_channel
 
 font:
+  # GF_Latin_Core: ASCII used by splash + PT accents for consistency with board UI fonts
   - file: "gfonts://Roboto@700"
     id: splash_font
     size: 30
-    glyphs: "ESPHomeAltr "   # unique characters of "ESPHome Altherma"
+    glyphsets:
+      - GF_Latin_Core
   - file: "gfonts://Roboto"
     id: splash_font_small
     size: 16
+    glyphsets:
+      - GF_Latin_Core
 
 esphome:
   on_boot:
