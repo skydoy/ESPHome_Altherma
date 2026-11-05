@@ -70,6 +70,7 @@
     .btn2 { display:inline-block; font-weight:700; text-decoration:none; color:var(--accent); border:2px solid var(--accent); border-radius:12px; padding:.6rem 1.3rem; background:transparent; }
     .btn2:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
     .report { text-align:center; margin:.9rem 0 .3rem; }
+    .privacy { color:var(--muted); font-size:.85rem; margin:.4rem 0 .6rem; }
     .report .d { color:var(--muted); font-size:.88rem; margin-top:.35rem; }
     table.compat { font-size:.86rem; }
     table.compat code { font-size:.76rem; word-break:break-all; }
@@ -185,11 +186,12 @@
     <p><span class="pt">Vê a etiqueta da unidade exterior (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) e da unidade interior (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Escolhe a linha que tem as duas.</span>
       <span class="en">Check the label on the outdoor unit (<b>ERGA</b>, <b>ERLA</b>, <b>EPRA</b>…) and the indoor unit (<b>EHV</b>, <b>EBV</b>, <b>ETV</b>…). Pick the row that matches both.</span></p>
     <form id="model-form" class="models"></form>
-    <div class="note ok" id="identify">🔎 <span class="pt">Não sabes o modelo? Instala qualquer um. A página da placa mostra o modelo certo em “Modelo sugerido”. Se for diferente, reinstala esse. Se aparecer “desconhecido”, carrega em “Reportar a minha bomba” nessa página e os dois números já vão preenchidos.</span>
-      <span class="en">Don't know your model? Install any one. The board's page shows the right model under “Suggested model”. If it's different, reinstall that one. If it says “unknown”, tap “Report my heat pump” on that page and both numbers are filled in for you.</span>
+    <div class="note ok" id="identify">🔎 <span class="pt">Não sabes o modelo? Instala qualquer um. A página da placa mostra o modelo certo em “Suggested Model”. Se for diferente, reinstala esse. Se aparecer “unknown”, carrega em “Reportar a minha bomba” nessa página e os dois números já vão preenchidos.</span>
+      <span class="en">Don't know your model? Install any one. The board's page shows the right model under “Suggested Model”. If it's different, reinstall that one. If it says “unknown”, tap “Report my heat pump” on that page and both numbers are filled in for you.</span>
       <div class="scroll"><table class="compat" id="known-ids">
         <tr><th>Software ID</th><th>Micon ID</th><th><span class="pt">Modelo sugerido</span><span class="en">Suggested model</span></th></tr>
       </table></div></div>
+    <p class="privacy"><span class="pt">ℹ️ Na primeira instalação, a placa envia uma única vez o modelo, os números do controlador e as leituras dos sensores, sem dados pessoais nem de rede, para ajudar a lista de compatibilidade.</span><span class="en">ℹ️ On first install, the board sends once the model, controller numbers and sensor readings, with no personal or network data, to help the compatibility list.</span></p>
     <p class="note ok">✅ <span class="pt"><b>Deves ver:</b> o teu modelo marcado. Não encontras o teu? Vê a <a href="#compat">lista de compatibilidade</a>; o mais próximo costuma ser <code>erga_eh_da_04_08</code>.</span><span class="en"><b>You should see:</b> your model ticked. Not listed? See the <a href="#compat">compatibility list</a>; the closest is usually <code>erga_eh_da_04_08</code>.</span></p>
   </section>
 
