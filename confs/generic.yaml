@@ -1,0 +1,16 @@
+# Generic sensors for the web installer's first firmware ("generic", every board).
+# Only what every X10A model in confs/ reads the same way, so the board shows something useful
+# while it identifies the heat pump. Then switch to your model (button "Install the right firmware",
+# or pick it on the installer site).
+sensor:
+  - platform: altherma_hub
+    altherma_hub_id: altherma_hub_1
+    name: "Outdoor Air Temp (R1T)"
+    device_class: temperature
+    unit_of_measurement: "°C"
+    state_class: measurement
+    accuracy_decimals: 1
+    register: 0x20
+    offset: 0
+    convid: 105
+    datasize: 2

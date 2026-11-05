@@ -6,7 +6,7 @@
 # instead); installer/secrets.yaml supplies empty placeholders because !secret is resolved at load time.
 # CI (.github/workflows/publish.yml) rewrites altherma_model and altherma_version per build.
 substitutions:
-  altherma_model: erga_eh_da_04_08
+  altherma_model: generic
   altherma_version: dev
   altherma_board: m5stack
   altherma_component_source: ../components

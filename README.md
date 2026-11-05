@@ -33,7 +33,7 @@ temperatures, flow, power and more locally in Home Assistant. No cloud, no MQTT,
 
 ## Install in 3 steps
 1. **Flash.** Open the **[web installer](https://skydoy.github.io/esphome-altherma/)** in Chrome or Edge on a computer,
-   pick your board and your heat pump model, plug the board in by USB → **Install**.
+   pick your board, plug it in by USB → **Install**. The board finds your heat pump model by itself (see below).
    (Do this *before* wiring: never connect USB and the X10A 5 V at the same time.)
 2. **Wi-Fi.** Type your Wi-Fi in the same window. (Or later: join the `esphome-altherma…` hotspot from your phone.)
 3. **Wire and add.** Heat pump off at the breaker, connect the board to **X10A** (table below), breaker back on.
@@ -76,18 +76,23 @@ On the M5Stack Core / Basic the screen shows the live values (buttons to navigat
 > instead (and connect only TX, RX and GND).
 
 ## Heat pump models
-| Pick in the installer | Unit |
+Ready-made firmware (confirmed models):
+
+| Model file | Unit |
 |---|---|
-| `erga_eh_da_04_08` (default) | Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA (4–8 kW), also Altherma 3 R MT (ERRA + ELVH/ELVX) |
+| `erga_eh_da_04_08` | Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA (4–8 kW), also Altherma 3 R MT (ERRA + ELVH/ELVX) |
 | `erga_eh_e_ej_04_08` | Altherma 3 R · ERGA E + EHV/EHB/EHVZ E/EJ (4–8 kW) |
 | `erla_d_ebv_ebb_ebvz_11_16` | Altherma 3 R · ERLA D + EBV/EBB/EBVZ D (11–16 kW) |
 | `erla_d_ebsh_11_16_ech2o` | Altherma 3 R ECH₂O · ERLA D + EBSH-X D (11–16 kW) |
 | `epra_d_etv_etb_etvz_14_18` | Altherma 3 H HT · EPRA D + ETV/ETB/ETVZ (14–18 kW) |
 | `altherma_ehvh_ehvx_cb` | Altherma LT · EHVH/EHVX CB (11–16 kW) |
 
-> **Not sure of the model?** Since v2.2.0 the board reads the indoor unit's Software ID and Micon ID (read-only) and
-> shows them with a **Suggested Model** sensor; **Model Check** tells you whether to reinstall with another one. If it
-> says `unknown`, pick by hand and send both IDs in a report. Who tested which unit: see the
+> **No need to know the model.** The installer flashes a generic firmware; the board reads the indoor unit's Software ID
+> and Micon ID (read-only) and shows **Suggested Model**. If the model is known, press **Install the right firmware** on
+> the board's page (or in Home Assistant) and it updates itself over Wi-Fi. If it says `unknown`, press
+> **Report my heat pump** and pick the model by hand on the installer site. 26 more model files (🧪, untested) are in
+> `confs/`: pick them by hand and build with the ESPHome Builder ([Advanced use](docs/advanced.md)).
+> All models live in one list, `installer/models.yaml`. Who tested which unit: see the
 > [compatibility list](docs/compatibility.md). Your model isn't listed, or values look wrong?
 > [Report my heat pump](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml).
 

@@ -33,7 +33,7 @@ temperaturas, caudal, potência e muito mais, localmente, no Home Assistant. Sem
 
 ## Instalar em 3 passos
 1. **Instalar o firmware.** Abre o **[instalador web](https://skydoy.github.io/esphome-altherma/)** no Chrome ou Edge,
-   num computador, escolhe a placa e o modelo da bomba de calor, liga a placa por USB → **Instalar**.
+   num computador, escolhe a placa, liga-a por USB → **Instalar**. A placa descobre sozinha o modelo da bomba (vê abaixo).
    (Faz isto *antes* de ligar os fios: nunca ligues o USB e os 5 V do X10A ao mesmo tempo.)
 2. **Wi-Fi.** Escreve o teu Wi-Fi na mesma janela. (Ou mais tarde: liga-te à rede `esphome-altherma…` com o telemóvel.)
 3. **Ligar e adicionar.** Desliga a bomba de calor no disjuntor, liga a placa ao **X10A** (tabela abaixo) e volta a
@@ -76,18 +76,23 @@ No M5Stack Core / Basic o ecrã mostra os valores em direto (botões para navega
 > reiniciar, alimenta-a por um carregador USB (e liga só o TX, o RX e o GND).
 
 ## Modelos de bomba de calor
-| Escolher no instalador | Unidade |
+Firmware pronto (modelos confirmados):
+
+| Ficheiro do modelo | Unidade |
 |---|---|
-| `erga_eh_da_04_08` (predefinido) | Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA (4–8 kW), também Altherma 3 R MT (ERRA + ELVH/ELVX) |
+| `erga_eh_da_04_08` | Altherma 3 R · ERGA D + EHV/EHB/EHVZ DA (4–8 kW), também Altherma 3 R MT (ERRA + ELVH/ELVX) |
 | `erga_eh_e_ej_04_08` | Altherma 3 R · ERGA E + EHV/EHB/EHVZ E/EJ (4–8 kW) |
 | `erla_d_ebv_ebb_ebvz_11_16` | Altherma 3 R · ERLA D + EBV/EBB/EBVZ D (11–16 kW) |
 | `erla_d_ebsh_11_16_ech2o` | Altherma 3 R ECH₂O · ERLA D + EBSH-X D (11–16 kW) |
 | `epra_d_etv_etb_etvz_14_18` | Altherma 3 H HT · EPRA D + ETV/ETB/ETVZ (14–18 kW) |
 | `altherma_ehvh_ehvx_cb` | Altherma LT · EHVH/EHVX CB (11–16 kW) |
 
-> **Não sabes o modelo?** Desde a v2.2.0 a placa lê o Software ID e o Micon ID da unidade interior (só leitura) e
-> mostra-os com o sensor **Suggested Model**; **Model Check** diz-te se tens de reinstalar com outro. Se aparecer
-> `unknown`, escolhe à mão e manda os dois IDs no reporte. Quem testou cada unidade: vê a
+> **Não precisas de saber o modelo.** O instalador põe um firmware genérico; a placa lê o Software ID e o Micon ID da
+> unidade interior (só leitura) e mostra **Suggested Model**. Se o modelo for conhecido, carrega em **Install the right
+> firmware** na página da placa (ou no Home Assistant) e ela atualiza-se sozinha por Wi-Fi. Se aparecer `unknown`, carrega
+> em **Reportar a minha bomba** e escolhe o modelo à mão no site do instalador. Há mais 26 ficheiros de modelo (🧪, por
+> testar) em `confs/`: escolhe-os à mão e compila no ESPHome Builder ([Uso avançado](docs/avancado.md)).
+> Todos os modelos estão numa só lista, `installer/models.yaml`. Quem testou cada unidade: vê a
 > [lista de compatibilidade](docs/compatibilidade.md). O teu modelo não está na lista, ou os valores parecem errados?
 > [Reportar a minha bomba](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml).
 
