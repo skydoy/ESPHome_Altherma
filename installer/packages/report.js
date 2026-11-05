@@ -313,14 +313,14 @@
 
       // Water: 3-way only on hot supply; cold returns merge at a tee (no valve)
       + '<g class="ad-pipe ad-pipe-warm ad-pipe-trunk" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M500 122 H528"/>'
+      + '<path d="M500 128 H532"/>'
       + '</g>'
       + '<g class="ad-pipe ad-pipe-cool ad-pipe-trunk" fill="none" stroke-linecap="round" stroke-linejoin="round">'
       + '<path d="M500 198 H590"/>'
       + '</g>'
 
       + '<g class="ad-pipe ad-pipe-warm ad-pipe-branch" data-branch="dhw" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M550 98 V50 H600"/>'
+      + '<path d="M550 110 V50 H600"/>'
       + '</g>'
       // Heat supply doglegs right around the valve state chip
       + '<g class="ad-pipe ad-pipe-warm ad-pipe-branch" data-branch="heat" fill="none" stroke-linecap="round" stroke-linejoin="round">'
@@ -379,22 +379,14 @@
       + chip('liquid', 12, 216, 110, 34, '')
       + '</g>'
 
-      // Prominent 3-way valve on hot supply (bowtie + actuator); always full opacity
-      + '<g class="ad-valve" data-valve transform="translate(550,122)">'
-      // Actuator (top)
-      + '<line x1="0" y1="-14" x2="0" y2="-28" class="ad-valve-stem"/>'
-      + '<rect x="-11" y="-42" width="22" height="14" rx="2" class="ad-valve-act"/>'
-      + '<line x1="-6" y1="-35" x2="6" y2="-35" class="ad-valve-act-mark"/>'
-      // Bowtie body (two triangles on through-flow) + third port down
-      + '<polygon points="-20,0 -4,-11 -4,11" class="ad-valve-wing"/>'
-      + '<polygon points="20,0 4,-11 4,11" class="ad-valve-wing"/>'
-      + '<polygon points="-9,4 9,4 0,20" class="ad-valve-wing ad-valve-port3"/>'
-      + '<circle cx="0" cy="0" r="3.2" class="ad-valve-hub"/>'
-      // Port nipples
-      + '<path d="M-20,0 H-26 M20,0 H26 M0,20 V26" class="ad-valve-ports" fill="none"/>'
-      + '<text y="-48" text-anchor="middle" class="ad-valve-name" data-i18n="valveShort">3 vias</text>'
-      // Clear state chip under the valve
-      + '<g class="ad-valve-chip" transform="translate(-46,32)">'
+      // v4-style circle 3-way on hot supply — full opacity; label only in chip below (no text in/on circle)
+      + '<g class="ad-valve" data-valve transform="translate(550,128)">'
+      + '<circle r="15" class="ad-valve-node"/>'
+      // Port stubs: inlet (left), DHW (up), Heating (down→dogleg)
+      + '<path d="M-15,0 H-21 M0,-15 V-21 M0,15 V21" class="ad-valve-ports" fill="none"/>'
+      + '<path d="M-7,0 H7 M0,-7 V7" class="ad-valve-t" fill="none"/>'
+      // Chip below only: title + AQS/Aquecimento (no duplicate '3 vias' on the symbol)
+      + '<g class="ad-valve-chip" transform="translate(-46,28)">'
       + '<rect width="92" height="34" rx="7" class="ad-valve-chip-bg"/>'
       + '<text x="46" y="13" text-anchor="middle" class="ad-valve-chip-l" data-i18n="valveShort">3 vias</text>'
       + '<text x="46" y="27" text-anchor="middle" class="ad-valve-chip-v" data-v="valve">—</text>'
@@ -488,20 +480,16 @@
     + '#altherma-diagram .ad-emit rect{fill:currentColor;opacity:.35}'
     + '#altherma-diagram .ad-emit-on .ad-emit rect{fill:#e76f51;opacity:.85}'
     + '#altherma-diagram .ad-valve{opacity:1!important;isolation:isolate}'
-    + '#altherma-diagram .ad-valve-wing{fill:CanvasText;stroke:CanvasText;stroke-width:1.8;stroke-linejoin:round;opacity:.92}'
-    + '#altherma-diagram .ad-valve-hub{fill:Canvas;stroke:CanvasText;stroke-width:2}'
-    + '#altherma-diagram .ad-valve-ports{stroke:CanvasText;stroke-width:3.2;stroke-linecap:square;opacity:1}'
-    + '#altherma-diagram .ad-valve-stem{stroke:CanvasText;stroke-width:2.4;stroke-linecap:round}'
-    + '#altherma-diagram .ad-valve-act{fill:Canvas;stroke:CanvasText;stroke-width:2.2}'
-    + '#altherma-diagram .ad-valve-act-mark{stroke:CanvasText;stroke-width:1.6;stroke-linecap:round;opacity:.7}'
-    + '#altherma-diagram .ad-valve-name{font:700 9px system-ui,sans-serif;fill:CanvasText;opacity:.75}'
+    + '#altherma-diagram .ad-valve-node{fill:color-mix(in srgb,Canvas 70%,#2a9d8f 30%);stroke:CanvasText;stroke-width:2.6;opacity:1}'
+    + '#altherma-diagram .ad-valve-ports{stroke:CanvasText;stroke-width:3.2;stroke-linecap:round;opacity:1}'
+    + '#altherma-diagram .ad-valve-t{stroke:CanvasText;stroke-width:2.6;stroke-linecap:round;opacity:1}'
     + '#altherma-diagram .ad-valve-chip-bg{fill:color-mix(in srgb,Canvas 82%,#2a9d8f 18%);stroke:CanvasText;stroke-width:1.8;opacity:1}'
-    + '#altherma-diagram .ad-valve-chip-l{font:700 9px system-ui,sans-serif;fill:CanvasText;opacity:.7}'
+    + '#altherma-diagram .ad-valve-chip-l{font:700 9px system-ui,sans-serif;fill:CanvasText;opacity:.75}'
     + '#altherma-diagram .ad-valve-chip-v{font:800 12px system-ui,sans-serif;fill:CanvasText;opacity:1}'
+    + '#altherma-diagram .ad-valve.ad-dhw .ad-valve-node{fill:color-mix(in srgb,#f4a261 45%,Canvas 55%);stroke:#c2410c}'
+    + '#altherma-diagram .ad-valve.ad-space .ad-valve-node{fill:color-mix(in srgb,#2a9d8f 40%,Canvas 60%);stroke:#0f766e}'
     + '#altherma-diagram .ad-valve.ad-dhw .ad-valve-chip-bg{fill:color-mix(in srgb,#f4a261 42%,Canvas 58%);stroke:#c2410c}'
     + '#altherma-diagram .ad-valve.ad-space .ad-valve-chip-bg{fill:color-mix(in srgb,#2a9d8f 38%,Canvas 62%);stroke:#0f766e}'
-    + '#altherma-diagram .ad-valve.ad-dhw .ad-valve-wing{fill:#e76f51;stroke:#9a3412}'
-    + '#altherma-diagram .ad-valve.ad-space .ad-valve-wing{fill:#0f766e;stroke:#134e4a}'
     + '#altherma-diagram .ad-tee-node{fill:color-mix(in srgb,Canvas 70%,#4cc9f0 30%);stroke:color-mix(in srgb,CanvasText 45%,transparent);stroke-width:1.8}'
     + '#altherma-diagram .ad-pipe{stroke-width:7}'
     + '#altherma-diagram .ad-pipe-ref-hot{stroke:#e85d04;opacity:.85}'
