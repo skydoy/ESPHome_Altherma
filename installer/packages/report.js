@@ -24,6 +24,30 @@
   };
 })(window);
 
+// Tab favicon: ESPHome Altherma logo (same as static/favicon.svg), inline data: URI for offline.
+(function () {
+  var HREF = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgNjAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwRkUzRkEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxNzg0RjciLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjYwMCIgcng9IjEyOCIgZmlsbD0idXJsKCNnKSIvPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBzdHJva2Utd2lkdGg9IjI4IiBkPSJNMTEyIDMwMEwzMDAgMTI4TDQ4OCAzMDBNMTU2IDI2MlY0OTJINDQ0VjI2MiIvPjxwYXRoIHN0cm9rZS13aWR0aD0iMTAiIGQ9Ik0zNTYgMjM2SDM4Nk0zNTYgMjY4SDM3NE0zNTYgMzAwSDM4Nk0zNTYgMzMySDM3NE0zNTYgMzY0SDM4NiIvPjwvZz48ZyBmaWxsPSIjZmZmIj48cmVjdCB4PSIyNjIiIHk9IjE5NiIgd2lkdGg9Ijc2IiBoZWlnaHQ9IjIzMCIgcng9IjM4Ii8+PGNpcmNsZSBjeD0iMzAwIiBjeT0iNDMwIiByPSI1NiIvPjwvZz48Y2lyY2xlIGN4PSIzMDAiIGN5PSI0MzAiIHI9IjM2IiBmaWxsPSIjMTc4NEY3Ii8+PHJlY3QgeD0iMjg4IiB5PSIyODMuMSIgd2lkdGg9IjI0IiBoZWlnaHQ9IjE0Ni45IiByeD0iMTIiIGZpbGw9IiMxNzg0RjciLz48L3N2Zz4=';
+  function apply() {
+    var head = document.head || document.getElementsByTagName('head')[0];
+    if (!head) return;
+    var links = head.querySelectorAll('link[rel="icon"],link[rel="shortcut icon"]');
+    if (!links.length) {
+      var l = document.createElement('link');
+      l.rel = 'icon';
+      l.type = 'image/svg+xml';
+      l.href = HREF;
+      head.appendChild(l);
+    } else {
+      for (var i = 0; i < links.length; i++) {
+        links[i].type = 'image/svg+xml';
+        links[i].href = HREF;
+      }
+    }
+  }
+  if (document.head) apply();
+  else document.addEventListener('DOMContentLoaded', apply);
+})();
+
 (function () {
   var CSS = '.logs{max-height:min(45vh,420px);overflow-y:auto;overscroll-behavior:contain}';
   function fix() {
