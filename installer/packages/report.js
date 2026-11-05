@@ -200,11 +200,13 @@
     var s = String(v).toUpperCase();
     return s === 'ON' || s === 'TRUE' || s === '1' || /^ON\b/.test(s);
   }
+  // ESPAltherma binary: ON = DHW, OFF = Space. Confirmed by sibling conf names
+  // "3way valve(On:DHW_Off:Space)" and ERLA "3-Way Valve (DHW/Space)".
   function valveIsDhw(v) {
     if (v == null) return null;
     var s = String(v).toUpperCase();
-    if (s.indexOf('DHW') >= 0 || s === 'ON' || s === 'TRUE') return true;
-    if (s.indexOf('SPACE') >= 0 || s === 'OFF' || s === 'FALSE') return false;
+    if (s.indexOf('DHW') >= 0 || s === 'ON' || s === 'TRUE' || s === '1') return true;
+    if (s.indexOf('SPACE') >= 0 || s === 'OFF' || s === 'FALSE' || s === '0') return false;
     return null;
   }
 
@@ -220,99 +222,114 @@
   }
 
   function buildSvg() {
-    // Layout (viewBox 780×340):
-    //  Outdoor (left) --refrig pipes-- Indoor unit / plate HX (center-left)
-    //  Indoor --warm supply--> 3-way valve --> DHW (top-right) / Heating (bottom-right)
-    //  return cool pipes back to indoor
+    // Layout (viewBox 800×410):
+    //  Outdoor --refrig-- Indoor (enlarged: water chips) --trunk--> 3-way
+    //  3-way branches: DHW (top-right) / Heating emitters (bottom-right)
     return ''
-      + '<svg viewBox="0 0 780 370" role="img" aria-label="Heat pump diagram">'
+      + '<svg viewBox="0 0 800 410" role="img" aria-label="Heat pump diagram">'
       + '<defs>'
       + '<linearGradient id="ad-tank" x1="0" y1="0" x2="0" y2="1">'
       + '<stop offset="0%" stop-color="#f4a261"/><stop offset="100%" stop-color="#e76f51"/></linearGradient>'
       + '</defs>'
 
       // --- Pipes (under blocks) ---
-      // Refrigerant pair outdoor <-> indoor (hot discharge top, cold suction bottom)
+      // Refrigerant pair outdoor <-> indoor
       + '<g class="ad-pipe ad-pipe-ref-hot" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M210 100 H270"/>'
+      + '<path d="M206 110 H250"/>'
       + '</g>'
       + '<g class="ad-pipe ad-pipe-ref-cold" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M210 150 H270"/>'
+      + '<path d="M206 160 H250"/>'
       + '</g>'
-      // Water supply (warm) indoor -> valve -> DHW / heating
-      + '<g class="ad-pipe ad-pipe-warm" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M390 120 H455"/>'                          // indoor -> valve
-      + '<path d="M480 105 V55 H560"/>'                      // valve -> DHW
-      + '<path d="M480 135 V175 H500"/>'                     // valve -> heating
+
+      // Shared trunk (indoor <-> valve) — not a branch
+      + '<g class="ad-pipe ad-pipe-warm ad-pipe-trunk" fill="none" stroke-linecap="round" stroke-linejoin="round">'
+      + '<path d="M500 130 H528"/>'
       + '</g>'
-      // Water return (cool) DHW/heating -> indoor
-      + '<g class="ad-pipe ad-pipe-cool" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-      + '<path d="M560 95 H520 V145 H390"/>'                 // DHW return leg into shared return
-      + '<path d="M500 210 H430 V145"/>'                     // heating return into shared return
+      + '<g class="ad-pipe ad-pipe-cool ad-pipe-trunk" fill="none" stroke-linecap="round" stroke-linejoin="round">'
+      + '<path d="M500 170 H528"/>'
+      + '</g>'
+
+      // DHW branch (supply + return)
+      + '<g class="ad-pipe ad-pipe-warm ad-pipe-branch" data-branch="dhw" fill="none" stroke-linecap="round" stroke-linejoin="round">'
+      + '<path d="M550 118 V50 H600"/>'
+      + '</g>'
+      + '<g class="ad-pipe ad-pipe-cool ad-pipe-branch" data-branch="dhw" fill="none" stroke-linecap="round" stroke-linejoin="round">'
+      + '<path d="M600 105 H575 V155 H550"/>'
+      + '</g>'
+
+      // Heating branch (supply + return)
+      + '<g class="ad-pipe ad-pipe-warm ad-pipe-branch" data-branch="heat" fill="none" stroke-linecap="round" stroke-linejoin="round">'
+      + '<path d="M550 142 V255 H600"/>'
+      + '</g>'
+      + '<g class="ad-pipe ad-pipe-cool ad-pipe-branch" data-branch="heat" fill="none" stroke-linecap="round" stroke-linejoin="round">'
+      + '<path d="M600 310 H575 V185 H550"/>'
       + '</g>'
 
       // Outdoor unit
-      + '<g class="ad-block" transform="translate(20,40)">'
-      + '<rect width="190" height="220" rx="14" class="ad-box"/>'
+      + '<g class="ad-block" transform="translate(16,40)">'
+      + '<rect width="190" height="230" rx="14" class="ad-box"/>'
       + '<text x="95" y="22" text-anchor="middle" class="ad-title" data-i18n="outdoor">Unidade exterior</text>'
-      + '<circle cx="65" cy="100" r="34" class="ad-fan"/><circle cx="65" cy="100" r="7" class="ad-fan-hub"/>'
-      + '<path d="M65 72 L72 95 L65 100 L58 95 Z M65 128 L72 105 L65 100 L58 105 Z M38 100 L60 93 L65 100 L60 107 Z M92 100 L70 93 L65 100 L70 107 Z" class="ad-fan-blade"/>'
-      + '<rect x="115" y="78" width="55" height="44" rx="8" class="ad-comp"/>'
-      + '<text x="142" y="104" text-anchor="middle" class="ad-small">comp</text>'
+      + '<circle cx="65" cy="105" r="34" class="ad-fan"/><circle cx="65" cy="105" r="7" class="ad-fan-hub"/>'
+      + '<path d="M65 77 L72 100 L65 105 L58 100 Z M65 133 L72 110 L65 105 L58 110 Z M38 105 L60 98 L65 105 L60 112 Z M92 105 L70 98 L65 105 L70 112 Z" class="ad-fan-blade"/>'
+      + '<rect x="115" y="83" width="55" height="44" rx="8" class="ad-comp"/>'
+      + '<text x="142" y="109" text-anchor="middle" class="ad-small">comp</text>'
       + chip('tdis', 12, 32, 80, 34, 'ad-hot')
       + chip('tsuc', 98, 32, 80, 34, 'ad-cold')
-      + chip('tout', 12, 148, 80, 34, '')
-      + chip('freq', 98, 148, 80, 34, '')
-      + chip('thx', 12, 188, 166, 34, '')
+      + chip('tout', 12, 158, 80, 34, '')
+      + chip('freq', 98, 158, 80, 34, '')
+      + chip('thx', 12, 198, 166, 34, '')
       + '</g>'
 
-      // Indoor unit (plate HX) — was "Permutador"
-      + '<g class="ad-block" transform="translate(270,55)">'
-      + '<rect width="120" height="160" rx="12" class="ad-box ad-hx"/>'
-      + '<text x="60" y="20" text-anchor="middle" class="ad-title" data-i18n="indoor">Unidade interior</text>'
-      + '<path d="M22 44 H98 M22 60 H98 M22 76 H98 M22 92 H98 M22 108 H98" class="ad-plates"/>'
-      + chip('liquid', 10, 118, 100, 34, '')
+      // Indoor unit — water-side data lives here (leaving/return, flow, BUH, pump, heating op)
+      + '<g class="ad-block" data-block="indoor" transform="translate(250,20)">'
+      + '<rect width="250" height="300" rx="14" class="ad-box ad-hx"/>'
+      + '<text x="125" y="22" text-anchor="middle" class="ad-title" data-i18n="indoor">Unidade interior</text>'
+      + '<path d="M18 40 H100 M18 52 H100 M18 64 H100 M18 76 H100" class="ad-plates"/>'
+      + chip('tlw', 12, 90, 110, 34, 'ad-hot')
+      + chip('tin', 128, 90, 110, 34, 'ad-cold')
+      + chip('flow', 12, 132, 90, 34, '')
+      + chip('buh1', 108, 132, 64, 34, '')
+      + chip('buh2', 178, 132, 64, 34, '')
+      + chip('pump', 12, 174, 110, 34, '')
+      + chip('space', 128, 174, 110, 34, '')
+      + chip('liquid', 12, 216, 110, 34, '')
       + '</g>'
 
       // 3-way valve node
-      + '<g class="ad-block" transform="translate(455,95)">'
-      + '<circle cx="25" cy="25" r="22" class="ad-valve-node"/>'
-      + '<text x="25" y="22" text-anchor="middle" class="ad-small" data-i18n="valveShort">3 vias</text>'
-      + '<text x="25" y="34" text-anchor="middle" class="ad-tiny" data-i18n="valveHint">AQS/AQ</text>'
+      + '<g class="ad-block" transform="translate(528,115)">'
+      + '<circle cx="22" cy="22" r="22" class="ad-valve-node"/>'
+      + '<text x="22" y="19" text-anchor="middle" class="ad-small" data-i18n="valveShort">3 vias</text>'
+      + '<text x="22" y="31" text-anchor="middle" class="ad-tiny" data-i18n="valveHint">AQS/AQ</text>'
       + '</g>'
-      + chip('valve', 430, 148, 100, 34, '')
+      + chip('valve', 505, 168, 100, 34, '')
 
       // DHW tank
-      + '<g class="ad-block" transform="translate(560,10)">'
-      + '<rect width="190" height="120" rx="14" class="ad-box"/>'
-      + '<text x="95" y="20" text-anchor="middle" class="ad-title" data-i18n="dhw">Depósito AQS</text>'
-      + '<rect x="20" y="32" width="50" height="70" rx="18" fill="url(#ad-tank)" opacity=".9"/>'
-      + '<rect x="20" y="32" width="50" height="70" rx="18" class="ad-tank-stroke"/>'
-      + chip('tdhw', 80, 50, 100, 34, 'ad-hot')
+      + '<g class="ad-block" data-block="dhw" transform="translate(600,10)">'
+      + '<rect width="180" height="120" rx="14" class="ad-box"/>'
+      + '<text x="90" y="20" text-anchor="middle" class="ad-title" data-i18n="dhw">Depósito AQS</text>'
+      + '<rect x="16" y="34" width="48" height="68" rx="16" fill="url(#ad-tank)" opacity=".9"/>'
+      + '<rect x="16" y="34" width="48" height="68" rx="16" class="ad-tank-stroke"/>'
+      + chip('tdhw', 72, 52, 96, 34, 'ad-hot')
       + '</g>'
 
-      // Heating circuit
-      + '<g class="ad-block" transform="translate(500,175)">'
-      + '<rect width="250" height="145" rx="14" class="ad-box"/>'
-      + '<text x="125" y="20" text-anchor="middle" class="ad-title" data-i18n="heat">Circuito de aquecimento</text>'
-      + '<g transform="translate(190,40)" class="ad-emit">'
-      + '<rect x="0" y="8" width="9" height="44" rx="2"/><rect x="14" y="8" width="9" height="44" rx="2"/><rect x="28" y="8" width="9" height="44" rx="2"/>'
-      + '<rect x="-3" y="6" width="43" height="4" rx="1"/><rect x="-3" y="52" width="43" height="4" rx="1"/>'
+      // Heating circuit — emitters only (radiator / floor); optional ON glow via .ad-emit-on
+      + '<g class="ad-block" data-block="heat" transform="translate(600,230)">'
+      + '<rect width="180" height="110" rx="14" class="ad-box"/>'
+      + '<text x="90" y="20" text-anchor="middle" class="ad-title" data-i18n="heat">Circuito de aquecimento</text>'
+      + '<g transform="translate(42,42)" class="ad-emit">'
+      + '<rect x="0" y="8" width="11" height="48" rx="2"/><rect x="16" y="8" width="11" height="48" rx="2"/>'
+      + '<rect x="32" y="8" width="11" height="48" rx="2"/><rect x="48" y="8" width="11" height="48" rx="2"/>'
+      + '<rect x="64" y="8" width="11" height="48" rx="2"/>'
+      + '<rect x="-4" y="6" width="83" height="4" rx="1"/><rect x="-4" y="56" width="83" height="4" rx="1"/>'
       + '</g>'
-      + chip('tlw', 12, 32, 110, 34, 'ad-hot')
-      + chip('tin', 128, 32, 110, 34, 'ad-cold')
-      + chip('flow', 12, 70, 90, 34, '')
-      + chip('buh1', 108, 70, 64, 34, '')
-      + chip('buh2', 178, 70, 64, 34, '')
-      + chip('pump', 12, 108, 100, 34, '')
-      + chip('space', 120, 108, 120, 34, '')
+      + '<text x="90" y="100" text-anchor="middle" class="ad-tiny ad-emit-label" data-i18n="emitters">Emissores</text>'
       + '</g>'
 
-      // Status + pipe legend (below the blocks so chips do not collide)
-      + '<g transform="translate(20,335)">'
+      // Status + pipe legend
+      + '<g transform="translate(16,370)">'
       + chip('mode', 0, 0, 160, 32, '')
       + '</g>'
-      + '<g transform="translate(200,342)" class="ad-legend">'
+      + '<g transform="translate(190,378)" class="ad-legend">'
       + '<line x1="0" y1="6" x2="22" y2="6" class="ad-pipe ad-pipe-ref-hot"/>'
       + '<text x="28" y="10" class="ad-legend-t" data-i18n="legRefHot">Refrig. quente</text>'
       + '<line x1="130" y1="6" x2="152" y2="6" class="ad-pipe ad-pipe-ref-cold"/>'
@@ -336,7 +353,7 @@
     + '#altherma-diagram .ad-sub{margin:2px 0 0;font:12px/1.3 system-ui,sans-serif;opacity:.55}'
     + '#altherma-diagram .ad-lang{flex:0 0 auto;padding:4px 8px;border-radius:8px;border:1px solid color-mix(in srgb,CanvasText 25%,transparent);'
     + 'background:color-mix(in srgb,Canvas 85%,CanvasText 15%);color:inherit;font:700 11px/1 system-ui,sans-serif;cursor:pointer}'
-    + '#altherma-diagram svg{width:100%;height:auto;display:block;max-height:420px}'
+    + '#altherma-diagram svg{width:100%;height:auto;display:block;max-height:460px}'
     + '#altherma-diagram .ad-box{fill:color-mix(in srgb,Canvas 88%,CanvasText 12%);stroke:color-mix(in srgb,CanvasText 22%,transparent);stroke-width:1.5}'
     + '#altherma-diagram .ad-hx{fill:color-mix(in srgb,Canvas 80%,#4cc9f0 20%)}'
     + '#altherma-diagram .ad-title{font:600 11px system-ui,sans-serif;fill:currentColor;opacity:.85}'
@@ -349,12 +366,21 @@
     + '#altherma-diagram .ad-plates{stroke:currentColor;stroke-width:2;opacity:.35}'
     + '#altherma-diagram .ad-tank-stroke{fill:none;stroke:currentColor;stroke-width:1.5;opacity:.5}'
     + '#altherma-diagram .ad-emit rect{fill:currentColor;opacity:.35}'
+    + '#altherma-diagram .ad-emit-on .ad-emit rect{fill:#e76f51;opacity:.85}'
     + '#altherma-diagram .ad-valve-node{fill:color-mix(in srgb,Canvas 75%,#2a9d8f 25%);stroke:color-mix(in srgb,CanvasText 35%,transparent);stroke-width:2}'
     + '#altherma-diagram .ad-pipe{stroke-width:7}'
     + '#altherma-diagram .ad-pipe-ref-hot{stroke:#e85d04;opacity:.85}'
     + '#altherma-diagram .ad-pipe-ref-cold{stroke:#219ebc;opacity:.85}'
     + '#altherma-diagram .ad-pipe-warm{stroke:#f4a261;opacity:.9}'
     + '#altherma-diagram .ad-pipe-cool{stroke:#4cc9f0;opacity:.85}'
+    + '#altherma-diagram .ad-pipe-trunk{opacity:.9}'
+    + '#altherma-diagram .ad-pipe-trunk.ad-muted{opacity:.22;stroke:#9aa0a6}'
+    + '#altherma-diagram .ad-pipe-branch.ad-active{opacity:1}'
+    + '#altherma-diagram .ad-pipe-branch.ad-muted{opacity:.16;stroke:#9aa0a6}'
+    + '#altherma-diagram [data-block="dhw"].ad-route-on .ad-box,'
+    + '#altherma-diagram [data-block="heat"].ad-route-on .ad-box{stroke:#2a9d8f;stroke-width:2.2}'
+    + '#altherma-diagram [data-block="dhw"].ad-route-off,'
+    + '#altherma-diagram [data-block="heat"].ad-route-off{opacity:.45}'
     + '#altherma-diagram .ad-legend-t{font:10px system-ui,sans-serif;fill:currentColor;opacity:.65}'
     + '#altherma-diagram .ad-chip{fill:color-mix(in srgb,Canvas 70%,CanvasText 30%);opacity:.97}'
     + '#altherma-diagram .ad-chip.ad-hot{fill:color-mix(in srgb,#e85d04 32%,Canvas 68%)}'
@@ -365,7 +391,45 @@
     + '#altherma-diagram [data-chip].on{display:inline}'
     + '#altherma-diagram [data-chip].active .ad-chip{stroke:#2a9d8f;stroke-width:1.6}'
     + '@media (max-width:600px){#altherma-diagram{margin:6px 6px 2px;padding:8px}'
-    + '#altherma-diagram .ad-head h2{font-size:14px}#altherma-diagram svg{max-height:340px}}';
+    + '#altherma-diagram .ad-head h2{font-size:14px}#altherma-diagram svg{max-height:380px}}';
+
+  function updatePipes(root) {
+    if (!root) return;
+    var pumpOn = isOn(vals.pump);
+    var dhw = valveIsDhw(vals.valve);
+    var branches = root.querySelectorAll('[data-branch]');
+    for (var i = 0; i < branches.length; i++) {
+      var el = branches[i];
+      var b = el.getAttribute('data-branch');
+      el.classList.remove('ad-active', 'ad-muted');
+      if (!pumpOn || dhw === null) {
+        el.classList.add('ad-muted');
+      } else if ((b === 'dhw' && dhw) || (b === 'heat' && !dhw)) {
+        el.classList.add('ad-active');
+      } else {
+        el.classList.add('ad-muted');
+      }
+    }
+    var trunks = root.querySelectorAll('.ad-pipe-trunk');
+    for (var t = 0; t < trunks.length; t++) {
+      if (pumpOn) trunks[t].classList.remove('ad-muted');
+      else trunks[t].classList.add('ad-muted');
+    }
+    var dhwBlock = root.querySelector('[data-block="dhw"]');
+    var heatBlock = root.querySelector('[data-block="heat"]');
+    function setRoute(block, on) {
+      if (!block) return;
+      block.classList.remove('ad-route-on', 'ad-route-off');
+      if (!pumpOn || dhw === null) return;
+      block.classList.add(on ? 'ad-route-on' : 'ad-route-off');
+    }
+    setRoute(dhwBlock, dhw === true);
+    setRoute(heatBlock, dhw === false);
+    if (heatBlock) {
+      if (isOn(vals.space)) heatBlock.classList.add('ad-emit-on');
+      else heatBlock.classList.remove('ad-emit-on');
+    }
+  }
 
   function paint(root) {
     if (!root) return;
@@ -391,6 +455,7 @@
       var c = root.querySelectorAll('[data-chip="tlw"]');
       for (var j = 0; j < c.length; j++) c[j].classList.add('on');
     }
+    updatePipes(root);
   }
 
   function applyI18n(root) {
@@ -401,6 +466,7 @@
       indoor: L.t('Unidade interior', 'Indoor unit'),
       dhw: L.t('Depósito AQS', 'DHW tank'),
       heat: L.t('Circuito de aquecimento', 'Heating circuit'),
+      emitters: L.t('Emissores', 'Emitters'),
       valveShort: L.t('3 vias', '3-way'),
       valveHint: L.t('AQS/AQ', 'DHW/Sp'),
       legRefHot: L.t('Refrig. quente', 'Hot refrigerant'),
