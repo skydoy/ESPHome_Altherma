@@ -15,6 +15,7 @@ packages:
   board: !include ../boards/esphome-altherma-m5stack.yaml
   identify: !include packages/identify.yaml
   firmware_update: !include packages/firmware-update.yaml
+  webui: !include packages/webui.yaml
   # Optional: animated ESPHome Altherma splash at boot. Remove this line to disable.
   boot_animation: !include packages/boot-animation-m5stack.yaml
 
