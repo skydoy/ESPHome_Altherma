@@ -31,6 +31,38 @@ listed with their author and the original discussion or pull request number.
 | `epra_d_etv_etb_etvz_14_18` | Altherma 3 H HT · EPRA D/D7 + ETV16/ETB16/ETVZ16 E/E7 (14–18 kW) | 🔶 |
 | `altherma_ehvh_ehvx_cb` | Altherma LT CA/CB · EHVH-CB / EHVX-CB (11–16 kW) | ❔ |
 
+### Model files not in the web installer yet
+Converted from the ESPAltherma model definitions (raomin and contributors, MIT License). Every file passes `esphome config`, but none has been tried on a real unit yet. They are not in the web installer: use them with your own build ([Advanced use](advanced.md#build-it-yourself)) by setting `altherma_model`, and report how it goes so the model can be added to the installer.
+
+| Model file | ESPAltherma definition | Entities | Status |
+|---|---|---|---|
+| `altherma_hybrid` | Altherma · HYBRID | 173 | 🧪 |
+| `altherma_lt_ca_cb_04_08` | Altherma · LT_CA_CB_04-08KW | 174 | 🧪 |
+| `altherma_lt_cb_04_08_bizone` | Altherma · LT_CB_04-08kW Bizone | 174 | 🧪 |
+| `altherma_lt_cb_11_16_bizone` | Altherma · LT_CB_11-16kW Bizone | 174 | 🧪 |
+| `altherma_lt_eblq_eblq_ca_5_7_monobloc` | Altherma · LT_EBLQ-EBLQ-CA series 5-7kW Monobloc | 156 | 🧪 |
+| `altherma_lt_eblq_edlq_ca_11_16_monobloc` | Altherma · LT_EBLQ-EDLQ-CA series 11-16kW Monobloc | 171 | 🧪 |
+| `altherma_lt_multi_dhwhp` | Altherma · LT_MULTI_DHWHP | 173 | 🧪 |
+| `altherma_lt_multi_hybrid` | Altherma · LT_MULTI_HYBRID | 174 | 🧪 |
+| `ebla_edla_d_4_8_monobloc` | Altherma · EBLA-EDLA D series 4-8kW Monobloc | 188 | 🧪 |
+| `ebla_edla_d_9_16_monobloc` | Altherma · EBLA-EDLA D series 9-16kW Monobloc | 192 | 🧪 |
+| `egsah_x_ewsah_x_d_6_10_geo3` | Altherma · EGSAH-X-EWSAH-X-D series 6-10kW GEO3 | 140 | 🧪 |
+| `egsqh_a_10_geo2` | Altherma · EGSQH-A series 10kW GEO2 | 171 | 🧪 |
+| `ekhwet_bav3_multi_dhw_tank` | EKHWET-BAV3 · MULTI DHW TANK | 191 | 🧪 |
+| `epga_d_eab_eav_eavz_d_j_11_16` | Altherma · EPGA D EAB-EAV-EAVZ D(J) series 11-16kW | 164 | 🧪 |
+| `epra_d_d7_etsh_x_16p30_50_e_e7_14_18_ech2o` | Altherma · EPRA D_D7 ETSH-X 16P30-50 E_E7 series 14-18kW-ECH2O | 195 | 🧪 |
+| `epra_d_etsh_x_16p30_50_d_14_16_ech2o` | Altherma · EPRA D ETSH-X 16P30-50 D series 14-16kW-ECH2O | 186 | 🧪 |
+| `epra_d_etv16_etb16_etvz16_d_14_16` | Altherma · EPRA D ETV16-ETB16-ETVZ16 D series 14-16kW | 187 | 🧪 |
+| `epra_e_etsh_x_16p30_50_e_8_12_ech2o` | Altherma · EPRA E ETSH-X 16P30-50 E series 8-12kW-ECH2O | 196 | 🧪 |
+| `epra_e_etv16_etb16_etvz16_e_ej_8_12` | Altherma · EPRA E ETV16-ETB16-ETVZ16 E_EJ series 8-12kW | 196 | 🧪 |
+| `erga_d_ehsh_x_p30_50_d_04_08_ech2o` | Altherma · ERGA D EHSH-X P30-50 D series 04-08kW-ECH2O | 170 | 🧪 |
+| `erga_d_ehv_ehb_ehvz_dj_04_08` | Altherma · ERGA D EHV-EHB-EHVZ DJ series 04-08 kW | 188 | 🧪 |
+| `erga_e_ehsh_x_p30_50_e_ef_04_08_ech2o` | Altherma · ERGA E EHSH-X P30-50 E_EF series 04-08kW-ECH2O | 195 | 🧪 |
+| `erla03_d_ehfh_ehfz_dj_3` | Altherma · ERLA03 D EHFH-EHFZ DJ series 3kW | 170 | 🧪 |
+| `mini_chiller_ewaa_ewya_d_4_8` | Daikin Mini chiller · EWAA-EWYA D series 4-8kW | 188 | 🧪 |
+| `mini_chiller_ewaa_ewya_d_9_16` | Daikin Mini chiller · EWAA-EWYA D series 9-16kW | 174 | 🧪 |
+| `mini_chiller_ewaq_ewyq_b_4_8` | Daikin Mini chiller · EWAQ-EWYQ B series 4-8kW | 156 | 🧪 |
+
 ## Reported installs
 | Outdoor / indoor unit | Series | Model file | Board | Status | Reported by, notes |
 |---|---|---|---|---|---|
