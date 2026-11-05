@@ -95,6 +95,14 @@ body:
         Quais as entidades com valores errados (e o que mostra o ecrã da bomba), ou que valores faltam.
       placeholder: |
         "Leaving Water Temp" shows 0.0, display says 35 °C.
+  - type: textarea
+    id: readings
+    attributes:
+      label: Sensor readings / Leituras dos sensores
+      description: |
+        Filled in by the "Report my heat pump" button on the board's web page: every entity and its value.
+        Preenchido pelo botão "Reportar a minha bomba" na página da placa: todas as entidades e o seu valor.
+      render: text
   - type: input
     id: esphome_version
     attributes:
