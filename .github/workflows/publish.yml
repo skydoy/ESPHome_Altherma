@@ -18,7 +18,7 @@ jobs:
   build:
     # Keep "model" in sync with confs/*.yaml and static/index.html (validate.yml checks it).
     name: ${{ matrix.board }} / ${{ matrix.model }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -63,7 +63,7 @@ jobs:
   pages:
     # Installer page + every firmware folder in one Pages artifact.
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
@@ -89,7 +89,7 @@ jobs:
     # Publish the installer and the OTA manifests only for release tags (or a manual run).
     # The github-pages environment must allow v* tags (Settings -> Environments).
     needs: pages
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       pages: write
       id-token: write
@@ -104,7 +104,7 @@ jobs:
     # a "## [x.y.z]" section (otherwise GitHub's generated notes), every image attached.
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     env:

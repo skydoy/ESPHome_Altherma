@@ -12,7 +12,7 @@ concurrency:
 jobs:
   config:
     name: config / ${{ matrix.board }} (6 models)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -38,7 +38,7 @@ jobs:
   board-configs:
     # The plain board files (what the Device Builder adopts), built from this checkout.
     name: config / ${{ matrix.file }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -55,7 +55,7 @@ jobs:
       - run: esphome -s altherma_component_source components config ${{ matrix.file }} > /dev/null
   site:
     # The installer page, its model list and the build matrix must list the same confs/*.yaml.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - name: Every model file is offered on the site and built on release
@@ -68,7 +68,7 @@ jobs:
           done
   compile:
     # One real build (default board and model) so compiler errors show up before a release.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
