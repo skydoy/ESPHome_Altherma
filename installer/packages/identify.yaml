@@ -3,7 +3,7 @@
 # shows both, and suggests the matching confs/<model>.yaml from the table below.
 # Unknown IDs: pick the model by hand, as before, and send the two IDs in a compatibility
 # report so they can be added here. Add an entry only after it has been confirmed.
-# (merged into the altherma_hub block of base.yaml)
+# (merged into the altherma_hub block of boards/base.yaml)
 altherma_hub:
   identify_on_boot: true
   software_id_text_sensor: altherma_software_id

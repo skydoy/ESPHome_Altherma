@@ -1,7 +1,7 @@
 # Optional boot animation for the M5Stack Core / Basic screen (320x240, id m5_display).
 # Shows the ESPHome Altherma logo with its thermometer filling up, then the name and the
 # firmware version, then hands the screen back to the normal UI of
-# esphome-altherma-m5stack.yaml. That file is not modified: the splash is drawn as a
+# boards/esphome-altherma-m5stack.yaml. That file is not modified: the splash is drawn as a
 # temporary display page (a page takes precedence over the display's lambda while shown).
 #
 # Use:   packages:

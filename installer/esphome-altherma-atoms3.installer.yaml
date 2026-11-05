@@ -1,5 +1,5 @@
 # Web installer build for skydoy/esphome-altherma (board: atoms3).
-# Same as ../esphome-altherma-atoms3.factory.yaml,
+# Same as ../boards/esphome-altherma-atoms3.factory.yaml,
 # plus what the web installer needs: a selectable heat pump model, this project's
 # project name/version and a per-board, per-model OTA manifest URL.
 # CI (.github/workflows/publish.yml) rewrites altherma_model and altherma_version per build.
@@ -11,7 +11,7 @@ substitutions:
   altherma_component_source: ../components
 
 packages:
-  board: !include ../esphome-altherma-atoms3.yaml
+  board: !include ../boards/esphome-altherma-atoms3.yaml
   identify: !include packages/identify.yaml
 
 esphome:
@@ -22,7 +22,7 @@ esphome:
 # Adopting in the ESPHome Device Builder imports the plain board file from skydoy/esphome-altherma.
 # Add "altherma_model: <model>" under substitutions in the adopted YAML to keep your model.
 dashboard_import:
-  package_import_url: github://skydoy/esphome-altherma/esphome-altherma-atoms3.yaml@main
+  package_import_url: github://skydoy/esphome-altherma/boards/esphome-altherma-atoms3.yaml@main
 
 # Wi-Fi provisioning over USB from the web installer.
 improv_serial:

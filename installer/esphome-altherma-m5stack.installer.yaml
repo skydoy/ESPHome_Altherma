@@ -1,6 +1,6 @@
 # Web installer build for skydoy/esphome-altherma (board: M5Stack Core / Basic).
 # Same idea as the other installer/*.installer.yaml files, built on
-# ../esphome-altherma-m5stack.yaml (screen UI and buttons, left untouched) plus the optional
+# ../boards/esphome-altherma-m5stack.yaml (screen UI and buttons, left untouched) plus the optional
 # boot animation package. That file is a personal config using !secret for Wi-Fi
 # and the OTA password; this wrapper drops the Wi-Fi credentials (set via Improv / hotspot
 # instead); installer/secrets.yaml supplies empty placeholders because !secret is resolved at load time.
@@ -12,7 +12,7 @@ substitutions:
   altherma_component_source: ../components
 
 packages:
-  board: !include ../esphome-altherma-m5stack.yaml
+  board: !include ../boards/esphome-altherma-m5stack.yaml
   identify: !include packages/identify.yaml
   # Optional: animated ESPHome Altherma splash at boot. Remove this line to disable.
   boot_animation: !include packages/boot-animation-m5stack.yaml
@@ -30,7 +30,7 @@ wifi:
   ap:
 
 dashboard_import:
-  package_import_url: github://skydoy/esphome-altherma/esphome-altherma-m5stack.yaml@main
+  package_import_url: github://skydoy/esphome-altherma/boards/esphome-altherma-m5stack.yaml@main
 
 improv_serial:
 
