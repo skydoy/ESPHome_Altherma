@@ -171,6 +171,7 @@
     ['liquid', ['refrigtempliquidside','liquidpipetemp'], '°C']
   ];
   var vals = {};
+  var updateStatus = "";
 
   // Chip label keys → PT / EN (short UI labels)
   var CHIP_L = {
@@ -327,6 +328,61 @@
       + '</g>';
   }
 
+
+  function translateUpdateStatus(st, lang) {
+    st = st == null ? '' : String(st);
+    if (!st) return '';
+    var pt = lang === 'pt';
+    var m;
+    if ((m = /^New version (.+) available, install from Device Builder$/i.exec(st)))
+      return pt
+        ? ('Versão nova ' + m[1] + ' disponível, instala no Device Builder')
+        : st;
+    if ((m = /^Update available: (.+)$/i.exec(st)))
+      return pt
+        ? ('Atualização disponível: ' + m[1])
+        : st;
+    if ((m = /^Up to date \((.+)\)$/i.exec(st)))
+      return pt ? ('Atualizado (' + m[1] + ')') : st;
+    if (/^Up to date$/i.test(st)) return pt ? 'Atualizado' : 'Up to date';
+    if (/^Checking for updates$/i.test(st)) return pt ? 'A procurar atualizações' : st;
+    if (/^Downloading firmware \(do not unplug\)$/i.test(st))
+      return pt ? 'A descarregar firmware (não desligues)' : st;
+    if (/^Installed, rebooting$/i.test(st)) return pt ? 'Instalado, a reiniciar' : st;
+    if (/^Install requested$/i.test(st)) return pt ? 'Instalação pedida' : st;
+    if (/^Update check failed$/i.test(st)) return pt ? 'Falha ao verificar atualização' : st;
+    if ((m = /^Update failed \((.+)\)$/i.exec(st)))
+      return pt ? ('Atualização falhou (' + m[1] + ')') : st;
+    return st;
+  }
+
+  function updateBannerKind(st) {
+    st = st == null ? '' : String(st);
+    if (/New version |Update available:/i.test(st)) return 'warn';
+    if (/^Up to date/i.test(st)) return 'ok';
+    if (/failed|Failed/i.test(st)) return 'warn';
+    if (/Checking|Downloading|Install|Installed/i.test(st)) return 'info';
+    return '';
+  }
+
+  function paintUpdateBanner(root) {
+    if (!root) return;
+    var ban = root.querySelector('.ad-update-banner');
+    if (!ban) return;
+    var L = window.althermaLang;
+    var lang = L && L.get ? L.get() : 'en';
+    var st = updateStatus;
+    // Optional: show only when there is something actionable / in progress (not "up to date").
+    var show = !!st && !/^Up to date/i.test(st);
+    ban.classList.toggle('on', show);
+    ban.classList.remove('ad-upd-ok', 'ad-upd-info');
+    var kind = updateBannerKind(st);
+    if (kind === 'ok') ban.classList.add('ad-upd-ok');
+    if (kind === 'info') ban.classList.add('ad-upd-info');
+    ban.textContent = show ? translateUpdateStatus(st, lang) : '';
+    ban.hidden = !show;
+  }
+
   function buildSvg() {
     // Layout (viewBox 800×410):
     //  Outdoor --refrig-- Indoor --warm--> 3-way --> DHW / Heating
@@ -479,6 +535,14 @@
     + '#altherma-diagram .ad-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin:0 0 6px}'
     + '#altherma-diagram .ad-head h2{margin:0;font:600 15px/1.2 system-ui,sans-serif;opacity:.85}'
     + '#altherma-diagram .ad-sub{margin:2px 0 0;font:12px/1.3 system-ui,sans-serif;opacity:.55}'
+    + '#altherma-diagram .ad-update-banner{display:none;margin:0 0 8px;padding:8px 10px;border-radius:10px;'
+    + 'font:13px/1.35 system-ui,sans-serif;border:1px solid color-mix(in srgb,#f59e0b 55%,transparent);'
+    + 'background:color-mix(in srgb,#f59e0b 16%,Canvas);color:inherit}'
+    + '#altherma-diagram .ad-update-banner.on{display:block}'
+    + '#altherma-diagram .ad-update-banner.ad-upd-ok{border-color:color-mix(in srgb,#10b981 45%,transparent);'
+    + 'background:color-mix(in srgb,#10b981 14%,Canvas)}'
+    + '#altherma-diagram .ad-update-banner.ad-upd-info{border-color:color-mix(in srgb,#3b82f6 45%,transparent);'
+    + 'background:color-mix(in srgb,#3b82f6 14%,Canvas)}'
     + '#altherma-diagram .ad-lang{flex:0 0 auto;padding:4px 8px;border-radius:8px;border:1px solid color-mix(in srgb,CanvasText 25%,transparent);'
     + 'background:color-mix(in srgb,Canvas 85%,CanvasText 15%);color:inherit;font:700 11px/1 system-ui,sans-serif;cursor:pointer}'
     + '#altherma-diagram svg{width:100%;height:auto;display:block;max-height:460px}'
@@ -681,9 +745,20 @@
       lb.textContent = L.get() === 'pt' ? 'PT · EN' : 'EN · PT';
       lb.title = L.t('Mudar língua (PT/EN)', 'Switch language (PT/EN)');
     }
+    paintUpdateBanner(root);
   }
 
   function applyState(d) {
+    var nm = norm((d.name || '') + ' ' + (d.id || ''));
+    if (nm.indexOf('updatestatus') >= 0 || nm.indexOf('update_status') >= 0) {
+      var st = d.state == null ? '' : String(d.state);
+      if (st !== updateStatus) {
+        updateStatus = st;
+        var app0 = document.querySelector('esp-app');
+        var el0 = app0 && app0.shadowRoot && app0.shadowRoot.getElementById('altherma-diagram');
+        if (el0) paintUpdateBanner(el0);
+      }
+    }
     var key = matchKey(d);
     if (!key) return;
     if (key === 'tlw' || key === 'tlwb') {
@@ -716,6 +791,7 @@
       el.id = 'altherma-diagram';
       el.innerHTML = '<div class="ad-head"><div><h2></h2><p class="ad-sub"></p></div>'
         + '<button type="button" class="ad-lang">PT · EN</button></div>'
+        + '<div class="ad-update-banner" hidden></div>'
         + buildSvg();
       main.parentNode.insertBefore(el, main);
       el.querySelector('.ad-lang').onclick = function () { window.althermaLang.toggle(); };
@@ -754,13 +830,18 @@
     es.addEventListener('state', onState);
   }
   function start() {
+    // Own EventSource so we get the full /events state dump (window.source may
+    // already have finished pushing the initial states before we listen).
+    listen(new EventSource('/events'));
     if (window.source) listen(window.source);
-    else listen(new EventSource('/events'));
     var n = 0, t = setInterval(function () {
       if (window.source) { listen(window.source); clearInterval(t); }
       else if (++n > 40) clearInterval(t);
     }, 250);
   }
+  window.althermaTranslateUpdateStatus = function (st, lang) {
+    return translateUpdateStatus(st, lang || (window.althermaLang && window.althermaLang.get()) || 'en');
+  };
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
 
@@ -847,6 +928,15 @@
 'CT sensor L2':'Sensor CT L2',
 'CT sensor L3':'Sensor CT L3',
 'Check for Update':'Procurar atualização',
+'Update Status':'Estado da atualização',
+'Latest Version':'Última versão',
+'Update Available':'Atualização disponível',
+'Up to date':'Atualizado',
+'Checking for updates':'A procurar atualizações',
+'Downloading firmware (do not unplug)':'A descarregar firmware (não desligues)',
+'Installed, rebooting':'Instalado, a reiniciar',
+'Install requested':'Instalação pedida',
+'Update check failed':'Falha ao verificar atualização',
 'Circulation pump operation':'Funcionamento bomba circulação',
 'Comp. INV Current Drop':'Queda corrente INV compressor',
 'Compressor Frequency':'Frequência do compressor',
@@ -1297,6 +1387,11 @@
     if (!en) return en;
     if (lang() !== 'pt') return en;
     if (DICT[en]) return DICT[en];
+    // Dynamic Update Status strings (version numbers vary)
+    if (window.althermaTranslateUpdateStatus) {
+      var upd = window.althermaTranslateUpdateStatus(en, 'pt');
+      if (upd && upd !== en) return upd;
+    }
     // Prefix labels "Current: 21.5 °C"
     for (var k in DICT) {
       if (k.length >= 4 && k.charAt(k.length - 1) === ':' && en.indexOf(k) === 0)

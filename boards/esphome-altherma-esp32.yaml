@@ -1,5 +1,9 @@
+substitutions:
+  altherma_board: esp32
+
 packages:
   base: !include base.yaml
+  update_check: !include ../installer/packages/update-check.yaml
 
 esp32:
   board: esp32dev

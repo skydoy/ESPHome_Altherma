@@ -1,5 +1,9 @@
+substitutions:
+  altherma_board: m5stack
+
 packages:
   base: !include base.yaml
+  update_check: !include ../installer/packages/update-check.yaml
 
 esphome:
   name: esphome-altherma-m5stack

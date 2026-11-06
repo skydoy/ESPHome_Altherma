@@ -42,10 +42,19 @@ ota:
   - platform: http_request
     id: ota_http
     on_begin:
+      - text_sensor.template.publish:
+          id: update_status
+          state: "Downloading firmware (do not unplug)"
       - logger.log: "Firmware update download started (do not unplug)"
     on_end:
+      - text_sensor.template.publish:
+          id: update_status
+          state: "Installed, rebooting"
       - logger.log: "Firmware update installed, rebooting"
     on_error:
+      - text_sensor.template.publish:
+          id: update_status
+          state: !lambda 'return "Update failed (" + to_string(x) + ")";'
       - logger.log:
           level: WARN
           format: "Firmware update failed (error %u), still running the old firmware"
@@ -58,4 +67,8 @@ update:
     device_class: firmware
     entity_category: config
     update_interval: 6h
+    on_update_available:
+      - text_sensor.template.publish:
+          id: update_status
+          state: !lambda 'return "Update available: " + x.latest_version;'
     source: https://skydoy.github.io/esphome-altherma/firmware/${altherma_board}/${altherma_model}/manifest.json

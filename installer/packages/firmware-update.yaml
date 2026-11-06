@@ -1,7 +1,12 @@
 # Firmware update controls for the web installer firmwares, same set and names as skydoy/ESPHome_AC
 # (core/auto-update.yaml): "Firmware Update" entity (in each installer/*.installer.yaml),
-# "Check for Update" and "Install Update" buttons, and the "Auto Update" switch (default on), which
-# checks once a night at 03:MM (random minute, SNTP time, UTC) and installs a newer release.
+# "Check for Update" and "Install Update" buttons, "Update Status" text sensor, and the
+# "Auto Update" switch (default on), which checks once a night at 03:MM (random minute, SNTP
+# time, UTC) and installs a newer release.
+# The stock web_server v3 frontend has no render_update() handler, so the update entity row is
+# not rendered even though the backend sends it. Install Update + Update Status make updating
+# visible without relying on that unsupported UI row.
+# FACTORY / installer only. Adopted Device Builder boards use update-check.yaml (report only).
 # Updates always come from THIS firmware's own manifest (firmware/<board>/<model>/manifest.json).
 # "Install the right firmware" (identify.yaml) repoints the update entity at another model only for
 # that switch; every check below first points it back at the installed model's manifest.
@@ -21,24 +26,55 @@ switch:
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
 
+# Drop the report-only entities of update-check.yaml (included by the board package).
+text_sensor:
+  - id: !remove latest_version
+  - id: !remove update_status
+  - platform: template
+    id: update_status
+    name: "Update Status"
+    icon: mdi:information-outline
+    entity_category: config
+    update_interval: never
+binary_sensor:
+  - id: !remove update_available
 button:
+  - id: !remove check_for_update
   - platform: template
     id: firmware_check_update
     name: "Check for Update"
     icon: mdi:cloud-search
     entity_category: config
     on_press:
+      - text_sensor.template.publish:
+          id: update_status
+          state: "Checking for updates"
       - logger.log:
           tag: firmware_update
           format: "Check for Update pressed"
       - lambda: 'id(update_http_request).set_source_url("${altherma_manifest_url}");'
       - component.update: update_http_request
+      - delay: 20s
+      - lambda: |-
+          auto st = id(update_http_request).state;
+          if (st == update::UPDATE_STATE_AVAILABLE) {
+            id(update_status).publish_state(
+                std::string("Update available: ") +
+                id(update_http_request).update_info.latest_version);
+          } else if (st == update::UPDATE_STATE_NO_UPDATE) {
+            id(update_status).publish_state(
+                std::string("Up to date (") +
+                id(update_http_request).update_info.current_version + ")");
+          }
   - platform: template
     id: firmware_install_update
     name: "Install Update"
     icon: mdi:download
     entity_category: config
     on_press:
+      - text_sensor.template.publish:
+          id: update_status
+          state: "Install requested"
       - logger.log:
           tag: firmware_update
           format: "Install Update pressed (force_update=false)"
@@ -67,6 +103,7 @@ globals:
     initial_value: "0"
 
 interval:
+  - id: !remove update_check_interval
   - id: auto_update_interval
     interval: 60s
     then:
@@ -96,6 +133,7 @@ interval:
             - script.execute: auto_update_run
 
 script:
+  - id: !remove update_check
   - id: auto_update_run
     mode: single
     then:
@@ -109,6 +147,11 @@ script:
           condition:
             lambda: return id(update_http_request).state == update::UPDATE_STATE_AVAILABLE;
           then:
+            - text_sensor.template.publish:
+                id: update_status
+                state: !lambda |-
+                  return std::string("Update available: ") +
+                         id(update_http_request).update_info.latest_version;
             - logger.log:
                 tag: auto_update
                 level: WARN
@@ -118,6 +161,11 @@ script:
                   - id(update_http_request).update_info.current_version.c_str()
             - update.perform: update_http_request
           else:
+            - text_sensor.template.publish:
+                id: update_status
+                state: !lambda |-
+                  return std::string("Up to date (") +
+                         id(update_http_request).update_info.current_version + ")";
             - logger.log:
                 tag: auto_update
                 format: "No update installed (up to date, or the check failed)"
