@@ -9,6 +9,9 @@ substitutions:
   # epra_d_etv_etb_etvz_14_18  - EPRA D / ETV/ETB/ETVZ
   # erla_d_ebv_ebb_ebvz_11_16  - ERLA D / EBV/EBB/EBVZ
   altherma_model: erga_eh_da_04_08
+  # Bumped on each release; Device Builder / update-check compare against this.
+  altherma_version: "2.5.0"
+  altherma_verify_ssl: "true"
 
   # Default to GitHub for Take Control.
   # Override with "components" for local and factory builds.
@@ -18,6 +21,9 @@ esphome:
   name: esphome-altherma
   friendly_name: ESPHome Altherma
   name_add_mac_suffix: true
+  project:
+    name: skydoy.esphome-altherma
+    version: ${altherma_version}
 
 logger:
 
