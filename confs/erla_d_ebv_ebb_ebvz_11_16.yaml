@@ -42,6 +42,7 @@
 sensor:
   # --- Temperaturas Exteriores e Circuito Frigorigéneo (0x20) ---
   - <<: *temp
+    id: altherma_outdoor_temp
     name: "Outdoor Air Temp (R1T)"
     register: 0x20
     offset: 0
@@ -85,6 +86,7 @@ sensor:
 
   # --- Elétrica e Compressor (0x21, 0x30) ---
   - <<: *current
+    id: altherma_inv_current
     name: "INV Primary Current"
     register: 0x21
     offset: 0
@@ -99,6 +101,7 @@ sensor:
     datasize: 2
 
   - <<: *freq
+    id: altherma_comp_freq
     name: "Compressor Frequency"
     register: 0x30
     offset: 0
@@ -114,6 +117,7 @@ sensor:
     datasize: 2
 
   - <<: *temp
+    id: altherma_lwt
     name: "Leaving Water Temp after BUH (R2T)"
     register: 0x61
     offset: 4
@@ -128,6 +132,7 @@ sensor:
     datasize: 2
 
   - <<: *temp
+    id: altherma_return
     name: "Inlet Water Temp (R4T)"
     register: 0x61
     offset: 8
@@ -135,6 +140,7 @@ sensor:
     datasize: 2
 
   - <<: *temp
+    id: altherma_dhw_temp
     name: "DHW Tank Temp (R5T)"
     register: 0x61
     offset: 10
@@ -149,6 +155,7 @@ sensor:
     datasize: 2
 
   - <<: *altherma_base
+    id: altherma_flow
     name: "Flow Sensor"
     register: 0x62
     offset: 9
@@ -184,6 +191,15 @@ sensor:
     register: 0x20
     offset: 8
     convid: 105
+    datasize: 2
+
+  # Confirmed on this unit while heating (discovery 2026-11-05): 0x10/8 conv114.
+  - <<: *temp
+    id: altherma_target_cond
+    name: "Target Cond. Temp."
+    register: 0x10
+    offset: 8
+    convid: 114
     datasize: 2
 
   - <<: *altherma_base
@@ -232,6 +248,7 @@ sensor:
 # Sensores Binários
 binary_sensor:
   - <<: *binary
+    id: altherma_defrost
     name: "Defrost Operation"
     register: 0x10
     offset: 1
@@ -253,6 +270,7 @@ binary_sensor:
     datasize: 1
 
   - <<: *binary
+    id: altherma_valve_dhw
     name: "3-Way Valve (DHW/Space)"
     register: 0x60
     offset: 12
@@ -339,6 +357,7 @@ text_sensor:
     datasize: 1
 
   - <<: *text
+    id: altherma_outdoor_error
     name: "Outdoor Error Code"
     icon: mdi:alert-circle-outline
     register: 0x10
@@ -347,6 +366,7 @@ text_sensor:
     datasize: 1
 
   - <<: *text
+    id: altherma_indoor_error
     name: "Indoor Error Code"
     icon: mdi:alert-circle-outline
     register: 0x60
@@ -361,3 +381,7 @@ text_sensor:
     offset: 5
     convid: 203
     datasize: 1
+
+# Derived COP / energy / compressor / defrost / error description (needs the ids above).
+packages:
+  erla_performance: !include ../installer/packages/performance.yaml

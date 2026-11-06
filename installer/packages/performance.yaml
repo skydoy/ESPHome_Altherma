@@ -1,0 +1,403 @@
+# Derived performance sensors for ERLA D (and any conf that defines the altherma_* ids).
+# COP and thermal power use confirmed Flow, LWT after BUH, Inlet Water and INV current.
+# Electrical power is INV Primary Current × 230 V (no CT clamps on this unit — approximate).
+# Energy is split by the confirmed 3-Way Valve (DHW/Space) while the compressor runs.
+# Defrost count uses the confirmed Defrost Operation bit. Error text uses Outdoor/Indoor Error Code.
+
+# SNTP (altherma_sntp_time) comes from boards/base.yaml.
+globals:
+  - id: perf_comp_was_on
+    type: bool
+    initial_value: "false"
+  - id: perf_defrost_was_on
+    type: bool
+    initial_value: "false"
+  - id: perf_cycle_start_ms
+    type: uint32_t
+    initial_value: "0"
+  - id: perf_last_cycle_s
+    type: uint32_t
+    initial_value: "0"
+  - id: perf_starts_today
+    type: uint32_t
+    initial_value: "0"
+  - id: perf_starts_hour
+    type: uint32_t
+    initial_value: "0"
+  - id: perf_runtime_today_s
+    type: uint32_t
+    initial_value: "0"
+  - id: perf_defrosts_today
+    type: uint32_t
+    initial_value: "0"
+  - id: perf_day_stamp
+    type: int
+    initial_value: "-1"
+  - id: perf_hour_stamp
+    type: int
+    initial_value: "-1"
+  - id: perf_month_stamp
+    type: int
+    initial_value: "-1"
+  - id: perf_heat_month_kwh
+    type: float
+    initial_value: "0"
+  - id: perf_dhw_month_kwh
+    type: float
+    initial_value: "0"
+  - id: perf_last_heat_total
+    type: float
+    initial_value: "NAN"
+  - id: perf_last_dhw_total
+    type: float
+    initial_value: "NAN"
+
+sensor:
+  # Instantaneous electrical power estimate (W). 0 when the compressor is stopped.
+  - platform: template
+    id: altherma_elec_power
+    name: "Estimated Electrical Power"
+    icon: mdi:flash
+    unit_of_measurement: W
+    device_class: power
+    state_class: measurement
+    accuracy_decimals: 0
+    update_interval: 5s
+    lambda: |-
+      if (isnan(id(altherma_comp_freq).state) || id(altherma_comp_freq).state <= 0.0f)
+        return 0.0f;
+      float a = id(altherma_inv_current).state;
+      if (isnan(a) || a < 0.0f) return 0.0f;
+      return a * 230.0f;
+
+  # Heating branch electrical power (W) — compressor on and 3-way on Space (OFF).
+  - platform: template
+    id: altherma_heat_power
+    name: "Heating Electrical Power"
+    icon: mdi:radiator
+    unit_of_measurement: W
+    device_class: power
+    state_class: measurement
+    accuracy_decimals: 0
+    update_interval: 5s
+    lambda: |-
+      if (isnan(id(altherma_comp_freq).state) || id(altherma_comp_freq).state <= 0.0f)
+        return 0.0f;
+      if (id(altherma_valve_dhw).state) return 0.0f;
+      return id(altherma_elec_power).state;
+
+  # DHW branch electrical power (W) — compressor on and 3-way on DHW (ON).
+  - platform: template
+    id: altherma_dhw_power
+    name: "DHW Electrical Power"
+    icon: mdi:water-boiler
+    unit_of_measurement: W
+    device_class: power
+    state_class: measurement
+    accuracy_decimals: 0
+    update_interval: 5s
+    lambda: |-
+      if (isnan(id(altherma_comp_freq).state) || id(altherma_comp_freq).state <= 0.0f)
+        return 0.0f;
+      if (!id(altherma_valve_dhw).state) return 0.0f;
+      return id(altherma_elec_power).state;
+
+  # Thermal power delivered to the water (kW): flow(L/min) × ΔT(°C) × 4.186 / 60.
+  - platform: template
+    id: altherma_thermal_power
+    name: "Thermal Power"
+    icon: mdi:heat-wave
+    unit_of_measurement: kW
+    device_class: power
+    state_class: measurement
+    accuracy_decimals: 2
+    update_interval: 5s
+    lambda: |-
+      if (isnan(id(altherma_comp_freq).state) || id(altherma_comp_freq).state <= 0.0f)
+        return 0.0f;
+      float flow = id(altherma_flow).state;
+      float lwt = id(altherma_lwt).state;
+      float ret = id(altherma_return).state;
+      if (isnan(flow) || isnan(lwt) || isnan(ret) || flow <= 0.0f) return 0.0f;
+      float dt = lwt - ret;
+      if (dt < 0.0f) dt = 0.0f;
+      return flow * dt * 4.186f / 60.0f;
+
+  # Real-time COP = thermal_kW / electrical_kW. Only while the compressor runs.
+  - platform: template
+    id: altherma_cop
+    name: "COP"
+    icon: mdi:chart-bell-curve-cumulative
+    state_class: measurement
+    accuracy_decimals: 2
+    update_interval: 5s
+    lambda: |-
+      if (isnan(id(altherma_comp_freq).state) || id(altherma_comp_freq).state <= 0.0f)
+        return NAN;
+      float elec_w = id(altherma_elec_power).state;
+      float th_kw = id(altherma_thermal_power).state;
+      if (isnan(elec_w) || isnan(th_kw) || elec_w < 50.0f) return NAN;
+      return th_kw / (elec_w / 1000.0f);
+
+  # Lifetime electrical energy (kWh) for the HA Energy dashboard.
+  - platform: integration
+    id: altherma_heat_energy_total
+    name: "Heating Energy Total"
+    sensor: altherma_heat_power
+    time_unit: h
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    restore: true
+    filters:
+      - multiply: 0.001
+
+  - platform: integration
+    id: altherma_dhw_energy_total
+    name: "DHW Energy Total"
+    sensor: altherma_dhw_power
+    time_unit: h
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    restore: true
+    filters:
+      - multiply: 0.001
+
+  # Daily electrical energy (resets at midnight local / SNTP).
+  - platform: total_daily_energy
+    id: altherma_heat_energy_today
+    name: "Heating Energy Today"
+    power_id: altherma_heat_power
+    method: left
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    accuracy_decimals: 3
+    filters:
+      - multiply: 0.001
+
+  - platform: total_daily_energy
+    id: altherma_dhw_energy_today
+    name: "DHW Energy Today"
+    power_id: altherma_dhw_power
+    method: left
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    accuracy_decimals: 3
+    filters:
+      - multiply: 0.001
+
+  # Monthly counters (calendar month, SNTP). Published from the interval below.
+  - platform: template
+    id: altherma_heat_energy_month
+    name: "Heating Energy This Month"
+    icon: mdi:calendar-month
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    accuracy_decimals: 3
+    update_interval: never
+    lambda: "return id(perf_heat_month_kwh);"
+
+  - platform: template
+    id: altherma_dhw_energy_month
+    name: "DHW Energy This Month"
+    icon: mdi:calendar-month
+    unit_of_measurement: kWh
+    device_class: energy
+    state_class: total_increasing
+    accuracy_decimals: 3
+    update_interval: never
+    lambda: "return id(perf_dhw_month_kwh);"
+
+  - platform: template
+    id: altherma_starts_today
+    name: "Compressor Starts Today"
+    icon: mdi:counter
+    accuracy_decimals: 0
+    state_class: measurement
+    update_interval: never
+    lambda: "return id(perf_starts_today);"
+
+  - platform: template
+    id: altherma_starts_hour
+    name: "Compressor Starts This Hour"
+    icon: mdi:counter
+    accuracy_decimals: 0
+    state_class: measurement
+    update_interval: never
+    lambda: "return id(perf_starts_hour);"
+
+  - platform: template
+    id: altherma_last_cycle_min
+    name: "Last Compressor Cycle"
+    icon: mdi:timer-outline
+    unit_of_measurement: min
+    accuracy_decimals: 1
+    state_class: measurement
+    update_interval: never
+    lambda: "return id(perf_last_cycle_s) / 60.0f;"
+
+  - platform: template
+    id: altherma_runtime_today_h
+    name: "Compressor Runtime Today"
+    icon: mdi:clock-outline
+    unit_of_measurement: h
+    accuracy_decimals: 2
+    state_class: measurement
+    update_interval: never
+    lambda: "return id(perf_runtime_today_s) / 3600.0f;"
+
+  - platform: template
+    id: altherma_defrosts_today
+    name: "Defrosts Today"
+    icon: mdi:snowflake-melt
+    accuracy_decimals: 0
+    state_class: measurement
+    update_interval: never
+    lambda: "return id(perf_defrosts_today);"
+
+text_sensor:
+  - platform: template
+    id: altherma_error_desc
+    name: "Error Description"
+    icon: mdi:alert
+    entity_category: diagnostic
+    update_interval: 30s
+    lambda: |-
+      auto trim = [](std::string s) {
+        while (!s.empty() && (s.front() == ' ' || s.front() == '\t')) s.erase(s.begin());
+        while (!s.empty() && (s.back() == ' ' || s.back() == '\t')) s.pop_back();
+        return s;
+      };
+      std::string out_c = trim(id(altherma_outdoor_error).state);
+      std::string in_c = trim(id(altherma_indoor_error).state);
+      auto is_ok = [](const std::string &c) {
+        return c.empty() || c == "0" || c == "00" || c == "-" || c == "--";
+      };
+      std::string code = !is_ok(out_c) ? out_c : in_c;
+      if (is_ok(code)) return std::string("No error");
+      // Common Daikin Altherma / R32 service codes (EN). PT is applied in the web UI.
+      struct E { const char *code; const char *en; };
+      static const E TAB[] = {
+        {"A1", "PCB failure"},
+        {"A5", "High discharge temperature / freeze protection"},
+        {"A9", "Expansion valve fault"},
+        {"C4", "Heat exchanger sensor fault"},
+        {"C9", "Outdoor air sensor fault"},
+        {"E1", "PCB failure"},
+        {"E3", "High pressure"},
+        {"E4", "Low pressure"},
+        {"E5", "Inverter compressor lock"},
+        {"E6", "Compressor start fault"},
+        {"E7", "Outdoor fan motor fault"},
+        {"E8", "Overcurrent input"},
+        {"E9", "Electronic expansion valve fault"},
+        {"EA", "4-way valve fault"},
+        {"F3", "Discharge pipe temperature too high"},
+        {"F6", "High pressure switch / heat exchanger"},
+        {"H0", "Compressor sensor system fault"},
+        {"H3", "High pressure switch fault"},
+        {"H9", "Outdoor air thermistor fault"},
+        {"J1", "Pressure sensor fault"},
+        {"J3", "Discharge pipe thermistor fault"},
+        {"J5", "Suction pipe thermistor fault"},
+        {"J6", "Heat exchanger thermistor fault"},
+        {"J7", "Liquid pipe thermistor fault"},
+        {"J8", "Liquid pipe thermistor fault"},
+        {"L1", "Inverter PCB fault"},
+        {"L3", "Electrical box temperature rise"},
+        {"L4", "Inverter radiator temperature rise"},
+        {"L5", "Inverter instantaneous overcurrent"},
+        {"L8", "Inverter overcurrent"},
+        {"L9", "Inverter stall prevention"},
+        {"LC", "Transmission outdoor-inverter fault"},
+        {"P1", "Open-phase / voltage imbalance"},
+        {"P4", "Radiator thermistor fault"},
+        {"U0", "Gas shortage / reverse piping"},
+        {"U2", "Supply voltage fault"},
+        {"U4", "Transmission indoor-outdoor fault"},
+        {"U5", "Transmission indoor PCB fault"},
+        {"U7", "Transmission outdoor-outdoor fault"},
+        {"U8", "Transmission outdoor-inverter fault"},
+        {"UA", "Indoor unit / outdoor unit combination fault"},
+        {"UF", "Piping / wiring mismatch"},
+        {"UH", "Improper stop / system fault"},
+      };
+      for (const auto &e : TAB) {
+        if (code == e.code) return std::string(e.code) + ": " + e.en;
+      }
+      return code + ": Unknown error code";
+
+interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          auto t = id(altherma_sntp_time).now();
+          if (t.is_valid()) {
+            int day = t.day_of_year;
+            int hour = t.hour;
+            int month = t.month + t.year * 12;
+            if (id(perf_day_stamp) != day) {
+              id(perf_day_stamp) = day;
+              id(perf_starts_today) = 0;
+              id(perf_runtime_today_s) = 0;
+              id(perf_defrosts_today) = 0;
+            }
+            if (id(perf_hour_stamp) != hour) {
+              id(perf_hour_stamp) = hour;
+              id(perf_starts_hour) = 0;
+            }
+            if (id(perf_month_stamp) != month) {
+              id(perf_month_stamp) = month;
+              id(perf_heat_month_kwh) = 0;
+              id(perf_dhw_month_kwh) = 0;
+              id(perf_last_heat_total) = NAN;
+              id(perf_last_dhw_total) = NAN;
+            }
+          }
+
+          // Monthly = sum of deltas from the lifetime totals within the month.
+          float ht = id(altherma_heat_energy_total).state;
+          float dt = id(altherma_dhw_energy_total).state;
+          if (!isnan(ht)) {
+            if (!isnan(id(perf_last_heat_total)) && ht >= id(perf_last_heat_total))
+              id(perf_heat_month_kwh) += (ht - id(perf_last_heat_total));
+            id(perf_last_heat_total) = ht;
+          }
+          if (!isnan(dt)) {
+            if (!isnan(id(perf_last_dhw_total)) && dt >= id(perf_last_dhw_total))
+              id(perf_dhw_month_kwh) += (dt - id(perf_last_dhw_total));
+            id(perf_last_dhw_total) = dt;
+          }
+
+          bool on = !isnan(id(altherma_comp_freq).state) && id(altherma_comp_freq).state > 0.0f;
+          uint32_t now_ms = millis();
+          if (on && !id(perf_comp_was_on)) {
+            id(perf_starts_today)++;
+            id(perf_starts_hour)++;
+            id(perf_cycle_start_ms) = now_ms;
+          }
+          if (on) {
+            id(perf_runtime_today_s)++;
+          }
+          if (!on && id(perf_comp_was_on) && id(perf_cycle_start_ms) != 0) {
+            id(perf_last_cycle_s) = (now_ms - id(perf_cycle_start_ms)) / 1000;
+          }
+          id(perf_comp_was_on) = on;
+
+          bool defrost = id(altherma_defrost).state;
+          if (defrost && !id(perf_defrost_was_on)) {
+            id(perf_defrosts_today)++;
+          }
+          id(perf_defrost_was_on) = defrost;
+
+          id(altherma_starts_today).publish_state(id(perf_starts_today));
+          id(altherma_starts_hour).publish_state(id(perf_starts_hour));
+          id(altherma_last_cycle_min).publish_state(id(perf_last_cycle_s) / 60.0f);
+          id(altherma_runtime_today_h).publish_state(id(perf_runtime_today_s) / 3600.0f);
+          id(altherma_defrosts_today).publish_state(id(perf_defrosts_today));
+          id(altherma_heat_energy_month).publish_state(id(perf_heat_month_kwh));
+          id(altherma_dhw_energy_month).publish_state(id(perf_dhw_month_kwh));

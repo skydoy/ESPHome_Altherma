@@ -38,6 +38,11 @@ wifi:
 
 captive_portal:
 
+# Shared clock for update checks, energy day/month rollover, auto-update.
+time:
+  - platform: sntp
+    id: altherma_sntp_time
+
 uart:
   id: uart_bus
   tx_pin: GPIO17

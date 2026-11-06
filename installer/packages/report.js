@@ -168,10 +168,17 @@
     ['pump',   ['waterpumpoperation'], ''],
     ['space',  ['spaceheatingoperation'], ''],
     ['mode',   ['operationmode'], ''],
-    ['liquid', ['refrigtempliquidside','liquidpipetemp'], '°C']
+    ['liquid', ['refrigtempliquidside','liquidpipetemp'], '°C'],
+    ['cop',    ['cop'], '']
   ];
   var vals = {};
   var updateStatus = "";
+  var defrostOn = false;
+  var errorCode = "";
+  var errorDesc = "";
+  var CHART_KEY = "altherma_chart_v1";
+  var chartPts = [];
+  try { chartPts = JSON.parse(localStorage.getItem(CHART_KEY) || "[]") || []; } catch (e) { chartPts = []; }
 
   // Chip label keys → PT / EN (short UI labels)
   var CHIP_L = {
@@ -189,7 +196,8 @@
     buh2:  ['BUH2', 'BUH2'],
     pump:  ['Bomba', 'Pump'],
     mode:  ['Modo', 'Mode'],
-    space: ['Aquecimento', 'Heating']
+    space: ['Aquecimento', 'Heating'],
+    cop:   ['COP', 'COP']
   };
 
   function norm(s) {
@@ -250,7 +258,7 @@
     if (isFinite(n)) {
       var u = '';
       for (var i = 0; i < MAP.length; i++) if (MAP[i][0] === key) { u = MAP[i][2]; break; }
-      var dec = (key === 'freq' || key === 'flow') ? 0 : 1;
+      var dec = (key === 'freq' || key === 'flow') ? 0 : (key === 'cop' ? 2 : 1);
       return n.toFixed(dec) + (u ? '\u00a0' + u : '');
     }
     if (/^(NA|nan)$/i.test(st.trim())) return prev != null ? prev : '';
@@ -383,6 +391,126 @@
     ban.hidden = !show;
   }
 
+
+  function translateErrorDesc(st, lang) {
+    st = st == null ? '' : String(st);
+    if (!st) return '';
+    var pt = lang === 'pt';
+    if (/^No error$/i.test(st)) return pt ? 'Sem erro' : 'No error';
+    var m = /^([A-Z0-9]{1,3}):\s*(.+)$/i.exec(st.trim());
+    if (!m) return st;
+    var code = m[1].toUpperCase(), en = m[2];
+    var map = {
+      'PCB failure': 'Falha da PCB',
+      'High discharge temperature / freeze protection': 'Temp. descarga alta / proteção anti-gelo',
+      'Expansion valve fault': 'Falha da válvula de expansão',
+      'Heat exchanger sensor fault': 'Falha do sensor do permutador',
+      'Outdoor air sensor fault': 'Falha do sensor de ar exterior',
+      'High pressure': 'Alta pressão',
+      'Low pressure': 'Baixa pressão',
+      'Inverter compressor lock': 'Bloqueio do compressor do inversor',
+      'Compressor start fault': 'Falha ao arrancar o compressor',
+      'Outdoor fan motor fault': 'Falha do motor do ventilador exterior',
+      'Overcurrent input': 'Sobrecorrente à entrada',
+      'Electronic expansion valve fault': 'Falha da válvula de expansão eletrónica',
+      '4-way valve fault': 'Falha da válvula de 4 vias',
+      'Discharge pipe temperature too high': 'Temp. do tubo de descarga demasiado alta',
+      'High pressure switch / heat exchanger': 'Pressóstato alta / permutador',
+      'Compressor sensor system fault': 'Falha do sistema de sensores do compressor',
+      'High pressure switch fault': 'Falha do pressóstato de alta',
+      'Outdoor air thermistor fault': 'Falha do termístor de ar exterior',
+      'Pressure sensor fault': 'Falha do sensor de pressão',
+      'Discharge pipe thermistor fault': 'Falha do termístor de descarga',
+      'Suction pipe thermistor fault': 'Falha do termístor de sucção',
+      'Heat exchanger thermistor fault': 'Falha do termístor do permutador',
+      'Liquid pipe thermistor fault': 'Falha do termístor do líquido',
+      'Inverter PCB fault': 'Falha da PCB do inversor',
+      'Electrical box temperature rise': 'Temp. da caixa elétrica elevada',
+      'Inverter radiator temperature rise': 'Temp. do radiador do inversor elevada',
+      'Inverter instantaneous overcurrent': 'Sobrecorrente instantânea do inversor',
+      'Inverter overcurrent': 'Sobrecorrente do inversor',
+      'Inverter stall prevention': 'Prevenção de bloqueio do inversor',
+      'Transmission outdoor-inverter fault': 'Falha de comunicação exterior-inversor',
+      'Open-phase / voltage imbalance': 'Fase em aberto / desequilíbrio de tensão',
+      'Radiator thermistor fault': 'Falha do termístor do radiador',
+      'Gas shortage / reverse piping': 'Falta de gás / tubagem invertida',
+      'Supply voltage fault': 'Falha da tensão de alimentação',
+      'Transmission indoor-outdoor fault': 'Falha de comunicação interior-exterior',
+      'Transmission indoor PCB fault': 'Falha de comunicação da PCB interior',
+      'Transmission outdoor-outdoor fault': 'Falha de comunicação exterior-exterior',
+      'Indoor unit / outdoor unit combination fault': 'Combinação unidade interior/exterior inválida',
+      'Piping / wiring mismatch': 'Tubagem / cablagem incorreta',
+      'Improper stop / system fault': 'Paragem incorreta / falha de sistema',
+      'Unknown error code': 'Código de erro desconhecido'
+    };
+    var tr = map[en] || (en.indexOf('Unknown error code') === 0 ? (pt ? 'Código de erro desconhecido' : en) : en);
+    return code + ': ' + (pt ? tr : en);
+  }
+
+  function paintErrorBanner(root) {
+    if (!root) return;
+    var ban = root.querySelector('.ad-error-banner');
+    if (!ban) return;
+    var L = window.althermaLang;
+    var lang = L && L.get ? L.get() : 'en';
+    var st = errorDesc || errorCode;
+    var show = !!(st && !/^No error$/i.test(st) && !/^(0|00|\s*0)$/.test(String(errorCode || '').trim()));
+    // Prefer description; if only raw code, show code
+    var text = errorDesc ? translateErrorDesc(errorDesc, lang) : String(errorCode || '').trim();
+    if (show && text && !/^No error$/i.test(errorDesc || '')) {
+      ban.classList.add('on');
+      ban.hidden = false;
+      ban.textContent = text;
+    } else {
+      ban.classList.remove('on');
+      ban.hidden = true;
+      ban.textContent = '';
+    }
+  }
+
+  function pushChartSample() {
+    var now = Date.now();
+    var tlw = parseFloat(vals.tlw); if (!isFinite(tlw)) tlw = parseFloat(vals.tlwb);
+    var tdhw = parseFloat(vals.tdhw);
+    var tout = parseFloat(vals.tout);
+    if (!isFinite(tlw) && !isFinite(tdhw) && !isFinite(tout)) return;
+    var last = chartPts.length ? chartPts[chartPts.length - 1] : null;
+    if (last && (now - last.t) < 55000) return; // ~1 min
+    chartPts.push({
+      t: now,
+      tlw: isFinite(tlw) ? tlw : null,
+      tdhw: isFinite(tdhw) ? tdhw : null,
+      tout: isFinite(tout) ? tout : null
+    });
+    var cut = now - 24 * 3600 * 1000;
+    chartPts = chartPts.filter(function (p) { return p.t >= cut; });
+    try { localStorage.setItem(CHART_KEY, JSON.stringify(chartPts)); } catch (e) {}
+  }
+
+  function paintChart(root) {
+    if (!root) return;
+    var svg = root.querySelector('.ad-chart-svg');
+    if (!svg) return;
+    var W = 760, H = 72, pad = 4;
+    function series(key, color) {
+      var pts = chartPts.filter(function (p) { return p[key] != null && isFinite(p[key]); });
+      if (pts.length < 2) return '';
+      var t0 = chartPts[0].t, t1 = chartPts[chartPts.length - 1].t;
+      if (t1 <= t0) t1 = t0 + 1;
+      var vals = pts.map(function (p) { return p[key]; });
+      var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
+      if (mx - mn < 1) { mx += 0.5; mn -= 0.5; }
+      var d = pts.map(function (p, i) {
+        var x = pad + (W - 2 * pad) * (p.t - t0) / (t1 - t0);
+        var y = H - pad - (H - 2 * pad) * (p[key] - mn) / (mx - mn);
+        return (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+      }).join(' ');
+      return '<path d="' + d + '" fill="none" stroke="' + color + '" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>';
+    }
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.innerHTML = series('tout', '#60a5fa') + series('tlw', '#f97316') + series('tdhw', '#e11d48');
+  }
+
   function buildSvg() {
     // Layout (viewBox 800×410):
     //  Outdoor --refrig-- Indoor --warm--> 3-way --> DHW / Heating
@@ -512,6 +640,7 @@
 
       + '<g transform="translate(16,370)">'
       + chip('mode', 0, 0, 160, 32, '')
+      + chip('cop', 170, 0, 100, 32, '')
       + '</g>'
       + '<g transform="translate(190,378)" class="ad-legend">'
       + '<line x1="0" y1="6" x2="22" y2="6" class="ad-pipe ad-pipe-ref-hot"/>'
@@ -543,6 +672,20 @@
     + 'background:color-mix(in srgb,#10b981 14%,Canvas)}'
     + '#altherma-diagram .ad-update-banner.ad-upd-info{border-color:color-mix(in srgb,#3b82f6 45%,transparent);'
     + 'background:color-mix(in srgb,#3b82f6 14%,Canvas)}'
+    + '#altherma-diagram .ad-error-banner{display:none;margin:0 0 8px;padding:8px 10px;border-radius:10px;'
+    + 'font:13px/1.35 system-ui,sans-serif;border:1px solid color-mix(in srgb,#ef4444 55%,transparent);'
+    + 'background:color-mix(in srgb,#ef4444 16%,Canvas);color:inherit}'
+    + '#altherma-diagram .ad-error-banner.on{display:block}'
+    + '#altherma-diagram .ad-chart{margin:4px 0 2px;padding:6px 8px;border-radius:10px;'
+    + 'background:color-mix(in srgb,CanvasText 4%,Canvas);border:1px solid color-mix(in srgb,CanvasText 12%,transparent)}'
+    + '#altherma-diagram .ad-chart svg{width:100%;height:72px;display:block}'
+    + '#altherma-diagram .ad-chart-leg{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:4px;'
+    + 'font:10px/1.2 system-ui,sans-serif;opacity:.7}'
+    + '#altherma-diagram .ad-chart-leg i{display:inline-block;width:10px;height:3px;border-radius:1px;margin-right:4px;vertical-align:middle}'
+    + '#altherma-diagram .ad-odu.ad-defrost{animation:ad-defrost-pulse 1.6s ease-in-out infinite}'
+    + '#altherma-diagram .ad-odu.ad-defrost .ad-odu-fins{stroke:#7dd3fc;opacity:.95}'
+    + '@keyframes ad-defrost-pulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18) saturate(1.2)}}'
+    + '@media (prefers-reduced-motion:reduce){#altherma-diagram .ad-odu.ad-defrost{animation:none}}'
     + '#altherma-diagram .ad-lang{flex:0 0 auto;padding:4px 8px;border-radius:8px;border:1px solid color-mix(in srgb,CanvasText 25%,transparent);'
     + 'background:color-mix(in srgb,Canvas 85%,CanvasText 15%);color:inherit;font:700 11px/1 system-ui,sans-serif;cursor:pointer}'
     + '#altherma-diagram svg{width:100%;height:auto;display:block;max-height:460px}'
@@ -701,6 +844,11 @@
     }
     updatePipes(root);
     updateOutdoorMotion(root);
+    var odu = root.querySelector('.ad-odu');
+    if (odu) odu.classList.toggle('ad-defrost', !!defrostOn);
+    pushChartSample();
+    paintChart(root);
+    paintErrorBanner(root);
   }
 
   function applyI18n(root) {
@@ -716,7 +864,11 @@
       legRefHot: L.t('Refrig. quente', 'Hot refrigerant'),
       legRefCold: L.t('Refrig. frio', 'Cold refrigerant'),
       legWarm: L.t('Água saída', 'Leaving water'),
-      legCool: L.t('Água retorno', 'Return water')
+      legCool: L.t('Água retorno', 'Return water'),
+      legLwt: L.t('Água saída', 'Leaving water'),
+      legDhw: L.t('Depósito AQS', 'DHW tank'),
+      legOut: L.t('Ar exterior', 'Outdoor air'),
+      legChart: L.t('últimas 24 h (neste browser)', 'last 24 h (this browser)')
     };
     root.querySelectorAll('[data-i18n]').forEach(function (el) {
       var k = el.getAttribute('data-i18n');
@@ -746,6 +898,8 @@
       lb.title = L.t('Mudar língua (PT/EN)', 'Switch language (PT/EN)');
     }
     paintUpdateBanner(root);
+    paintErrorBanner(root);
+    paintChart(root);
   }
 
   function applyState(d) {
@@ -758,6 +912,29 @@
         var el0 = app0 && app0.shadowRoot && app0.shadowRoot.getElementById('altherma-diagram');
         if (el0) paintUpdateBanner(el0);
       }
+    }
+    if (nm.indexOf('defrostoperation') >= 0 || nm === 'althermadefrost') {
+      defrostOn = isOn(d.state) || d.value === true;
+      var appD = document.querySelector('esp-app');
+      var elD = appD && appD.shadowRoot && appD.shadowRoot.getElementById('altherma-diagram');
+      if (elD) {
+        var odu = elD.querySelector('.ad-odu');
+        if (odu) odu.classList.toggle('ad-defrost', !!defrostOn);
+      }
+    }
+    if (nm.indexOf('errordescription') >= 0) {
+      errorDesc = d.state == null ? '' : String(d.state);
+      var appE = document.querySelector('esp-app');
+      var elE = appE && appE.shadowRoot && appE.shadowRoot.getElementById('altherma-diagram');
+      if (elE) paintErrorBanner(elE);
+    }
+    if (nm.indexOf('outdoorerrorcode') >= 0 || nm.indexOf('indoorerrorcode') >= 0) {
+      var ec = d.state == null ? '' : String(d.state).trim();
+      if (ec && ec !== '0' && ec !== '00') errorCode = ec;
+      else if (nm.indexOf('outdoorerrorcode') >= 0) errorCode = ec;
+      var appC = document.querySelector('esp-app');
+      var elC = appC && appC.shadowRoot && appC.shadowRoot.getElementById('altherma-diagram');
+      if (elC) paintErrorBanner(elC);
     }
     var key = matchKey(d);
     if (!key) return;
@@ -792,6 +969,13 @@
       el.innerHTML = '<div class="ad-head"><div><h2></h2><p class="ad-sub"></p></div>'
         + '<button type="button" class="ad-lang">PT · EN</button></div>'
         + '<div class="ad-update-banner" hidden></div>'
+        + '<div class="ad-error-banner" hidden></div>'
+        + '<div class="ad-chart"><svg class="ad-chart-svg" viewBox="0 0 760 72" preserveAspectRatio="none"></svg>'
+        + '<div class="ad-chart-leg">'
+        + '<span><i style="background:#f97316"></i><span data-i18n="legLwt">Água saída</span></span>'
+        + '<span><i style="background:#e11d48"></i><span data-i18n="legDhw">Depósito AQS</span></span>'
+        + '<span><i style="background:#60a5fa"></i><span data-i18n="legOut">Ar exterior</span></span>'
+        + '<span data-i18n="legChart">24 h</span></div></div>'
         + buildSvg();
       main.parentNode.insertBefore(el, main);
       el.querySelector('.ad-lang').onclick = function () { window.althermaLang.toggle(); };
@@ -929,6 +1113,24 @@
 'CT sensor L3':'Sensor CT L3',
 'Check for Update':'Procurar atualização',
 'Update Status':'Estado da atualização',
+'COP':'COP',
+'Estimated Electrical Power':'Potência elétrica estimada',
+'Heating Electrical Power':'Potência elétrica aquecimento',
+'DHW Electrical Power':'Potência elétrica AQS',
+'Thermal Power':'Potência térmica',
+'Heating Energy Total':'Energia aquecimento total',
+'DHW Energy Total':'Energia AQS total',
+'Heating Energy Today':'Energia aquecimento hoje',
+'DHW Energy Today':'Energia AQS hoje',
+'Heating Energy This Month':'Energia aquecimento este mês',
+'DHW Energy This Month':'Energia AQS este mês',
+'Compressor Starts Today':'Arranques do compressor hoje',
+'Compressor Starts This Hour':'Arranques do compressor nesta hora',
+'Last Compressor Cycle':'Último ciclo do compressor',
+'Compressor Runtime Today':'Tempo de compressor hoje',
+'Defrosts Today':'Descongelações hoje',
+'Error Description':'Descrição do erro',
+'No error':'Sem erro',
 'Latest Version':'Última versão',
 'Update Available':'Atualização disponível',
 'Up to date':'Atualizado',
@@ -1391,6 +1593,14 @@
     if (window.althermaTranslateUpdateStatus) {
       var upd = window.althermaTranslateUpdateStatus(en, 'pt');
       if (upd && upd !== en) return upd;
+    }
+    // Error Description (and "No error")
+    if (/^No error$/i.test(en) || /^[A-Z0-9]{1,3}:\s/.test(en)) {
+      // diagram helper is in another IIFE; duplicate minimal via window if exposed
+      if (window.althermaTranslateErrorDesc) {
+        var ed = window.althermaTranslateErrorDesc(en, 'pt');
+        if (ed && ed !== en) return ed;
+      }
     }
     // Prefix labels "Current: 21.5 °C"
     for (var k in DICT) {
