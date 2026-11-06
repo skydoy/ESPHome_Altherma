@@ -748,3 +748,710 @@
   }
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
+
+// Entity-list i18n for web_server v3: translate display text only (never option/button values
+// sent to the device). Walks shadowRoots and re-applies on MutationObserver + language toggle.
+(function () {
+  var ATTR = 'data-altherma-en';
+  var DICT = {
+'Heating':'Aquecimento',
+'Cooling':'Arrefecimento',
+'Auto':'Automático',
+'DHW':'AQS',
+'HEAT':'AQUECER',
+'COOL':'ARREFECER',
+'HEAT_COOL':'AUTO',
+'FAN_ONLY':'SÓ VENTILAÇÃO',
+'DRY':'DESUMIDIFICAR',
+'OFF':'OFF',
+'(Raw data)Water heat exchanger inlet temp.':'(Dados brutos) Temp. entrada permutador água',
+'(Raw data)Water heat exchanger outlet temp.':'(Dados brutos) Temp. saída permutador água',
+'2 phase thermistor (R4T)':'Termístor 2 fases (R4T)',
+'2nd Domestic hot water temperature':'2.ª temp. água quente sanitária',
+'2way valve (On:Heat Off:Cool)':'Válvula 2 vias (On:Calor Off:Frio)',
+'2way valve On Heat Off Cool':'Válvula 2 vias On Calor Off Frio',
+'2way valve(On:Heat_Off:Cool)':'Válvula 2 vias (On:Calor Off:Frio)',
+'3 way Valve Mixing 1':'Válvula 3 vias mistura 1',
+'3 way Valve Mixing 2':'Válvula 3 vias mistura 2',
+'3-Way Valve (DHW/Space)':'Válvula de 3 vias (AQS/Espaço)',
+'3-Way Valve (DHW–Space)':'Válvula de 3 vias (AQS/Espaço)',
+'3-Way Valve (DHW⁄Space)':'Válvula de 3 vias (AQS/Espaço)',
+'3way valve (On:DHW Off:Space)':'Válvula 3 vias (On:AQS Off:Espaço)',
+'3way valve On DHW Off Space':'Válvula 3 vias On AQS Off Espaço',
+'3way valve(On:DHW_Off:Space)':'Válvula 3 vias (On:AQS Off:Espaço)',
+'4 Way Valve':'Válvula de 4 vias',
+'4 Way Valve 1':'Válvula de 4 vias 1',
+'4 Way Valve 2':'Válvula de 4 vias 2',
+'4 Way Valve 3':'Válvula de 4 vias 3',
+'4 Way Valve 4':'Válvula de 4 vias 4',
+'4 Way Valve 5':'Válvula de 4 vias 5',
+'4 Way Valve 6':'Válvula de 4 vias 6',
+'4 Way Valve 7':'Válvula de 4 vias 7',
+'4 Way Valve 8':'Válvula de 4 vias 8',
+'4 Way Valve Data Qty':'Qtd. dados válvula 4 vias',
+'4 way valve':'Válvula de 4 vias',
+'4 way valve (Y1S)':'Válvula de 4 vias (Y1S)',
+'4-Way Valve':'Válvula de 4 vias',
+'52C Output':'52C Saída',
+'Add pump':'Bomba adicional',
+'Add pump (2)':'Bomba adicional (2)',
+'Add. Ext. RT Input Cool.':'Entrada RT ext. adic. frio',
+'Add. Ext. RT Input Heat.':'Entrada RT ext. adic. calor',
+'Alarm output':'Saída de alarme',
+'Alterma LT setting':'Definição Altherma LT',
+'Altherma Update Running':'Atualização Altherma a decorrer',
+'Auto Update':'Atualização automática',
+'Away:':'Ausência:',
+'BSH allowance Multi':'Autorização BSH Multi',
+'BUH Step 1':'BUH passo 1',
+'BUH Step 1 power':'BUH passo 1 power',
+'BUH Step 2':'BUH passo 2',
+'BUH Step 2 power':'BUH passo 2 power',
+'BUH Step1':'BUH passo 1',
+'BUH Step2':'BUH passo 2',
+'BUH output capacity':'Capacidade saída BUH',
+'BUH step 1':'BUH passo 1',
+'BUH step 2':'BUH passo 2',
+'Backup Heater Step 1':'Aquecedor de apoio passo 1',
+'Backup Heater Step 2':'Aquecedor de apoio passo 2',
+'Benefit kWh rate power supply':'Alimentação tarifa benefício kWh',
+'Bivalent Operation':'Operação bivalente',
+'Bivalent operation':'Operação bivalente',
+'Boiler DHW Demand':'Procura AQS caldeira',
+'Boiler Heating Target Temp.':'Temp. alvo aquecimento caldeira',
+'Boiler Operation Demand':'Procura operação caldeira',
+'Boot Count':'Contagem de arranques',
+'Bottom Plate Heater':'Aquecedor placa inferior',
+'Brine Flow Switch':'Interruptor caudal salmoura',
+'Brine inlet temp.':'Temp. entrada salmoura',
+'Brine outlet temp.':'Temp. saída salmoura',
+'Brine pump feedback':'Salmoura pump feedback',
+'Bypass Valve Output':'Saída válvula bypass',
+'CLOSE':'FECHAR',
+'CT sensor L1':'Sensor CT L1',
+'CT sensor L2':'Sensor CT L2',
+'CT sensor L3':'Sensor CT L3',
+'Check for Update':'Procurar atualização',
+'Circulation pump operation':'Funcionamento bomba circulação',
+'Comp. INV Current Drop':'Queda corrente INV compressor',
+'Compressor Frequency':'Frequência do compressor',
+'Compressor outlet temp.':'Temp. saída compressor',
+'Compressor outlet temperature':'Temp. saída compressor',
+'Compressor port temperature':'Temp. porta compressor',
+'Configuration':'Configuração',
+'Connected Indoor Unit Qty':'Qtd. unidades interiores ligadas',
+'Controller Micon ID':'Micon ID do controlador',
+'Controller Software ID':'Software ID do controlador',
+'Crank Case Heater Qty':'Qtd. aquecedores do cárter',
+'Crank case heater':'Aquecedor do cárter',
+'Crank case heater (2)':'Aquecedor do cárter (2)',
+'Crank case heater 1':'Aquecedor do cárter 1',
+'Crank case heater 2':'Aquecedor do cárter 2',
+'Crank case heater 3':'Aquecedor do cárter 3',
+'Crank case heater 4':'Aquecedor do cárter 4',
+'Crank case heater 5':'Aquecedor do cárter 5',
+'Current measured by CT sensor of L1':'Corrente medida pelo CT de L1',
+'Current measured by CT sensor of L2':'Corrente medida pelo CT de L2',
+'Current measured by CT sensor of L3':'Corrente medida pelo CT de L3',
+'Current:':'Atual:',
+'DHW Setpoint':'Setpoint AQS',
+'DHW Tank Temp (R5T)':'Temp. depósito AQS (R5T)',
+'DHW in standby due to defrost in ODU':'AQS em espera por descongelação U.E.',
+'DHW priority request':'Pedido prioridade AQS',
+'DHW setpoint':'Setpoint AQS',
+'DHW supply temperature':'Temp. fornecimento AQS',
+'DHW tank temp. (R5T)':'Temp. depósito AQS (R5T)',
+'DHW:SV1':'AQS:SV1',
+'DHW:SV1 (2)':'AQS:SV1 (2)',
+'Data Enable Disable 60':'Dados ativar desativar 60',
+'Data Enable Disable 61':'Dados ativar desativar 61',
+'Data Enable Disable 62':'Dados ativar desativar 62',
+'Data Enable Disable 63':'Dados ativar desativar 63',
+'Data Enable Disable 64':'Dados ativar desativar 64',
+'Data Enable-Disable':'Dados ativar-desativar',
+'Data Enable-Disable (2)':'Dados ativar-desativar (2)',
+'Data Enable-Disable (3)':'Dados ativar-desativar (3)',
+'Data Enable-Disable (4)':'Dados ativar-desativar (4)',
+'Data Enable-Disable (5)':'Dados ativar-desativar (5)',
+'Data Enable-Disable (6)':'Dados ativar-desativar (6)',
+'Debug Log':'Registo de depuração',
+'Defrost':'Descongelação',
+'Defrost Operation':'Descongelação',
+'Defrost operation':'Descongelação',
+'Defrost prohibition ON-OFF':'Proibição descongelação ON-OFF',
+'Demand Signal':'Sinal de procura',
+'Diagnostic':'Diagnóstico',
+'Discharge Pipe Temp (R2T)':'Temp. tubagem descarga (R2T)',
+'Discharge Temp. Drop':'Queda temp. descarga',
+'Discharge Temp. Drop (2)':'Queda temp. descarga (2)',
+'Discharge pipe temp.':'Temp. tubagem descarga',
+'Discharge pipe temp. (R2T)':'Temp. tubagem descarga (R2T)',
+'Discharge pipe temp.(R2T)':'Temp. tubagem descarga(R2T)',
+'Display Backlight':'Retroiluminação do ecrã',
+'Drain pan heater':'Aquecedor tabuleiro condensados',
+'Drain pan heater (2)':'Aquecedor tabuleiro condensados (2)',
+'During emergency operation':'Durante operação de emergência',
+'ESPHome Version':'Versão ESPHome',
+'Emergency (indoor) active-not active':'Emergência (interior) ativa-inativa',
+'Emergency active':'Emergência ativa',
+'Emergency indoor active':'Emergência interior ativa',
+'Emoncms heat pump sender':'Envio bomba de calor Emoncms',
+'Emoncms node':'Nó Emoncms',
+'Entering brine temp.(R5T)':'Temp. entrada salmoura(R5T)',
+'Error Code':'Código de erro',
+'Error Code (2)':'Código de erro (2)',
+'Error Code indoor':'Código de erro indoor',
+'Error Code outdoor':'Código de erro outdoor',
+'Error code':'Código de erro',
+'Error detailed code':'Código de erro detalhado',
+'Error type':'Tipo de erro',
+'Error type (2)':'Tipo de erro (2)',
+'Error type outdoor':'Tipo de erro outdoor',
+'Expansion Valve 1':'Válvula de expansão 1',
+'Expansion Valve Data Qty':'Qtd. dados válvula expansão',
+'Expansion valve 1':'Válvula de expansão 1',
+'Expansion valve 1 (pls)':'Válvula de expansão 1 (pls)',
+'Expansion valve 2':'Válvula de expansão 2',
+'Expansion valve 3':'Válvula de expansão 3',
+'Expansion valve 4':'Válvula de expansão 4',
+'Ext. Thermostat ON-OFF':'Termóstato ext. ON-OFF',
+'Ext. indoor ambient sensor (R6T)':'Sensor ambiente interior ext. (R6T)',
+'Ext. outdoor ambient sensor (R6T)':'Sensor ambiente exterior ext. (R6T)',
+'Fan 1':'Ventilador 1',
+'Fan 1 (10 rpm)':'Ventilador 1 (10 rpm)',
+'Fan 1 (step)':'Ventilador 1 (passo)',
+'Fan 1 fin temp.':'Temp. aleta ventilador 1',
+'Fan 2':'Ventilador 2',
+'Fan 2 (step)':'Ventilador 2 (passo)',
+'Fan 2 fin temp.':'Temp. aleta ventilador 2',
+'Fan Data Qty':'Qtd. dados ventilador',
+'Fan1 Fin temp.':'Temp. aleta ventilador 1',
+'Fan1 fin temp.':'Temp. aleta ventilador 1',
+'Fan2 Fin temp.':'Temp. aleta ventilador 2',
+'Fin Temp.':'Temp. aleta',
+'Fin Temp. Drop Control':'Controlo queda temp. aleta',
+'Firmware Update':'Atualização de firmware',
+'Floor loop shut off valve':'Válvula fecho circuito piso',
+'Flow':'Caudal',
+'Flow Sensor':'Sensor de caudal',
+'Flow sensor':'Sensor de caudal',
+'Flow sensor (L per min)':'Sensor de caudal (L/min)',
+'Flow sensor (l⁄min)':'Sensor de caudal (l/min)',
+'Freeze Protection':'Proteção anticongelamento',
+'Freeze Protection for water piping':'Proteção anticongelamento tubagem água',
+'Freeze protection':'Proteção anticongelamento',
+'Freeze protection for water piping':'Proteção anticongelamento tubagem água',
+'GSHP setting':'Definição GSHP',
+'HP Drop Control':'Controlo queda HP',
+'HP is operation forced OFF by installer':'HP forçada OFF pelo instalador',
+'HPS operation':'Operação HPS',
+'Heat Exchanger Mid Temp (R5T)':'Temp. média permutador (R5T)',
+'Heat exchanger mid-temp.':'Temp. média permutador',
+'Heat exchanger mid-temp. (R5T)':'Temp. média permutador (R5T)',
+'Heat exchanger mid-temp.(R5T)':'Temp. média permutador(R5T)',
+'Heat sink temp.':'Temp. dissipador',
+'Heat sink temp.(R10T)':'Temp. dissipador(R10T)',
+'High Pressure':'Pressão alta',
+'High Pressure(T)':'Pressão alta (T)',
+'High pressure':'Pressão alta',
+'High pressure saturation temp.':'Pressão alta saturation temp.',
+'Hot gas bypass valve (Y2S)':'Válvula bypass gás quente (Y2S)',
+'Hot gas bypass valve (Y3S)':'Válvula bypass gás quente (Y3S)',
+'Hybrid DHW operation mode':'Modo operação AQS híbrida',
+'Hybrid Heating Target Temp.':'Temp. alvo aquecimento híbrido',
+'Hybrid Op. Mode':'Modo operação híbrida',
+'Hydro split setting':'Definição hydro split',
+'I/U EEPROM Ver.':'Versão EEPROM U.I.',
+'I/U capacity code':'Código capacidade U.I.',
+'I/U operation mode':'Modo operação U.I.',
+'INV Primary Current':'Corrente primária INV',
+'INV compressor Qty':'Qtd. compressores INV',
+'INV fin temp.':'Temp. aleta INV',
+'INV frequency':'Frequência INV',
+'INV frequency (rps)':'Frequência INV (rps)',
+'INV frequency 2 (rps)':'Frequência INV 2 (rps)',
+'INV primary current':'Corrente primária INV',
+'INV primary current (A)':'Corrente primária INV (A)',
+'INV secondary current':'Corrente secundária INV',
+'INV secondary current (A)':'Corrente secundária INV (A)',
+'IP Address':'Endereço IP',
+'Indoor Ambient Temp (R1T)':'Temp. ambiente interior (R1T)',
+'Indoor EEPROM (11th digit)':'EEPROM interior (11th digit)',
+'Indoor EEPROM (12th digit)(rev.)':'EEPROM interior (12th digit)(rev.)',
+'Indoor EEPROM (3rd digit)':'EEPROM interior (3rd digit)',
+'Indoor EEPROM (4th 5th digit)':'EEPROM interior (4th 5th digit)',
+'Indoor EEPROM (6th 7th digit)':'EEPROM interior (6th 7th digit)',
+'Indoor EEPROM (8th 9th digit)':'EEPROM interior (8th 9th digit)',
+'Indoor EEPROM Ver.':'Versão EEPROM interior',
+'Indoor Error Code':'Código de erro interior',
+'Indoor Error Detail Code':'Código detalhe erro interior',
+'Indoor Error Type':'Tipo de erro interior',
+'Indoor Option Code':'Código opção interior',
+'Indoor Software ID (xx)':'Software ID interior (xx)',
+'Indoor Software ID (yy)':'Software ID interior (yy)',
+'Indoor Unit Address':'Endereço unidade interior',
+'Indoor Unit Address (2)':'Endereço unidade interior (2)',
+'Indoor Unit Address (3)':'Endereço unidade interior (3)',
+'Indoor Unit Address (4)':'Endereço unidade interior (4)',
+'Indoor Unit Address (5)':'Endereço unidade interior (5)',
+'Indoor Unit Address (6)':'Endereço unidade interior (6)',
+'Indoor Unit Code':'Interior Unit Código',
+'Indoor Unit Operation Mode':'Modo operação unidade interior',
+'Indoor ambient temp. (R1T)':'Temp. ambiente interior (R1T)',
+'Indoor operation mode':'Modo operação interior',
+'Indoor unit blowout 50 ° C flag':'Interior unit blowout 50 ° C flag',
+'Injection tube temperature':'Temp. tubo de injeção',
+'Inlet Water Temp (R4T)':'Temp. água entrada (R4T)',
+'Inlet water temp. (DMW)':'Temp. água entrada (DMW)',
+'Inlet water temp. (R4T)':'Temp. água entrada (R4T)',
+'Inlet water temp.(R4T)':'Temp. água entrada(R4T)',
+'Install Update':'Instalar atualização',
+'Install the right firmware':'Instalar o firmware certo',
+'Internal Temperature':'Temperatura interna',
+'Interval in seconds':'Intervalo em segundos',
+'Inverter Fin Temp':'Temp. aleta inversor',
+'I⁄U operation mode':'Modo operação U.I.',
+'LP Drop Control':'Controlo queda LP',
+'LP bypass valve (Y2S)':'Válvula bypass BP (Y2S)',
+'LP bypass valve (Y3S)':'Válvula bypass BP (Y3S)',
+'LW setpoint (add)':'Setpoint água saída (adic.)',
+'LW setpoint (main)':'Setpoint água saída (principal)',
+'LW setpoint add':'Setpoint água saída adic.',
+'LW setpoint main':'Setpoint água saída principal',
+'Leaving Water Setpoint Main':'Setpoint água saída principal',
+'Leaving Water Temp after BUH (R2T)':'Temp. água saída depois do BUH (R2T)',
+'Leaving Water Temp before BUH (R1T)':'Temp. água saída antes do BUH (R1T)',
+'Leaving brine temp.(R6T)':'Temp. saída salmoura(R6T)',
+'Leaving water temp. after BUH (R2T)':'Temp. água saída depois do BUH (R2T)',
+'Leaving water temp. before BUH (R1T)':'Temp. água saída antes do BUH (R1T)',
+'Level':'Nível',
+'Liquid INJ solenoid valve (Y4S)':'Válvula solenóide injeção líquido (Y4S)',
+'Liquid pipe temp.':'Temp. tubagem líquido',
+'Liquid pipe temp. (R6T)':'Temp. tubagem líquido (R6T)',
+'Liquid pipe temp.(R6T)':'Temp. tubagem líquido(R6T)',
+'Liquid temp. (R3T)':'Temp. líquido (R3T)',
+'Liquid temperature(R3T)':'Temp. líquido(R3T)',
+'Low Pressure':'Pressão baixa',
+'Low Pressure(T)':'Pressão baixa (T)',
+'Low noise control':'Controlo baixo ruído',
+'Low pressure':'Pressão baixa',
+'Low pressure saturation temp.':'Pressão baixa saturation temp.',
+'M5 Button A':'Botão M5 A',
+'M5 Button B':'Botão M5 B',
+'M5 Button C':'Botão M5 C',
+'M5 Dark Mode':'Modo escuro M5',
+'MAC Address':'Endereço MAC',
+'MT setting':'Definição MT',
+'Main RT Cooling':'RT principal arrefecimento',
+'Main RT Heating':'RT principal aquecimento',
+'Main pump':'Bomba principal',
+'Main pump (2)':'Bomba principal (2)',
+'Manual Query Registry Result':'Resultado consulta manual registo',
+'Max. connectable indoor units':'Máx. unidades interiores ligáveis',
+'Message':'Mensagem',
+'Minichiller setting':'Definição mini-chiller',
+'Mixed water temp.':'Temp. água misturada',
+'Mixed water temp. (R7T)':'Temp. água misturada (R7T)',
+'Mixed water temp.(R7T)':'Temp. água misturada(R7T)',
+'Mode conflict':'Conflito de modo',
+'Mode conflict (DHW in standby)':'Conflito de modo (DHW in standby)',
+'Mode:':'Modo:',
+'Model Check':'Verificação do modelo',
+'Monobloc setting':'Definição monobloco',
+'Not in use':'Não usado',
+'Not in use (10)':'Não usado (10)',
+'Not in use (11)':'Não usado (11)',
+'Not in use (12)':'Não usado (12)',
+'Not in use (13)':'Não usado (13)',
+'Not in use (14)':'Não usado (14)',
+'Not in use (15)':'Não usado (15)',
+'Not in use (16)':'Não usado (16)',
+'Not in use (17)':'Não usado (17)',
+'Not in use (18)':'Não usado (18)',
+'Not in use (19)':'Não usado (19)',
+'Not in use (2)':'Não usado (2)',
+'Not in use (20)':'Não usado (20)',
+'Not in use (21)':'Não usado (21)',
+'Not in use (22)':'Não usado (22)',
+'Not in use (23)':'Não usado (23)',
+'Not in use (24)':'Não usado (24)',
+'Not in use (25)':'Não usado (25)',
+'Not in use (26)':'Não usado (26)',
+'Not in use (27)':'Não usado (27)',
+'Not in use (28)':'Não usado (28)',
+'Not in use (29)':'Não usado (29)',
+'Not in use (3)':'Não usado (3)',
+'Not in use (4)':'Não usado (4)',
+'Not in use (5)':'Não usado (5)',
+'Not in use (6)':'Não usado (6)',
+'Not in use (7)':'Não usado (7)',
+'Not in use (8)':'Não usado (8)',
+'Not in use (9)':'Não usado (9)',
+'O/U Heat Exch. Temp.':'O/U Heat Exch. Temp..',
+'O/U capacity':'Capacidade U.E.',
+'OPEN':'ABRIR',
+'OTA Update':'Atualização OTA',
+'Oil Return Operation':'Operação retorno de óleo',
+'Oil return operation':'Operação retorno de óleo',
+'Operation Mode':'Modo de operação',
+'Operation mode':'Modo de operação',
+'Other Drop Control':'Outro controlo de queda',
+'Outdoor Air Temp (R1T)':'Temp. ar exterior (R1T)',
+'Outdoor Ambient or Ext Sensor':'Ambiente exterior ou sensor ext.',
+'Outdoor EEPROM (10th digit)':'EEPROM exterior (10th digit)',
+'Outdoor EEPROM (1st digit)':'EEPROM exterior (1st digit)',
+'Outdoor EEPROM (3rd 4th digit)':'EEPROM exterior (3rd 4th digit)',
+'Outdoor EEPROM (5th 6th digit)':'EEPROM exterior (5th 6th digit)',
+'Outdoor EEPROM (7th 8th digit)':'EEPROM exterior (7th 8th digit)',
+'Outdoor Error Code':'Código de erro exterior',
+'Outdoor Fan Step':'Passo ventilador exterior',
+'Outdoor Heat Exch. Mid-temp.':'Temp. média permutador exterior',
+'Outdoor Heat Exch. Temp.':'Temp. permutador exterior',
+'Outdoor Heat Exch. Temp.(R4T)':'Temp. permutador exterior(R4T)',
+'Outdoor Heat Exchanger Temp (R4T)':'Temp. permutador exterior (R4T)',
+'Outdoor MPU ID':'MPU ID exterior',
+'Outdoor MPU ID (2)':'MPU ID exterior (2)',
+'Outdoor air temp.':'Temp. ar exterior',
+'Outdoor air temp. (R1T)':'Temp. ar exterior (R1T)',
+'Outdoor error code':'Código de erro exterior',
+'Outdoor error type':'Tipo de erro exterior',
+'Outdoor heat exch. temp. (R4T)':'Exterior heat exch. temp. (R4T)',
+'Outdoor heat exchanger mid temp.':'Temp. média permutador exterior',
+'Outdoor heat exchanger temp.':'Temp. permutador exterior',
+'Outdoor thermostat':'Termóstato exterior',
+'Outlet Water BUH Temp. (R2T)':'Temp. água saída BUH (R2T)',
+'Outlet Water Heat Exch. Temp. (R1T)':'Temp. saída permutador água (R1T)',
+'Outlet water heat exch. temp. (DLWB2)':'Temp. saída permutador água (DLWB2)',
+'Outlet water heat exchanger temp (hydro split model) DLWB2':'Temp. saída permutador água (hydro split) DLWB2',
+'O⁄U Heat Exch. Temp.':'O⁄U Heat Exch. Temp..',
+'PHE Heater':'PHE Aquecedor',
+'PHE Heater (2)':'PHE Aquecedor (2)',
+'PRESS':'PREMIR',
+'Power:':'Potência:',
+'Powerful DHW Operation':'AQS reforçada',
+'Powerful DHW Operation ON/OFF':'AQS reforçada ON/OFF',
+'Powerful DHW Operation. ON-OFF':'AQS reforçada ON-OFF',
+'Powerful DHW Operation. ON⁄OFF':'AQS reforçada ON/OFF',
+'Powerful DHW operation':'AQS reforçada',
+'Powerful bit (MT setting bit)':'Bit reforçado (MT setting bit)',
+'Powerful demand':'Procura reforçada',
+'Pressure':'Pressão',
+'Pressure (2)':'Pressão (2)',
+'Pressure equalizing operation':'Operação equalização pressão',
+'Pressure sensor':'Sensor de pressão',
+'Pressure sensor(T)':'Sensor de pressão(T)',
+'Pressure sensor(T) (2)':'Sensor de pressão(T) (2)',
+'Pressure(T)':'Pressão(T)',
+'Pump Feedback (bit5)':'Bomba Feedback (bit5)',
+'Pump Feedback (bit6)':'Bomba Feedback (bit6)',
+'Pump Feedback (bit7)':'Bomba Feedback (bit7)',
+'Pwr consumption limit 1':'Limite consumo energia 1',
+'Pwr consumption limit 2':'Limite consumo energia 2',
+'Pwr consumption limit 3':'Limite consumo energia 3',
+'Pwr consumption limit 4':'Limite consumo energia 4',
+'R1T-Outdoor air temp.':'Temp. ar exterior (R1T)',
+'RT Temp.':'Temp. ambiente',
+'RT setpoint':'Setpoint ambiente',
+'Refrig Temp Liquid Side (R3T)':'Temp. refrig. lado líquido (R3T)',
+'Refrig. Temp. liquid side (R3T)':'Temp. refrig. lado líquido (R3T)',
+'Refrig. temp. evap. In':'Temp. refrig. evap. entrada',
+'Refrig. temp. evap. Out':'Temp. refrig. evap. saída',
+'Refrig. temp. evap.Out':'Temp. refrig. evap. saída',
+'Refrig. temp. liquid side (R3T)':'Temp. refrig. lado líquido (R3T)',
+'Refrigerant pressure':'Pressão refrigerante',
+'Refrigerant pressure saturation temp.':'Pressão refrigerante saturation temp.',
+'Refrigerant pressure sensor':'Sensor pressão refrigerante',
+'Reheat ON-OFF':'Reaquecimento ON-OFF',
+'Reheat ON/OFF':'Reaquecimento ON/OFF',
+'Restart':'Reiniciar',
+'Restart standby':'Espera de reinício',
+'STD Compressor 1':'Compressor STD 1',
+'STD Compressor 2':'Compressor STD 2',
+'STD compressor Qty':'Qtd. compressores STD',
+'SV (drain pan heater)':'SV (aquecedor tabuleiro)',
+'SV (drain pan heater) (2)':'SV (aquecedor tabuleiro) (2)',
+'Safeguard operation':'Operação de salvaguarda',
+'Sensor Data Qty':'Qtd. dados sensor',
+'Sensor and Control':'Sensores e controlos',
+'Show All':'Mostrar tudo',
+'Silent Mode':'Modo silencioso',
+'Silent mode':'Modo silencioso',
+'SmartGridContact1':'Contacto Smart Grid 1',
+'SmartGridContact2':'Contacto Smart Grid 2',
+'Solar input':'Entrada solar',
+'Solar pump operation':'Funcionamento bomba solar',
+'Solenoid Valve 1':'Válvula solenóide 1',
+'Solenoid Valve 2':'Válvula solenóide 2',
+'Solenoid Valve 3':'Válvula solenóide 3',
+'Solenoid Valve 4':'Válvula solenóide 4',
+'Solenoid Valve 5':'Válvula solenóide 5',
+'Solenoid valve Qty':'Qtd. válvulas solenóide',
+'Space C-H Op. or BPH':'Espaço C-H Op. or BPH',
+'Space H Operation output':'Saída operação aquecimento',
+'Space Heating Operation':'Aquecimento de espaço',
+'Space Heating Output':'Saída aquecimento de espaço',
+'Space heating Operation ON-OFF':'Aquecimento de espaço ON-OFF',
+'Space heating Operation ON/OFF':'Aquecimento de espaço ON/OFF',
+'Space heating Operation ON⁄OFF':'Espaço heating Operação ON⁄OFF',
+'Space heating operation':'Aquecimento de espaço',
+'Startup Control':'Controlo de arranque',
+'States':'Estados',
+'Status':'Estado',
+'Storage ECO ON-OFF':'Armazenamento ECO ON-OFF',
+'Storage ECO ON/OFF':'Armazenamento ECO ON/OFF',
+'Storage comfort ON-OFF':'Armazenamento conforto ON-OFF',
+'Storage comfort ON/OFF':'Armazenamento conforto ON/OFF',
+'Suction Pipe Temp (R3T)':'Temp. tubagem aspiração (R3T)',
+'Suction Pipe Temperature':'Temp. tubagem aspiração',
+'Suction pipe temp.':'Temp. tubagem aspiração',
+'Suction pipe temp. (R3T)':'Temp. tubagem aspiração (R3T)',
+'Suction pipe temp.(R3T)':'Temp. tubagem aspiração(R3T)',
+'Suction temp':'Temp. aspiração',
+'Suggested Model':'Modelo sugerido',
+'System OFF':'Sistema OFF',
+'System OFF (ON:System off)':'Sistema OFF (ON:sistema desligado)',
+'System off':'Sistema desligado',
+'Tag':'Etiqueta',
+'Tank preheat ON-OFF':'Pré-aquecimento depósito ON-OFF',
+'Tank preheat ON/OFF':'Pré-aquecimento depósito ON/OFF',
+'Target Cond. Temp.':'Temp. alvo condensação',
+'Target Discharge Temp.':'Temp. alvo descarga',
+'Target Evap. Temp.':'Temp. alvo evaporação',
+'Target High:':'Alvo alto:',
+'Target Low:':'Alvo baixo:',
+'Target cond. temp.':'Temp. alvo condensação',
+'Target delta T cooling':'Delta T alvo arrefecimento',
+'Target delta T heating':'Delta T alvo aquecimento',
+'Target evap. temp.':'Temp. alvo evaporação',
+'Target port temperature':'Alvo port temperature',
+'Target:':'Alvo:',
+'Thermal Protector BUH':'Proteção térmica BUH',
+'Thermal protector (Q1L) BUH':'Proteção térmica (Q1L) BUH',
+'Thermal protector BSH':'Proteção térmica BSH',
+'Thermal protector BUH':'Proteção térmica BUH',
+'Thermal protector BUH (Q1L)':'Proteção térmica BUH (Q1L)',
+'Thermostat':'Termóstato',
+'Thermostat ON-OFF':'Termóstato ON-OFF',
+'Thermostat ON-OFF (2)':'Termóstato ON-OFF (2)',
+'Thermostat ON/OFF indoor':'Termóstato ON/OFF interior',
+'Thermostat ON/OFF outdoor':'Termóstato ON/OFF exterior',
+'Thermostat ON⁄OFF':'Termóstato ON/OFF',
+'Thermostat Status':'Estado do termóstato',
+'Time':'Hora',
+'Update':'Atualizar',
+'Uptime':'Tempo ligado',
+'Voltage (N-phase) (V)':'Tensão (fase N) (V)',
+'Voltage (V)':'Tensão (V)',
+'Voltage N-phase':'Tensão fase N',
+'Water Flow Switch':'Interruptor caudal',
+'Water Pressure':'Pressão da água',
+'Water Pump Operation':'Funcionamento bomba de água',
+'Water Pump Signal':'Sinal bomba de água',
+'Water flow switch':'Interruptor caudal',
+'Water pressure':'Pressão da água',
+'Water pressure (bar)':'Pressão da água (bar)',
+'Water pump operation':'Funcionamento bomba de água',
+'Water pump signal':'Sinal bomba de água',
+'Water pump signal (0:max-100:stop)':'Sinal bomba de água (0:máx-100:parar)',
+'WiFi BSSID':'BSSID Wi‑Fi',
+'WiFi SSID':'SSID Wi‑Fi',
+'WiFi Signal':'Sinal Wi‑Fi',
+'[EKMIK] Bizone kit mix valve position M1S':'[EKMIK] Posição válvula mistura kit bizone M1S',
+'[EKMIK] Bizone kit mixed leaving water temperature R1T':'[EKMIK] Temp. água saída misturada kit bizone R1T',
+'[Future] 3 way Valve Mixing 1':'[Futuro] Válvula 3 vias mistura 1',
+'[Future] 3 way Valve Mixing 2':'[Futuro] Válvula 3 vias mistura 2',
+'[HPSU] Bypass valve position (0:Bypass 100:Emitter)':'[HPSU] Posição válvula bypass (0:Bypass 100:Emissor)',
+'[HPSU] Mixed leaving water temperature after the tank R7T (DLWA2)':'[HPSU] Temp. água saída misturada após depósito R7T (DLWA2)',
+'[HPSU] Tank DHW bivalent output signal':'[HPSU] Sinal saída bivalente AQS depósito',
+'[HPSU] Tank DHW bivalent primary heat source (OFF:HP  ON:Boiler)':'[HPSU] Fonte calor primária bivalente AQS (OFF:HP ON:Caldeira)',
+'[HPSU] Tank heating bivalent output signal':'[HPSU] Sinal saída bivalente aquecimento depósito',
+'[HPSU] Tank heating bivalent primary heat source (OFF:HP  ON:Boiler)':'[HPSU] Fonte calor primária bivalente aquecimento (OFF:HP ON:Caldeira)',
+'[HPSU] Tank valve position (0:Bypass 100:Tank)':'[HPSU] Posição válvula depósito (0:Bypass 100:Depósito)',
+'[HPSU] Tr return Temp (R4T)':'[HPSU] Temp. retorno Tr (R4T)',
+'[HPSU] Tv inflow Temp  (R1T)':'[HPSU] Temp. entrada Tv (R1T)',
+'[HPSU] Tvbh inflow Temp after Buffer-BUH (R2T)':'[HPSU] Temp. entrada Tvbh após buffer-BUH (R2T)',
+'[RT space thermo ON-OFF] (bit0)':'[Termóstato espaço ON-OFF] (bit0)',
+'[RT space thermo ON-OFF] (bit1)':'[Termóstato espaço ON-OFF] (bit1)'
+  };
+
+  function lang() {
+    return (window.althermaLang && window.althermaLang.get()) || 'en';
+  }
+
+  function tr(en) {
+    if (!en) return en;
+    if (lang() !== 'pt') return en;
+    if (DICT[en]) return DICT[en];
+    // Prefix labels "Current: 21.5 °C"
+    for (var k in DICT) {
+      if (k.length >= 4 && k.charAt(k.length - 1) === ':' && en.indexOf(k) === 0)
+        return DICT[k] + en.slice(k.length);
+    }
+    return en;
+  }
+
+  function setText(el, en) {
+    if (!el) return;
+    if (!el.getAttribute(ATTR)) el.setAttribute(ATTR, en);
+    var src = el.getAttribute(ATTR) || en;
+    var next = tr(src);
+    if (el.textContent !== next) el.textContent = next;
+  }
+
+  function translateNode(el) {
+    if (!el || el.nodeType !== 1) return;
+    // Skip our own diagram (already has data-i18n)
+    if (el.id === 'altherma-diagram' || (el.closest && el.closest('#altherma-diagram'))) return;
+
+    var tag = (el.tagName || '').toLowerCase();
+
+    // Group headers + chrome
+    if (el.classList && el.classList.contains('tab-header')) {
+      var raw = el.getAttribute(ATTR) || el.textContent.trim();
+      setText(el, raw);
+      return;
+    }
+
+    // Entity name cell: second child of .entity-row (may include [device] prefix)
+    if (el.classList && el.classList.contains('entity-row')) {
+      var kids = el.children;
+      if (kids && kids.length >= 2) {
+        var nameEl = kids[1];
+        var full = nameEl.getAttribute(ATTR) || nameEl.textContent;
+        // Remember full English including optional [device] prefix
+        if (!nameEl.getAttribute(ATTR)) nameEl.setAttribute(ATTR, full);
+        var src = nameEl.getAttribute(ATTR);
+        var m = src.match(/^(\[[^\]]+\]\s*)([\s\S]*)$/);
+        if (m) {
+          var next = m[1] + tr(m[2]);
+          if (nameEl.textContent !== next) nameEl.textContent = next;
+        } else {
+          setText(nameEl, src);
+        }
+      }
+    }
+
+    // PRESS / Show All / Update buttons — text only; click handlers keep English actions
+    if (tag === 'button' || (el.classList && el.classList.contains('btn'))) {
+      var bt = (el.getAttribute(ATTR) || el.textContent || '').trim();
+      if (bt === 'PRESS' || bt === 'Show All' || bt === 'Update' || DICT[bt]) {
+        if (!el.getAttribute(ATTR)) el.setAttribute(ATTR, bt);
+        setText(el, el.getAttribute(ATTR));
+      }
+    }
+
+    // <option>: translate label, keep value attribute (device receives English value)
+    if (tag === 'option') {
+      var ov = el.getAttribute('value');
+      var ot = el.getAttribute(ATTR) || el.textContent;
+      if (!el.getAttribute(ATTR)) el.setAttribute(ATTR, ot);
+      var srcO = el.getAttribute(ATTR);
+      var nextO = tr(srcO);
+      if (el.textContent !== nextO) el.textContent = nextO;
+      // never touch value
+      if (ov != null) el.setAttribute('value', ov);
+    }
+
+    // Climate / water_heater labels
+    if (tag === 'label') {
+      var lt = el.getAttribute(ATTR) || el.textContent;
+      if (!el.getAttribute(ATTR)) el.setAttribute(ATTR, lt);
+      var srcL = el.getAttribute(ATTR);
+      var nextL = tr(srcL);
+      // Also try prefix keys inside "Current: 21 °C"
+      if (nextL === srcL && lang() === 'pt') {
+        var pks = ['Current:', 'Target Low:', 'Target High:', 'Target:', 'Mode:', 'Away:', 'Power:'];
+        for (var pi = 0; pi < pks.length; pi++) {
+          var pk = pks[pi];
+          if (srcL.indexOf(pk) === 0 && DICT[pk]) {
+            nextL = DICT[pk] + srcL.slice(pk.length);
+            break;
+          }
+        }
+      }
+      if (el.textContent !== nextL) el.textContent = nextL;
+    }
+
+    // Debug log column headers
+    if (el.classList && el.classList.contains('thead')) {
+      el.querySelectorAll('div').forEach(function (d) {
+        var t = (d.getAttribute(ATTR) || d.textContent || '').trim();
+        if (DICT[t] || t === 'Time' || t === 'Level' || t === 'Tag' || t === 'Message') {
+          if (!d.getAttribute(ATTR)) d.setAttribute(ATTR, t);
+          setText(d, d.getAttribute(ATTR));
+        }
+      });
+    }
+  }
+
+  function walk(root) {
+    if (!root) return;
+    var list;
+    try { list = root.querySelectorAll('*'); } catch (e) { return; }
+    for (var i = 0; i < list.length; i++) {
+      var el = list[i];
+      translateNode(el);
+      if (el.shadowRoot) walk(el.shadowRoot);
+    }
+    // Also translate the root itself if it's an element
+    if (root.nodeType === 1) translateNode(root);
+  }
+
+  function applyAll() {
+    walk(document);
+    var app = document.querySelector('esp-app');
+    if (app && app.shadowRoot) walk(app.shadowRoot);
+  }
+
+  var scheduled = null;
+  function schedule() {
+    if (scheduled) return;
+    scheduled = setTimeout(function () {
+      scheduled = null;
+      applyAll();
+    }, 50);
+  }
+
+  function observe(node) {
+    if (!node || node.__althermaI18nObs) return;
+    try {
+      var mo = new MutationObserver(schedule);
+      mo.observe(node, { childList: true, subtree: true, characterData: true });
+      node.__althermaI18nObs = mo;
+    } catch (e) {}
+  }
+
+  function boot() {
+    applyAll();
+    observe(document.documentElement);
+    var app = document.querySelector('esp-app');
+    if (app) {
+      observe(app);
+      if (app.shadowRoot) {
+        observe(app.shadowRoot);
+        // Nested custom elements often mount later
+        app.shadowRoot.querySelectorAll('*').forEach(function (el) {
+          if (el.shadowRoot) observe(el.shadowRoot);
+        });
+      }
+    }
+  }
+
+  var n = 0;
+  var t = setInterval(function () {
+    boot();
+    if (document.querySelector('esp-app') && document.querySelector('esp-app').shadowRoot) {
+      /* keep observing a few more ticks for late entity rows */
+    }
+    if (++n > 240) clearInterval(t);
+  }, 250);
+
+  if (window.althermaLang && window.althermaLang.on) {
+    window.althermaLang.on(function () { applyAll(); });
+  } else {
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.althermaLang && window.althermaLang.on)
+        window.althermaLang.on(function () { applyAll(); });
+    });
+  }
+})();
