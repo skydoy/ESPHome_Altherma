@@ -13,10 +13,7 @@
 substitutions:
   altherma_manifest_url: https://skydoy.github.io/esphome-altherma/firmware/${altherma_board}/${altherma_model}/manifest.json
 
-time:
-  - platform: sntp
-    id: altherma_sntp_time
-
+# SNTP (altherma_sntp_time) comes from boards/base.yaml.
 switch:
   - platform: template
     id: auto_update_enabled
