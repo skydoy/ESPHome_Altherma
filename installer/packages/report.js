@@ -222,7 +222,14 @@
     if (dhw === false) return L.t('Aquecimento', 'Heating');
     return v || '—';
   }
-  function fmt(key, d) {
+  // Sensors also arrive as strings / "NA" (nan via JSON) on web_server v3.
+  function numberOrNaN(v) {
+    if (v == null || v === 'NA' || v === 'nan' || v === '') return NaN;
+    var n = typeof v === 'number' ? v : parseFloat(v);
+    return isFinite(n) ? n : NaN;
+  }
+
+  function fmt(key, d, prev) {
     var st = d.state == null ? '' : String(d.state);
     if (key === 'valve') {
       // Store canonical DHW/SPACE so paint/i18n can localise the chip value.
@@ -233,15 +240,23 @@
       if (dhw === false) return 'SPACE';
       return raw;
     }
-    if (d.value != null && typeof d.value === 'number' && isFinite(d.value)) {
+    // Prefer d.value (number or numeric string); keep last known on NA/nan.
+    var n = numberOrNaN(d.value);
+    if (!isFinite(n) && st) {
+      if (/^(NA|nan)$/i.test(st.trim())) return prev != null ? prev : '';
+      n = numberOrNaN(st); // parseFloat("14.1 °C") → 14.1
+    }
+    if (isFinite(n)) {
       var u = '';
       for (var i = 0; i < MAP.length; i++) if (MAP[i][0] === key) { u = MAP[i][2]; break; }
       var dec = (key === 'freq' || key === 'flow') ? 0 : 1;
-      return d.value.toFixed(dec) + (u ? '\u00a0' + u : '');
+      return n.toFixed(dec) + (u ? '\u00a0' + u : '');
     }
+    if (/^(NA|nan)$/i.test(st.trim())) return prev != null ? prev : '';
     if (/^(ON|OFF|True|False)$/i.test(st)) return /^(ON|True)$/i.test(st) ? 'ON' : 'OFF';
     return st.replace(/\s+/g, '\u00a0');
   }
+
   function isOn(v) {
     if (v == null) return false;
     var s = String(v).toUpperCase();
@@ -677,7 +692,7 @@
       else if (k.indexOf('beforebuh') >= 0) key = 'tlwb';
       else if (vals.tlw && key === 'tlw') return;
     }
-    vals[key] = fmt(key, d);
+    vals[key] = fmt(key, d, vals[key]);
     var app = document.querySelector('esp-app');
     var el = app && app.shadowRoot && app.shadowRoot.getElementById('altherma-diagram');
     if (el) paint(el);
