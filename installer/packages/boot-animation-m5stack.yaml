@@ -1,6 +1,6 @@
 # Optional boot animation for the M5Stack Core / Basic screen (320x240, id m5_display).
-# Shows the ESPHome Altherma logo with its thermometer filling up, then the name and the
-# firmware version, then hands the screen back to the normal UI of
+# Shows the ESPHome Altherma logo with its thermometer filling up, then the name, the
+# firmware version and (smaller) the ESPHome build version, then hands the screen back to the normal UI of
 # boards/esphome-altherma-m5stack.yaml. That file is not modified: the splash is drawn as a
 # temporary display page (a page takes precedence over the display's lambda while shown).
 #
@@ -36,6 +36,11 @@ font:
     size: 16
     glyphsets:
       - GF_Latin_Core
+  # ESPHome build version line under the firmware version (digits, dots, "ESPHome", "-dev"/"b").
+  - file: "gfonts://Roboto"
+    id: splash_font_tiny
+    size: 13
+    glyphs: " .-0123456789ESPHabdemov"
 
 esphome:
   on_boot:
@@ -77,6 +82,10 @@ script:
             if (f >= n) {
             #ifdef ESPHOME_PROJECT_VERSION
               it.printf(w / 2, 192, id(splash_font_small), Color(154, 169, 189), TextAlign::TOP_CENTER, "v%s", ESPHOME_PROJECT_VERSION);
+            #endif
+            #ifdef ESPHOME_VERSION
+              // ESPHome build version, smaller and dimmer (y 214..229, above the 4 px progress bar).
+              it.printf(w / 2, 214, id(splash_font_tiny), Color(96, 110, 132), TextAlign::TOP_CENTER, "ESPHome %s", ESPHOME_VERSION);
             #endif
             }
             // Progress bar along the bottom edge.
