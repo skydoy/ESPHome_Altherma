@@ -1588,6 +1588,63 @@
     return (window.althermaLang && window.althermaLang.get()) || 'en';
   }
 
+  // Diagnostic VALUES (third column of the entity list). Exact strings sent by ESPHome's debug
+  // reset_reason text sensor: ESP32 (esp_reset_reason table) and ESP8266 (ResetReasonStrings).
+  var VALUE_DICT = {
+'unknown source':'origem desconhecida',
+'power-on event':'ligação à corrente',
+'external pin':'pino externo (reset)',
+'software via esp_restart':'reinício por software',
+'exception/panic':'exceção/pânico',
+'interrupt watchdog':'watchdog de interrupções',
+'task watchdog':'watchdog de tarefas',
+'other watchdogs':'outros watchdogs',
+'exiting deep sleep mode':'saída do sono profundo',
+'brownout':'quebra de tensão (brownout)',
+'SDIO':'SDIO',
+'USB peripheral':'periférico USB',
+'JTAG':'JTAG',
+'efuse error':'erro de eFuse',
+'power glitch detected':'falha de alimentação detetada',
+'CPU lock up':'bloqueio do CPU',
+'Power On':'Ligação à corrente',
+'Hardware Watchdog':'Watchdog de hardware',
+'Exception':'Exceção',
+'Software Watchdog':'Watchdog de software',
+'Software/System restart':'Reinício por software/sistema',
+'Deep-Sleep Wake':'Despertar do sono profundo',
+'External System':'Reinício externo',
+'Unknown':'Desconhecido'
+  };
+
+  function trValue(en) {
+    if (!en || lang() !== 'pt') return en;
+    if (Object.prototype.hasOwnProperty.call(VALUE_DICT, en)) return VALUE_DICT[en];
+    var m = en.match(/^Reboot request from (.+)$/);
+    if (m) return 'Reinício pedido por ' + m[1];
+    if (window.althermaTranslateUpdateStatus) {
+      var upd = window.althermaTranslateUpdateStatus(en, 'pt');
+      if (upd && upd !== en) return upd;
+    }
+    return en;
+  }
+
+  // Edit lit's own text node in place (never textContent: that would detach lit's markers and
+  // freeze later state updates). When lit writes a new English state, node.data no longer matches
+  // what we wrote, so it is taken as the new source.
+  function translateValueCell(cell) {
+    if (!cell) return;
+    var w = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT, null);
+    var n;
+    while ((n = w.nextNode())) {
+      if (!n.data || !n.data.trim()) continue;
+      if (n.__altOut === undefined || n.data !== n.__altOut) n.__altEn = n.data;
+      var out = trValue(n.__altEn);
+      n.__altOut = out;
+      if (n.data !== out) n.data = out;
+    }
+  }
+
   function tr(en) {
     if (!en) return en;
     if (lang() !== 'pt') return en;
@@ -1651,6 +1708,7 @@
         } else {
           setText(nameEl, src);
         }
+        if (kids.length >= 3) translateValueCell(kids[2]);
       }
     }
 

@@ -5,6 +5,7 @@
 - Ecrã de arranque do M5Stack: por baixo da versão do firmware aparece agora, mais pequena e mais escura, a versão do ESPHome com que foi compilado (ex. «ESPHome 2026.10.1»).
 - O hotspot de configuração passa a chamar-se «ESPHome Altherma Setup», como nos outros projetos (ESPHome_AC Setup, ESPHome Hunter Setup). O nome da placa e o `project` não mudam, por isso as placas adotadas continuam a atualizar.
 - Pacote de diagnóstico opcional (`boards/common/diagnostics.yaml`): novos **Motivo do reinício**, **Versão do firmware** e **Reiniciar (modo seguro)**, iguais aos do ESPHome_AC; nomes traduzidos no seletor PT/EN da página da placa.
+- Seletor PT/EN da página da placa: os valores de diagnóstico também são traduzidos (motivo do reinício em ESP32 e ESP8266, «Reinício pedido por …», estado da atualização). Só muda o texto mostrado; os valores enviados pela placa ficam iguais.
 - Novo blueprint do Home Assistant `homeassistant/blueprints/esphome_altherma_update_available.yaml`: notificação no telemóvel quando há versão nova (placas adotadas no Device Builder).
 - Repositório: CONTRIBUTING, CODE_OF_CONDUCT, modelo de pull request, CODEOWNERS e .editorconfig, como nos outros projetos.
 - Novo THIRD_PARTY_NOTICES.md com os créditos e licenças de terceiros (ESPAltherma, MIT, com o texto completo; projeto original esphome-altherma; ESPHome e ferramentas usadas na compilação). O README deixa de ter link para outro repositório na nota da licença.
