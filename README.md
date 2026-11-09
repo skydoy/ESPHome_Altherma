@@ -63,6 +63,17 @@ On the M5Stack Core / Basic the screen shows the live values (buttons to navigat
 
 <p align="center"><img src="docs/logo-animation.gif" alt="ESPHome Altherma animated logo" width="200"></p>
 
+## Device web page
+Open `http://<board-ip>/` in a browser: a live diagram of the heat pump (temperatures, flow, 3-way valve, compressor,
+COP and a 24 h chart kept in your browser), every entity with its value, the update buttons and the debug log. The
+**PT · EN** button switches the whole page between Portuguese and English, including entity names, groups, buttons and
+diagnostic values. Only the text on screen changes; what the board sends and receives stays the same.
+
+<p align="center"><img src="docs/img/webui-en.png" alt="Device web page in English" width="420">
+<img src="docs/img/webui-pt.png" alt="Device web page in Portuguese" width="420"></p>
+
+<sub>Example values from a test page, not a live heat pump.</sub>
+
 ## Boards
 | Board | Notes |
 |---|---|

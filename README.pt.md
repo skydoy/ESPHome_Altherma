@@ -63,6 +63,18 @@ No M5Stack Core / Basic o ecrã mostra os valores em direto (botões para navega
 
 <p align="center"><img src="docs/logo-animation.gif" alt="Logótipo animado do ESPHome Altherma" width="200"></p>
 
+## Página web da placa
+Abre `http://<ip-da-placa>/` no browser: tens um esquema da bomba de calor em direto (temperaturas, caudal, válvula de
+3 vias, compressor, COP e um gráfico de 24 h guardado no teu browser), todas as entidades com o seu valor, os botões de
+atualização e o registo de depuração. O botão **PT · EN** muda a página toda entre português e inglês, incluindo os
+nomes das entidades, os grupos, os botões e os valores de diagnóstico. Só muda o texto que vês; o que a placa envia e
+recebe fica igual.
+
+<p align="center"><img src="docs/img/webui-pt.png" alt="Página web da placa em português" width="420">
+<img src="docs/img/webui-en.png" alt="Página web da placa em inglês" width="420"></p>
+
+<sub>Valores de exemplo de uma página de teste, não de uma bomba real.</sub>
+
 ## Placas
 | Placa | Notas |
 |---|---|
