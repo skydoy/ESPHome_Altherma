@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Instalador web: botão de tema (sol/lua) igual ao hub ESPmaniacs — última pílula depois de PT | EN, 36,4×25 px, ícone SVG 14 px centrado (sem emoji).
+
 ## [2.6.2] - 2026-11-09
 
 - Repositório renomeado para `skydoy/ESPHome_Altherma`: todos os links, o instalador web (https://skydoy.github.io/ESPHome_Altherma/), o endereço das atualizações OTA e os `package_import_url` passam a usar o nome novo. Placas com versões anteriores procuram atualizações no endereço antigo (que deixou de existir): atualiza uma vez pelo instalador web ou pelo Device Builder.
