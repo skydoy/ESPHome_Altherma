@@ -353,14 +353,14 @@
     if ((m = /^Up to date \((.+)\)$/i.exec(st)))
       return pt ? ('Atualizado (' + m[1] + ')') : st;
     if (/^Up to date$/i.test(st)) return pt ? 'Atualizado' : 'Up to date';
-    if (/^Checking for updates$/i.test(st)) return pt ? 'A procurar atualizações' : st;
+    if (/^Checking for updates$/i.test(st)) return pt ? 'A verificar atualizações' : st;
     if (/^Downloading firmware \(do not unplug\)$/i.test(st))
-      return pt ? 'A descarregar firmware (não desligues)' : st;
+      return pt ? 'A transferir o firmware (não desligues)' : st;
     if (/^Installed, rebooting$/i.test(st)) return pt ? 'Instalado, a reiniciar' : st;
-    if (/^Install requested$/i.test(st)) return pt ? 'Instalação pedida' : st;
-    if (/^Update check failed$/i.test(st)) return pt ? 'Falha ao verificar atualização' : st;
+    if (/^Install requested$/i.test(st)) return pt ? 'Instalação solicitada' : st;
+    if (/^Update check failed$/i.test(st)) return pt ? 'Falha na verificação de atualizações' : st;
     if ((m = /^Update failed \((.+)\)$/i.exec(st)))
-      return pt ? ('Atualização falhou (' + m[1] + ')') : st;
+      return pt ? ('Falha na atualização (' + m[1] + ')') : st;
     return st;
   }
 
@@ -1134,11 +1134,11 @@
 'Latest Version':'Última versão',
 'Update Available':'Atualização disponível',
 'Up to date':'Atualizado',
-'Checking for updates':'A procurar atualizações',
-'Downloading firmware (do not unplug)':'A descarregar firmware (não desligues)',
+'Checking for updates':'A verificar atualizações',
+'Downloading firmware (do not unplug)':'A transferir o firmware (não desligues)',
 'Installed, rebooting':'Instalado, a reiniciar',
-'Install requested':'Instalação pedida',
-'Update check failed':'Falha ao verificar atualização',
+'Install requested':'Instalação solicitada',
+'Update check failed':'Falha na verificação de atualizações',
 'Circulation pump operation':'Funcionamento bomba circulação',
 'Comp. INV Current Drop':'Queda corrente INV compressor',
 'Compressor Frequency':'Frequência do compressor',
@@ -1591,37 +1591,44 @@
   // Diagnostic VALUES (third column of the entity list). Exact strings sent by ESPHome's debug
   // reset_reason text sensor: ESP32 (esp_reset_reason table) and ESP8266 (ResetReasonStrings).
   var VALUE_DICT = {
+// ESP32 (same PT wording as ESPHome_AC core/web-ui.js VAL_PT)
 'unknown source':'origem desconhecida',
-'power-on event':'ligação à corrente',
-'external pin':'pino externo (reset)',
-'software via esp_restart':'reinício por software',
-'exception/panic':'exceção/pânico',
-'interrupt watchdog':'watchdog de interrupções',
-'task watchdog':'watchdog de tarefas',
-'other watchdogs':'outros watchdogs',
-'exiting deep sleep mode':'saída do sono profundo',
-'brownout':'quebra de tensão (brownout)',
+'power-on event':'Ligado',
+'external pin':'Pino externo',
+'software via esp_restart':'Software (esp_restart)',
+'exception/panic':'Exceção/pânico',
+'interrupt watchdog':'Watchdog de interrupção',
+'task watchdog':'Watchdog de tarefa',
+'other watchdogs':'Outros watchdogs',
+'exiting deep sleep mode':'A sair do deep sleep',
+'brownout':'Quebra de tensão',
 'SDIO':'SDIO',
-'USB peripheral':'periférico USB',
+'USB peripheral':'Periférico USB',
 'JTAG':'JTAG',
-'efuse error':'erro de eFuse',
-'power glitch detected':'falha de alimentação detetada',
-'CPU lock up':'bloqueio do CPU',
-'Power On':'Ligação à corrente',
+'efuse error':'Erro de eFuse',
+'power glitch detected':'Oscilação de alimentação',
+'CPU lock up':'CPU bloqueada',
+// ESP8266
+'Power On':'Ligado',
 'Hardware Watchdog':'Watchdog de hardware',
 'Exception':'Exceção',
 'Software Watchdog':'Watchdog de software',
-'Software/System restart':'Reinício por software/sistema',
-'Deep-Sleep Wake':'Despertar do sono profundo',
-'External System':'Reinício externo',
-'Unknown':'Desconhecido'
+'Software/System restart':'Software (reinício do sistema)',
+'Deep-Sleep Wake':'A sair do deep sleep',
+'External System':'Sistema externo',
+'Unknown':'desconhecido',
+// Misc (as in ESPHome_AC)
+'None':'Nenhuma',
+'self-built':'compilação própria',
+'custom':'personalizado',
+'unknown':'desconhecido'
   };
 
   function trValue(en) {
     if (!en || lang() !== 'pt') return en;
     if (Object.prototype.hasOwnProperty.call(VALUE_DICT, en)) return VALUE_DICT[en];
     var m = en.match(/^Reboot request from (.+)$/);
-    if (m) return 'Reinício pedido por ' + m[1];
+    if (m) return 'Pedido de reinício de ' + m[1];
     if (window.althermaTranslateUpdateStatus) {
       var upd = window.althermaTranslateUpdateStatus(en, 'pt');
       if (upd && upd !== en) return upd;
