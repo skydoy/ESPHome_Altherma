@@ -85,13 +85,16 @@ ficheiro em [`installer/`](../installer/): `esphome -s altherma_model <modelo> r
 | `boards/esphome-altherma-<placa>.factory.yaml` | Imagens de fábrica simples (modelo predefinido, sem escolha de modelo); o instalador web usa `installer/`. |
 | `installer/*.installer.yaml` | O que o instalador web compila: ficheiro da placa + escolha do modelo + entidade Firmware. Vê [segurança](seguranca.md#configurações-do-instalador--de-fábrica). |
 | `confs/*.yaml` | [Ficheiros de modelo](#ficheiros-de-modelo). |
-| `boards/common/diagnostics.yaml` | Diagnóstico opcional do ESP: estado, tempo ligado, Wi-Fi, temperatura interna, número de arranques, motivo do reinício, versão do firmware, botões de reinício e de reinício em modo seguro. |
+| `boards/common/diagnostics.yaml` | Diagnóstico opcional do ESP, para qualquer placa: estado, tempo ligado, Wi-Fi, número de arranques, motivo do reinício, versão do firmware, botões de reinício e de reinício em modo seguro. |
+
+| `boards/common/diagnostics-esp32.yaml` | O mesmo e ainda a temperatura interna do chip (só placas ESP32; o ESPHome não tem temperatura interna no ESP8266). |
 
 Para ativar o diagnóstico, acrescenta o pacote ao teu YAML:
 
 ```yaml
 packages:
-  diagnostics: !include common/diagnostics.yaml  # from boards/
+  diagnostics: !include common/diagnostics.yaml          # from boards/; qualquer placa
+  # diagnostics: !include common/diagnostics-esp32.yaml  # placas ESP32, junta a temperatura interna
 ```
 
 ## Ficheiros de modelo
@@ -247,7 +250,7 @@ boards/
   base.yaml                     configuração ESPHome comum (logger, API, OTA, UART, hub)
   esphome-altherma-<placa>.yaml configurações por placa (esp32, esp32-s3, atoms3, esp8266, m5stack)
   esphome-altherma-<placa>.factory.yaml   imagens de fábrica simples
-  common/diagnostics.yaml       pacote de diagnóstico opcional
+  common/diagnostics.yaml       pacote de diagnóstico opcional (diagnostics-esp32.yaml junta a temperatura interna)
 installer/                      ficheiros do instalador web (+ secrets.yaml de exemplo, animação de arranque M5Stack)
 confs/                          ficheiros de modelo (mapas de sensores)
 components/altherma_hub/

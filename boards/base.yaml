@@ -74,5 +74,5 @@ text_sensor:
 packages:
   altherma_sensors: !include ../confs/${altherma_model}.yaml
 
-  # Optional ESP diagnostics
+  # Optional ESP diagnostics (ESP32 boards: common/diagnostics-esp32.yaml adds Internal Temperature)
   # common_diagnostics: !include common/diagnostics.yaml

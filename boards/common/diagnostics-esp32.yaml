@@ -1,0 +1,10 @@
+# Optional ESP diagnostics for ESP32 boards (esp32, esp32-s3, atoms3, m5stack): everything in
+# diagnostics.yaml plus the chip's Internal Temperature, which ESPHome only supports on ESP32.
+packages:
+  common: !include diagnostics.yaml
+
+sensor:
+  - platform: internal_temperature
+    name: "Internal Temperature"
+    update_interval: 60s
+    entity_category: "diagnostic"
