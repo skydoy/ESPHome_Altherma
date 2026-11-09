@@ -34,6 +34,9 @@ The maintainer moves the **Unreleased** notes to `## [x.y.z] - YYYY-MM-DD`, bump
 `boards/base.yaml` and pushes a `vx.y.z` tag. CI builds every board and model, publishes the installer and OTA
 manifests to GitHub Pages and creates the GitHub Release with those notes.
 
+Code copied from other projects must keep its licence notice: add it to [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Do not copy code from projects without a licence, or GPL code into the component.
+
 Be kind: see the [Code of Conduct](CODE_OF_CONDUCT.md). Security problems go through [SECURITY.md](SECURITY.md),
 not public issues.
 

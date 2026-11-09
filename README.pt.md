@@ -130,6 +130,6 @@ copiados do ESPAltherma: [uso avançado](docs/avancado.md).
   de ligações são ilustrações.
 
 Fornecido tal como está, para uso pessoal e educativo, como o projeto original; os ficheiros do ESPAltherma mantêm a
-[licença original](https://github.com/raomin/ESPAltherma/blob/main/LICENSE). Usa por tua conta e risco: mexe na
+licença MIT original: vê os [avisos de terceiros](THIRD_PARTY_NOTICES.md) (em inglês). Usa por tua conta e risco: mexe na
 bomba de calor com o disjuntor desligado. Daikin e Altherma são marcas registadas do seu dono; este é um projeto
 independente da comunidade, sem ligação à marca.
