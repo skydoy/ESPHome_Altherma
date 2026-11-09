@@ -74,5 +74,6 @@ text_sensor:
 packages:
   altherma_sensors: !include ../confs/${altherma_model}.yaml
 
-  # Optional ESP diagnostics (ESP32 boards: common/diagnostics-esp32.yaml adds Internal Temperature)
+  # Optional ESP diagnostics (ESP32 boards: common/diagnostics-esp32.yaml adds Internal Temperature).
+  # M5Stack already includes diagnostics-esp32.yaml (display needs wifi_signal_sensor).
   # common_diagnostics: !include common/diagnostics.yaml

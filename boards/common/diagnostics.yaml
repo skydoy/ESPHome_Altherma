@@ -1,6 +1,9 @@
 # Optional ESP diagnostics, for every board (ESP32 and ESP8266). On ESP32 boards use
 # diagnostics-esp32.yaml instead: it includes this file and adds the chip's Internal Temperature
 # (ESPHome's internal_temperature sensor does not exist on ESP8266).
+# WiFi Signal / Uptime / IP / SSID use stable ids (wifi_signal_sensor, uptime_s, ip_addr,
+# ssid_name) so the M5Stack board can include this package and drive its display from the
+# same sensors — do not redefine those names on the board.
 globals:
   - id: boot_count
     type: int
@@ -20,13 +23,17 @@ binary_sensor:
     entity_category: "diagnostic"
 
 sensor:
+  # Stable ids so boards that already need these (M5Stack display/graph) can include this
+  # package instead of defining the same sensors again.
   - platform: wifi_signal
     name: "WiFi Signal"
+    id: wifi_signal_sensor
     update_interval: 60s
     entity_category: "diagnostic"
 
   - platform: uptime
     name: "Uptime"
+    id: uptime_s
     update_interval: 60s
     entity_category: "diagnostic"
 
@@ -70,9 +77,11 @@ text_sensor:
   - platform: wifi_info
     ip_address:
       name: "IP Address"
+      id: ip_addr
       entity_category: "diagnostic"
     ssid:
       name: "WiFi SSID"
+      id: ssid_name
       entity_category: "diagnostic"
     bssid:
       name: "WiFi BSSID"

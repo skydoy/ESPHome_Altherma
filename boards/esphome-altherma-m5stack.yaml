@@ -4,6 +4,8 @@ substitutions:
 packages:
   base: !include base.yaml
   update_check: !include ../installer/packages/update-check.yaml
+  # Always on: display/graph need wifi_signal_sensor; package owns WiFi Signal / Uptime / IP / SSID.
+  diagnostics: !include common/diagnostics-esp32.yaml
 
 esphome:
   name: esphome-altherma-m5stack
@@ -28,24 +30,9 @@ esp32:
 logger:
   level: DEBUG # Set to INFO on production
 
-sensor:
-  - platform: uptime
-    name: "Uptime"
-    id: uptime_s
-
-  - platform: wifi_signal
-    name: "WiFi Signal"
-    id: wifi_signal_sensor
-    update_interval: 60s
-
-text_sensor:
-  - platform: wifi_info
-    ip_address:
-      name: "IP Address"
-      id: ip_addr
-    ssid:
-      name: "SSID"
-      id: ssid_name
+# WiFi Signal, Uptime, IP Address and WiFi SSID come from common/diagnostics-esp32.yaml
+# (ids: wifi_signal_sensor, uptime_s, ip_addr, ssid_name) so the optional diagnostics package
+# combines cleanly on this board.
 
 globals:
   - id: ui_selected_index

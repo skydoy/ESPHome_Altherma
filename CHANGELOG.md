@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- Pacote de diagnóstico opcional: os sensores WiFi Signal, Uptime, IP Address e WiFi SSID passam a ter ids estáveis (`wifi_signal_sensor`, `uptime_s`, `ip_addr`, `ssid_name`). A placa M5Stack deixa de os definir em duplicado e inclui sempre `diagnostics-esp32.yaml`, por isso o pacote combina sem conflito em todas as placas.
 - Ecrã de arranque do M5Stack: por baixo da versão do firmware aparece agora, mais pequena e mais escura, a versão do ESPHome com que foi compilado (ex. «ESPHome 2026.10.1»).
 - O hotspot de configuração passa a chamar-se «ESPHome Altherma Setup», como nos outros projetos (ESPHome_AC Setup, ESPHome Hunter Setup). O nome da placa e o `project` não mudam, por isso as placas adotadas continuam a atualizar.
 - Pacote de diagnóstico opcional (`boards/common/diagnostics.yaml`): novos **Motivo do reinício**, **Versão do firmware** e **Reiniciar (modo seguro)**, iguais aos do ESPHome_AC; nomes traduzidos no seletor PT/EN da página da placa.
