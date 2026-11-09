@@ -31,7 +31,7 @@ jobs:
             m=$(basename "$f" .yaml)
             echo "::group::${{ matrix.board }} / $m"
             esphome -s altherma_model "$m" config "$WRAPPER" | tee config.txt
-            grep -q "source: https://skydoy.github.io/esphome-altherma/firmware/${{ matrix.board }}/$m/manifest.json" config.txt \
+            grep -q "source: https://skydoy.github.io/ESPHome_Altherma/firmware/${{ matrix.board }}/$m/manifest.json" config.txt \
               || { echo "::error::$WRAPPER ($m) does not update from firmware/${{ matrix.board }}/$m/manifest.json"; exit 1; }
             echo "::endgroup::"
           done

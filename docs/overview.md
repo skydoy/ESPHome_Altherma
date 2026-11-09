@@ -11,7 +11,7 @@ Free for personal and non-commercial use on my own files in this fork ([LICENSE]
 
 **Is my heat pump supported?** See the [models](models.md) and the
 [compatibility list](compatibility.md) ·
-[Report my heat pump](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
+[Report my heat pump](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
 
 ## What you get in Home Assistant
 

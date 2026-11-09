@@ -69,7 +69,7 @@ script:
                 id: update_status
                 state: "Checking for updates"
             - http_request.get:
-                url: https://skydoy.github.io/esphome-altherma/firmware/${altherma_board}/${altherma_model}/manifest.json
+                url: https://skydoy.github.io/ESPHome_Altherma/firmware/${altherma_board}/${altherma_model}/manifest.json
                 capture_response: true
                 max_response_buffer_size: 2kB
                 on_response:

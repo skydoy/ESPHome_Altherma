@@ -12,9 +12,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml/badge.svg" alt="Build"></a>
-  <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/validate.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/validate.yml/badge.svg" alt="Validate"></a>
-  <a href="https://github.com/skydoy/esphome-altherma/releases/latest"><img src="https://img.shields.io/github/v/release/skydoy/esphome-altherma?sort=semver" alt="Release"></a>
+  <a href="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/publish.yml"><img src="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/publish.yml/badge.svg" alt="Build"></a>
+  <a href="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/validate.yml"><img src="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/validate.yml/badge.svg" alt="Validate"></a>
+  <a href="https://github.com/skydoy/ESPHome_Altherma/releases/latest"><img src="https://img.shields.io/github/v/release/skydoy/ESPHome_Altherma?sort=semver" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue" alt="License: PolyForm Noncommercial"></a>
 </p>
 
@@ -22,7 +22,7 @@
 🇵🇹 <a href="README.pt.md">Ler em português</a></p>
 
 <p align="center">
-  <a href="https://skydoy.github.io/esphome-altherma/"><img src="https://img.shields.io/badge/Open%20the%20web%20installer-1784F7?style=for-the-badge&logo=esphome&logoColor=white" alt="Open the web installer" height="40"></a>
+  <a href="https://skydoy.github.io/ESPHome_Altherma/"><img src="https://img.shields.io/badge/Open%20the%20web%20installer-1784F7?style=for-the-badge&logo=esphome&logoColor=white" alt="Open the web installer" height="40"></a>
 </p>
 
 <p align="center">
@@ -32,11 +32,11 @@
 ## Compatibility
 
 **ESP32 DevKit**, **ESP32-S3**, **M5Stack AtomS3**, **D1 mini (ESP8266)** or **M5Stack Core / Basic**, on **Daikin Altherma** units with the **X10A** service connector (Altherma 3 R / H HT, Altherma LT, and more).  
-Full list: [models](docs/models.md) · [compatibility](docs/compatibility.md) · [Report my heat pump](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
+Full list: [models](docs/models.md) · [compatibility](docs/compatibility.md) · [Report my heat pump](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
 
 ## Install in 3 steps
 
-1. **Flash** — Open the **[web installer](https://skydoy.github.io/esphome-altherma/)**, pick your board, plug in by USB → **Install**. (Do this *before* wiring: never connect USB and the X10A 5 V at the same time.)
+1. **Flash** — Open the **[web installer](https://skydoy.github.io/ESPHome_Altherma/)**, pick your board, plug in by USB → **Install**. (Do this *before* wiring: never connect USB and the X10A 5 V at the same time.)
 2. **Wi-Fi** — Type your 2.4 GHz network in the same window (or join `ESPHome Altherma Setup` later).
 3. **Wire and add** — Breaker off, connect the board to **X10A** ([wiring](docs/wiring.md)), breaker on. Home Assistant → **Configure**.
 
@@ -62,7 +62,7 @@ Details: [Install guide](docs/install.md)
 [Security & OTA](docs/security.md) ·
 [Advanced use](docs/advanced.md) ·
 [Changelog](CHANGELOG.md) ·
-[Report my heat pump](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
+[Report my heat pump](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
 
 [PolyForm Noncommercial 1.0.0](LICENSE) — free for personal and non-commercial use; commercial use not permitted (covers my own files in this fork; see [LICENSE](LICENSE) and [third-party notices](THIRD_PARTY_NOTICES.md)).  
 [Security policy](SECURITY.md) · [Contributing](CONTRIBUTING.md) · [Code of Conduct](CODE_OF_CONDUCT.md)

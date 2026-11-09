@@ -2,7 +2,7 @@
 
 🇵🇹 [Ler em português](avancado.md) · [Back to the README](../README.md)
 
-Most people only need the [web installer](https://skydoy.github.io/esphome-altherma/). This page is for building
+Most people only need the [web installer](https://skydoy.github.io/ESPHome_Altherma/). This page is for building
 your own firmware, adding relays, mapping new sensors and working on the code.
 
 - [Three ways to run it](#three-ways-to-run-it)
@@ -45,7 +45,7 @@ After adopting, the **Firmware** entity is gone: updates are compiled by the Dev
 Requirements: Python 3.12 or newer and git.
 
 ```sh
-git clone https://github.com/skydoy/esphome-altherma.git
+git clone https://github.com/skydoy/ESPHome_Altherma.git
 cd esphome-altherma
 python3 -m venv .venv && source .venv/bin/activate
 pip install esphome
@@ -69,7 +69,7 @@ esphome -s altherma_model erla_d_ebv_ebb_ebvz_11_16 \
 
 - `-s altherma_model …` picks the [model file](#model-files); you can also set it under `substitutions:`.
 - `-s altherma_component_source ../components` builds the `altherma_hub` component from your checkout. Without it,
-  `boards/base.yaml` downloads it from this repository (`github://skydoy/esphome-altherma@main`).
+  `boards/base.yaml` downloads it from this repository (`github://skydoy/ESPHome_Altherma@main`).
 
 To get the same firmware as the web installer (Firmware entity, Improv Wi-Fi, OTA manifest), build the wrapper in
 [`installer/`](../installer/) instead: `esphome -s altherma_model <model> run installer/esphome-altherma-esp32.installer.yaml`.
@@ -220,7 +220,7 @@ Tips:
 3. Build it: `esphome -s altherma_model <your_model> -s altherma_component_source ../components run boards/esphome-altherma-esp32.yaml`.
 4. To include it in the web installer, add it to `MODELS` in `static/index.html` and to the `model:` list in
    `.github/workflows/publish.yml` (the Validate workflow checks that all three match).
-5. Open a pull request, or [report your heat pump](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
+5. Open a pull request, or [report your heat pump](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
    and attach the file.
 
 ## Emoncms

@@ -2,11 +2,11 @@
 
 🇬🇧 [Read in English](install.md) · [Voltar ao README](../README.pt.md)
 
-A maior parte das pessoas só precisa do **[instalador web](https://skydoy.github.io/esphome-altherma/)**. Esta página é o mesmo fluxo, com um pouco mais de detalhe.
+A maior parte das pessoas só precisa do **[instalador web](https://skydoy.github.io/ESPHome_Altherma/)**. Esta página é o mesmo fluxo, com um pouco mais de detalhe.
 
 ## Instalar em 3 passos
 
-1. **Instalar o firmware.** Abre o **[instalador web](https://skydoy.github.io/esphome-altherma/)** no Chrome ou Edge, num computador, escolhe a placa, liga-a por USB → **Instalar**. A placa descobre sozinha o modelo da bomba (vê [Modelos](modelos.md)). Faz isto *antes* de ligar os fios: nunca ligues o USB e os 5 V do X10A ao mesmo tempo.
+1. **Instalar o firmware.** Abre o **[instalador web](https://skydoy.github.io/ESPHome_Altherma/)** no Chrome ou Edge, num computador, escolhe a placa, liga-a por USB → **Instalar**. A placa descobre sozinha o modelo da bomba (vê [Modelos](modelos.md)). Faz isto *antes* de ligar os fios: nunca ligues o USB e os 5 V do X10A ao mesmo tempo.
 2. **Wi-Fi.** Escreve o teu Wi-Fi na mesma janela. (Ou mais tarde: liga-te à rede `ESPHome Altherma Setup` com o telemóvel.)
 3. **Ligar e adicionar.** Desliga a bomba de calor no disjuntor, liga a placa ao **X10A** ([guia de ligações](ligacoes.md)) e volta a ligar o disjuntor. O Home Assistant mostra *ESPHome Altherma* em **Definições → Dispositivos e serviços** → **Configurar**.
 

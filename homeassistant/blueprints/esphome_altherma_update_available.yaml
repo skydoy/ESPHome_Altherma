@@ -7,7 +7,7 @@ blueprint:
     entity instead.
   domain: automation
   author: skydoy
-  source_url: https://github.com/skydoy/esphome-altherma/blob/main/homeassistant/blueprints/esphome_altherma_update_available.yaml
+  source_url: https://github.com/skydoy/ESPHome_Altherma/blob/main/homeassistant/blueprints/esphome_altherma_update_available.yaml
   homeassistant:
     min_version: 2024.10.0
   input:

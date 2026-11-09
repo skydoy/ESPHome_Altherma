@@ -13,7 +13,7 @@
 - Abrir a unidade pode afetar a garantia. Este projeto não tem ligação à Daikin; fá-lo por tua conta e risco.
 
 ## O que precisas
-- Uma das placas suportadas, já com o firmware do [instalador web](https://skydoy.github.io/esphome-altherma/).
+- Uma das placas suportadas, já com o firmware do [instalador web](https://skydoy.github.io/ESPHome_Altherma/).
 - Uma ficha **JST EH de 5 pinos (passo de 2,5 mm)** com fios, ou 4 fios Dupont que encaixem nos pinos do X10A.
 - *(Opcional)* um carregador e um cabo USB, se os 5 V do X10A não conseguirem alimentar a tua placa.
 
@@ -60,7 +60,7 @@ colocar a placa logo fora da caixa metálica, ajuda quando o sinal é fraco.
    - nenhum dado, *timeouts* → o mais provável é o TX e o RX estarem trocados; troca-os.
    - os valores chegam mas parecem errados → provavelmente o ficheiro de modelo não é o certo; vê a
      [lista de compatibilidade](compatibilidade.md) e escolhe outro modelo no instalador.
-4. Continua sem funcionar? [Reporta a tua bomba de calor](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
+4. Continua sem funcionar? [Reporta a tua bomba de calor](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
    com um excerto dos registos.
 
 ## Relés opcionais (termóstato / Smart Grid)

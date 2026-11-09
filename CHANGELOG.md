@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+## [2.6.2] - 2026-11-09
+
+- Repositório renomeado para `skydoy/ESPHome_Altherma`: todos os links, o instalador web (https://skydoy.github.io/ESPHome_Altherma/), o endereço das atualizações OTA e os `package_import_url` passam a usar o nome novo. Placas com versões anteriores procuram atualizações no endereço antigo (que deixou de existir): atualiza uma vez pelo instalador web ou pelo Device Builder.
 - README (EN/PT) encurtado no mesmo layout do ESPHome_AC: logótipo, donativos, badges (build/validate/release/license), tagline + idioma, botão do instalador web, imagem social-preview; depois compatibilidade, instalação em 3 passos, ~6 bullets e links para docs/. O detalhe passou para docs/overview.md e docs/visao-geral.md (mais docs/install.md, docs/instalar.md, docs/models.md, docs/modelos.md). As capturas da página da placa ficam em docs/web-page.md e docs/pagina-web.md. Instalador web simplificado no fluxo 1-2-3 (placa → modelo → instalar) + «A seguir», com o mesmo estilo visual e o seletor PT/EN.
 - Pacote de diagnóstico opcional: os sensores WiFi Signal, Uptime, IP Address e WiFi SSID passam a ter ids estáveis (`wifi_signal_sensor`, `uptime_s`, `ip_addr`, `ssid_name`). A placa M5Stack deixa de os definir em duplicado e inclui sempre `diagnostics-esp32.yaml`, por isso o pacote combina sem conflito em todas as placas.
 - Seletor PT/EN da página da placa: os valores de texto dos sensores Altherma (modo de operação, tipo de erro, «No error», «Heating», «Fan Only»/«Stopped», etc.) também são traduzidos, só no ecrã — os estados enviados pela placa continuam em inglês.

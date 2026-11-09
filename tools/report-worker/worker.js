@@ -1,9 +1,9 @@
-// altherma-reports: receives the one-time automatic compatibility report from skydoy/esphome-altherma
+// altherma-reports: receives the one-time automatic compatibility report from skydoy/ESPHome_Altherma
 // boards and opens a GitHub issue (label "compatibility-report"). The GitHub token lives only here,
 // as the Worker secret GITHUB_TOKEN; boards never hold it.
 // Privacy: nothing about the sender is stored or posted. The client IP is only used, as a salted
 // SHA-256, for a 1-hour rate-limit counter in KV. device_hash is computed on the board (salted hash).
-const REPO = "skydoy/esphome-altherma";
+const REPO = "skydoy/ESPHome_Altherma";
 const LABEL = "compatibility-report";
 const MAX_BYTES = 16384;
 const RATE_PER_HOUR = 5;

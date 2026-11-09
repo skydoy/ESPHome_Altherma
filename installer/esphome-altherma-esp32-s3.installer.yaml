@@ -1,4 +1,4 @@
-# Web installer build for skydoy/esphome-altherma (board: esp32-s3).
+# Web installer build for skydoy/ESPHome_Altherma (board: esp32-s3).
 # Same as ../boards/esphome-altherma-esp32-s3.factory.yaml,
 # plus what the web installer needs: the heat pump model ("generic" = identify first, see installer/models.yaml), this project's
 # project name/version and a per-board, per-model OTA manifest URL.
@@ -21,15 +21,15 @@ esphome:
     name: skydoy.esphome-altherma
     version: ${altherma_version}
 
-# Adopting in the ESPHome Device Builder imports the plain board file from skydoy/esphome-altherma.
+# Adopting in the ESPHome Device Builder imports the plain board file from skydoy/ESPHome_Altherma.
 # Add "altherma_model: <model>" under substitutions in the adopted YAML to keep your model.
 dashboard_import:
-  package_import_url: github://skydoy/esphome-altherma/boards/esphome-altherma-esp32-s3.yaml@main
+  package_import_url: github://skydoy/ESPHome_Altherma/boards/esphome-altherma-esp32-s3.yaml@main
 
 # Wi-Fi provisioning over USB from the web installer.
 improv_serial:
 
-# OTA updates from skydoy/esphome-altherma GitHub Pages (same board and model you installed).
+# OTA updates from skydoy/ESPHome_Altherma GitHub Pages (same board and model you installed).
 http_request:
 
 ota:
@@ -65,4 +65,4 @@ update:
       - text_sensor.template.publish:
           id: update_status
           state: !lambda 'return "Update available: " + x.latest_version;'
-    source: https://skydoy.github.io/esphome-altherma/firmware/${altherma_board}/${altherma_model}/manifest.json
+    source: https://skydoy.github.io/ESPHome_Altherma/firmware/${altherma_board}/${altherma_model}/manifest.json

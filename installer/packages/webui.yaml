@@ -4,7 +4,7 @@
 # esp-log's shadowRoot), draws a live heat-pump schematic (indoor water chips, 3-way branch highlight), and a PT/EN toggle.
 # Reusable from your own config:
 #   packages:
-#     altherma_webui: github://skydoy/esphome-altherma/installer/packages/webui.yaml@main
+#     altherma_webui: github://skydoy/ESPHome_Altherma/installer/packages/webui.yaml@main
 # Remove the page with `web_server: !remove`.
 web_server:
   port: 80

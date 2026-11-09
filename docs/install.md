@@ -2,11 +2,11 @@
 
 🇵🇹 [Ler em português](instalar.md) · [Back to the README](../README.md)
 
-Most people only need the **[web installer](https://skydoy.github.io/esphome-altherma/)**. This page is the same flow with a bit more detail.
+Most people only need the **[web installer](https://skydoy.github.io/ESPHome_Altherma/)**. This page is the same flow with a bit more detail.
 
 ## Install in 3 steps
 
-1. **Flash.** Open the **[web installer](https://skydoy.github.io/esphome-altherma/)** in Chrome or Edge on a computer, pick your board, plug it in by USB → **Install**. The board finds your heat pump model by itself (see [Models](models.md)). Do this *before* wiring: never connect USB and the X10A 5 V at the same time.
+1. **Flash.** Open the **[web installer](https://skydoy.github.io/ESPHome_Altherma/)** in Chrome or Edge on a computer, pick your board, plug it in by USB → **Install**. The board finds your heat pump model by itself (see [Models](models.md)). Do this *before* wiring: never connect USB and the X10A 5 V at the same time.
 2. **Wi-Fi.** Type your Wi-Fi in the same window. (Or later: join the `ESPHome Altherma Setup` hotspot from your phone.)
 3. **Wire and add.** Heat pump off at the breaker, connect the board to **X10A** ([wiring guide](wiring.md)), breaker back on. Home Assistant shows *ESPHome Altherma* under **Settings → Devices & services** → **Configure**.
 

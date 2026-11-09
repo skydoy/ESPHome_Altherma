@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Deploy the altherma-reports Worker with the Cloudflare API (no wrangler needed).
 # Needs: CLOUDFLARE_API_TOKEN (Workers Scripts + KV edit), CF_ACCOUNT_ID, GITHUB_TOKEN_REPORTS
-# (fine-grained, Issues read/write on skydoy/esphome-altherma). Tokens are never printed.
+# (fine-grained, Issues read/write on skydoy/ESPHome_Altherma). Tokens are never printed.
 set -euo pipefail
 cd "$(dirname "$0")"
 NAME=altherma-reports
