@@ -86,13 +86,16 @@ To get the same firmware as the web installer (Firmware entity, Improv Wi-Fi, OT
 | `boards/esphome-altherma-<board>.factory.yaml` | Plain factory images (default model, no model choice); the web installer uses `installer/` instead. |
 | `installer/*.installer.yaml` | What the web installer builds: board file + model choice + Firmware entity. See [security](security.md#installer--factory-configurations). |
 | `confs/*.yaml` | [Model files](#model-files). |
-| `boards/common/diagnostics.yaml` | Optional ESP diagnostics: status, uptime, Wi-Fi info, internal temperature, boot count, reset reason, firmware version, restart and safe-mode restart buttons. |
+| `boards/common/diagnostics.yaml` | Optional ESP diagnostics for every board: status, uptime, Wi-Fi info, boot count, reset reason, firmware version, restart and safe-mode restart buttons. |
+
+| `boards/common/diagnostics-esp32.yaml` | The same plus the chip's internal temperature (ESP32 boards only; ESPHome has no internal temperature on ESP8266). |
 
 To enable the diagnostics, add the package to your YAML:
 
 ```yaml
 packages:
-  diagnostics: !include common/diagnostics.yaml  # from boards/
+  diagnostics: !include common/diagnostics.yaml          # from boards/; any board
+  # diagnostics: !include common/diagnostics-esp32.yaml  # ESP32 boards, adds Internal Temperature
 ```
 
 ## Model files
@@ -248,7 +251,7 @@ boards/
   base.yaml                     shared ESPHome config (logger, API, OTA, UART, hub)
   esphome-altherma-<board>.yaml board configs (esp32, esp32-s3, atoms3, esp8266, m5stack)
   esphome-altherma-<board>.factory.yaml   plain factory images
-  common/diagnostics.yaml       optional diagnostics package
+  common/diagnostics.yaml       optional diagnostics package (diagnostics-esp32.yaml adds internal temperature)
 installer/                      web installer wrappers (+ placeholder secrets.yaml, M5Stack boot animation)
 confs/                          model files (sensor maps)
 components/altherma_hub/

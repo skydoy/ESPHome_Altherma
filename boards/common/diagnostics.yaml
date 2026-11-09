@@ -1,3 +1,6 @@
+# Optional ESP diagnostics, for every board (ESP32 and ESP8266). On ESP32 boards use
+# diagnostics-esp32.yaml instead: it includes this file and adds the chip's Internal Temperature
+# (ESPHome's internal_temperature sensor does not exist on ESP8266).
 globals:
   - id: boot_count
     type: int
@@ -24,11 +27,6 @@ sensor:
 
   - platform: uptime
     name: "Uptime"
-    update_interval: 60s
-    entity_category: "diagnostic"
-
-  - platform: internal_temperature
-    name: "Internal Temperature"
     update_interval: 60s
     entity_category: "diagnostic"
 
