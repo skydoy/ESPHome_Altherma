@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.6.1] - 2026-11-09
+
+- Sincronizado com o projeto original até 2026-11-08. O novo perfil experimental GEO3 EGSAH/EWSAH D (6-10 kW) foi comparado sensor a sensor com o perfil `egsah_x_ewsah_x_d_6_10_geo3` deste fork: todos os registos, posições e conversões coincidem (salmoura de entrada R5T `0x20`/8, saída R6T `0x20`/10, bomba de salmoura `0x30`/1). Nota de verificação no cabeçalho do perfil; sem alterações de sensores.
+- Versão do projeto 2.6.1 para o Device Builder detetar a atualização.
+
 ## [2.6.0] - 2026-11-06
 
 ### Interface web (PT/EN)

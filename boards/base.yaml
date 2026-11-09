@@ -10,7 +10,7 @@ substitutions:
   # erla_d_ebv_ebb_ebvz_11_16  - ERLA D / EBV/EBB/EBVZ
   altherma_model: erga_eh_da_04_08
   # Bumped on each release; Device Builder / update-check compare against this.
-  altherma_version: "2.6.0"
+  altherma_version: "2.6.1"
   altherma_verify_ssl: "true"
 
   # Default to GitHub for Take Control.
