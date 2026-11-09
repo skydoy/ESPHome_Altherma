@@ -85,7 +85,7 @@ ficheiro em [`installer/`](../installer/): `esphome -s altherma_model <modelo> r
 | `boards/esphome-altherma-<placa>.factory.yaml` | Imagens de fábrica simples (modelo predefinido, sem escolha de modelo); o instalador web usa `installer/`. |
 | `installer/*.installer.yaml` | O que o instalador web compila: ficheiro da placa + escolha do modelo + entidade Firmware. Vê [segurança](seguranca.md#configurações-do-instalador--de-fábrica). |
 | `confs/*.yaml` | [Ficheiros de modelo](#ficheiros-de-modelo). |
-| `boards/common/diagnostics.yaml` | Diagnóstico opcional do ESP: estado, tempo ligado, Wi-Fi, temperatura interna, número de arranques, botão de reinício. |
+| `boards/common/diagnostics.yaml` | Diagnóstico opcional do ESP: estado, tempo ligado, Wi-Fi, temperatura interna, número de arranques, motivo do reinício, versão do firmware, botões de reinício e de reinício em modo seguro. |
 
 Para ativar o diagnóstico, acrescenta o pacote ao teu YAML:
 

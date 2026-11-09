@@ -40,7 +40,30 @@ sensor:
       return id(boot_count);
     entity_category: "diagnostic"
 
+# Reset reason ("Power on", "Brownout", ...), same as ESPHome_AC / ESPHome Hunter. A brownout
+# usually means the 5 V supply to the board is too weak or badly connected.
+debug:
+  update_interval: never
+
 text_sensor:
+  - platform: debug
+    reset_reason:
+      name: "Reset Reason"
+      entity_category: "diagnostic"
+
+  # Project version (esphome: project: version), e.g. "2.6.1".
+  - platform: template
+    name: "Firmware Version"
+    icon: mdi:tag-outline
+    entity_category: "diagnostic"
+    update_interval: 1h
+    lambda: |-
+      #ifdef ESPHOME_PROJECT_VERSION
+      return std::string(ESPHOME_PROJECT_VERSION);
+      #else
+      return std::string("unknown");
+      #endif
+
   - platform: version
     name: "ESPHome Version"
     hide_timestamp: true
@@ -63,4 +86,7 @@ text_sensor:
 button:
   - platform: restart
     name: "Restart"
+    entity_category: "config"
+  - platform: safe_mode
+    name: "Restart (Safe Mode)"
     entity_category: "config"
