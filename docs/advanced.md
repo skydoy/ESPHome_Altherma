@@ -86,7 +86,7 @@ To get the same firmware as the web installer (Firmware entity, Improv Wi-Fi, OT
 | `boards/esphome-altherma-<board>.factory.yaml` | Plain factory images (default model, no model choice); the web installer uses `installer/` instead. |
 | `installer/*.installer.yaml` | What the web installer builds: board file + model choice + Firmware entity. See [security](security.md#installer--factory-configurations). |
 | `confs/*.yaml` | [Model files](#model-files). |
-| `boards/common/diagnostics.yaml` | Optional ESP diagnostics: status, uptime, Wi-Fi info, internal temperature, boot count, restart button. |
+| `boards/common/diagnostics.yaml` | Optional ESP diagnostics: status, uptime, Wi-Fi info, internal temperature, boot count, reset reason, firmware version, restart and safe-mode restart buttons. |
 
 To enable the diagnostics, add the package to your YAML:
 
