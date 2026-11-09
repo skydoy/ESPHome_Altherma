@@ -84,7 +84,7 @@ button:
                 args: ['id(altherma_suggested_model).state.c_str()']
             - lambda: |-
                 id(update_http_request).set_source_url(
-                    "https://skydoy.github.io/esphome-altherma/firmware/${altherma_board}/" +
+                    "https://skydoy.github.io/ESPHome_Altherma/firmware/${altherma_board}/" +
                     id(altherma_suggested_model).state + "/manifest.json");
             - component.update: update_http_request
             - wait_until:
@@ -108,7 +108,7 @@ button:
                       args: ['id(altherma_suggested_model).state.c_str()']
                   - lambda: |-
                       id(update_http_request).set_source_url(
-                          "https://skydoy.github.io/esphome-altherma/firmware/${altherma_board}/${altherma_model}/manifest.json");
+                          "https://skydoy.github.io/ESPHome_Altherma/firmware/${altherma_board}/${altherma_model}/manifest.json");
           else:
             - logger.log: "Nothing to install: model unknown or already installed"
 

@@ -3,7 +3,7 @@
 🇵🇹 [Ler em português](seguranca.md) · [Back to the README](../README.md)
 
 ## What the prebuilt firmware does
-The firmware from the [web installer](https://skydoy.github.io/esphome-altherma/) is the same image for everybody,
+The firmware from the [web installer](https://skydoy.github.io/ESPHome_Altherma/) is the same image for everybody,
 so it **cannot contain your keys or passwords**. It ships:
 
 | Item | Prebuilt firmware | Why |

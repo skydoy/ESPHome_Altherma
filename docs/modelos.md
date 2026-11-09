@@ -21,4 +21,4 @@ Há mais 26 ficheiros de modelo (🧪, por testar) em [`confs/`](../confs/): esc
 
 Todos os modelos estão numa só lista, [`installer/models.yaml`](../installer/models.yaml). Quem testou cada unidade: vê a [lista de compatibilidade](compatibilidade.md).
 
-O teu modelo não está na lista, ou os valores parecem errados? [Reportar a minha bomba](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml).
+O teu modelo não está na lista, ou os valores parecem errados? [Reportar a minha bomba](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml).

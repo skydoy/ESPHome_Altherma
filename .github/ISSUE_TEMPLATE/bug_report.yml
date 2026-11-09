@@ -7,13 +7,13 @@ body:
     attributes:
       value: |
         Thanks for taking the time to report this. Please check the
-        [wiring guide](https://github.com/skydoy/esphome-altherma/blob/main/docs/wiring.md) and the
-        [existing issues](https://github.com/skydoy/esphome-altherma/issues?q=is%3Aissue) first.
+        [wiring guide](https://github.com/skydoy/ESPHome_Altherma/blob/main/docs/wiring.md) and the
+        [existing issues](https://github.com/skydoy/ESPHome_Altherma/issues?q=is%3Aissue) first.
         If your heat pump is simply not supported or values are wrong for your model, use
         **Report my heat pump** instead. **Never post Wi-Fi passwords, API keys or OTA passwords.**
 
         Podes escrever em português. Vê primeiro o
-        [guia de ligações](https://github.com/skydoy/esphome-altherma/blob/main/docs/ligacoes.md) e os problemas já abertos.
+        [guia de ligações](https://github.com/skydoy/ESPHome_Altherma/blob/main/docs/ligacoes.md) e os problemas já abertos.
         Se a tua bomba não é suportada ou os valores do teu modelo estão errados, usa **Reportar a minha bomba**.
         **Nunca publiques palavras-passe do Wi-Fi, chaves da API nem palavras-passe OTA.**
   - type: input

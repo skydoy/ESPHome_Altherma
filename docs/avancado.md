@@ -2,7 +2,7 @@
 
 🇬🇧 [Read in English](advanced.md) · [Voltar ao README](../README.pt.md)
 
-A maioria das pessoas só precisa do [instalador web](https://skydoy.github.io/esphome-altherma/). Esta página é para
+A maioria das pessoas só precisa do [instalador web](https://skydoy.github.io/ESPHome_Altherma/). Esta página é para
 quem quer compilar o próprio firmware, acrescentar relés, mapear sensores novos ou trabalhar no código.
 
 - [Três formas de usar](#três-formas-de-usar)
@@ -44,7 +44,7 @@ Depois de adotar, a entidade **Firmware** desaparece: as atualizações passam a
 Requisitos: Python 3.12 ou mais recente e git.
 
 ```sh
-git clone https://github.com/skydoy/esphome-altherma.git
+git clone https://github.com/skydoy/ESPHome_Altherma.git
 cd esphome-altherma
 python3 -m venv .venv && source .venv/bin/activate
 pip install esphome
@@ -68,7 +68,7 @@ esphome -s altherma_model erla_d_ebv_ebb_ebvz_11_16 \
 
 - `-s altherma_model …` escolhe o [ficheiro de modelo](#ficheiros-de-modelo); também o podes definir em `substitutions:`.
 - `-s altherma_component_source ../components` compila o componente `altherma_hub` a partir da tua cópia. Sem isto, o
-  `boards/base.yaml` descarrega-o deste repositório (`github://skydoy/esphome-altherma@main`).
+  `boards/base.yaml` descarrega-o deste repositório (`github://skydoy/ESPHome_Altherma@main`).
 
 Para obter o mesmo firmware do instalador web (entidade Firmware, Wi-Fi por Improv, manifesto OTA), compila antes o
 ficheiro em [`installer/`](../installer/): `esphome -s altherma_model <modelo> run installer/esphome-altherma-esp32.installer.yaml`.
@@ -219,7 +219,7 @@ Dicas:
 3. Compila: `esphome -s altherma_model <o_teu_modelo> -s altherma_component_source ../components run boards/esphome-altherma-esp32.yaml`.
 4. Para o incluir no instalador web, acrescenta-o a `MODELS` em `static/index.html` e à lista `model:` em
    `.github/workflows/publish.yml` (o workflow Validate confirma que os três coincidem).
-5. Abre um *pull request*, ou [reporta a tua bomba de calor](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
+5. Abre um *pull request*, ou [reporta a tua bomba de calor](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
    e anexa o ficheiro.
 
 ## Emoncms

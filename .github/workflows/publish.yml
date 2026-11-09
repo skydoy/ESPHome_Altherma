@@ -1,5 +1,5 @@
 name: Build firmware & publish installer
-# Web installer for this fork (https://skydoy.github.io/esphome-altherma/), in the same style
+# Web installer for this fork (https://skydoy.github.io/ESPHome_Altherma/), in the same style
 # as skydoy/ESPHome_AC: one firmware per board x heat pump model, each in its own Pages folder
 # firmware/<board>/<model>/ with an ESP Web Tools manifest.json that is also the OTA source of
 # the "Firmware" update entity (see installer/*.installer.yaml).

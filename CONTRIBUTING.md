@@ -1,8 +1,8 @@
 # Contributing
 
 Thanks for helping! Model reports are the most useful contribution: use the
-[compatibility report](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
-form. Bugs and ideas go in the [issue forms](https://github.com/skydoy/esphome-altherma/issues/new/choose).
+[compatibility report](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
+form. Bugs and ideas go in the [issue forms](https://github.com/skydoy/ESPHome_Altherma/issues/new/choose).
 
 ## Repository layout
 | Folder | What |

@@ -5,7 +5,7 @@
 Which Daikin Altherma units and boards are known to work, and with which model file.
 
 **Your unit is not here, or it is and something is off?**
-[**Report my heat pump**](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml),
+[**Report my heat pump**](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml),
 also when it works: every report helps the next person.
 
 ## Status key
@@ -92,6 +92,6 @@ Converted from the ESPAltherma model definitions (raomin and contributors, MIT L
 3. Install with that model file and compare a few values in Home Assistant with the heat pump display: outdoor
    temperature, leaving water temperature, operation mode.
 4. Values missing or clearly wrong (for example −3276.8 or a temperature of 0 that never changes)? Try the next
-   closest model file, then [report it](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
+   closest model file, then [report it](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
    with a log excerpt. To map the missing values yourself, see
    [register discovery](advanced.md#register-discovery-experimental).

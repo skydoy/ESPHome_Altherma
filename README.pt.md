@@ -12,9 +12,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/publish.yml/badge.svg" alt="Build"></a>
-  <a href="https://github.com/skydoy/esphome-altherma/actions/workflows/validate.yml"><img src="https://github.com/skydoy/esphome-altherma/actions/workflows/validate.yml/badge.svg" alt="Validação"></a>
-  <a href="https://github.com/skydoy/esphome-altherma/releases/latest"><img src="https://img.shields.io/github/v/release/skydoy/esphome-altherma?sort=semver" alt="Versão"></a>
+  <a href="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/publish.yml"><img src="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/publish.yml/badge.svg" alt="Build"></a>
+  <a href="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/validate.yml"><img src="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/validate.yml/badge.svg" alt="Validação"></a>
+  <a href="https://github.com/skydoy/ESPHome_Altherma/releases/latest"><img src="https://img.shields.io/github/v/release/skydoy/ESPHome_Altherma?sort=semver" alt="Versão"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue" alt="Licença: PolyForm Noncommercial"></a>
 </p>
 
@@ -22,7 +22,7 @@
 🇬🇧 <a href="README.md">Read in English</a></p>
 
 <p align="center">
-  <a href="https://skydoy.github.io/esphome-altherma/"><img src="https://img.shields.io/badge/Abrir%20o%20instalador%20web-1784F7?style=for-the-badge&logo=esphome&logoColor=white" alt="Abrir o instalador web" height="40"></a>
+  <a href="https://skydoy.github.io/ESPHome_Altherma/"><img src="https://img.shields.io/badge/Abrir%20o%20instalador%20web-1784F7?style=for-the-badge&logo=esphome&logoColor=white" alt="Abrir o instalador web" height="40"></a>
 </p>
 
 <p align="center">
@@ -32,11 +32,11 @@
 ## Compatibilidade
 
 **ESP32 DevKit**, **ESP32-S3**, **M5Stack AtomS3**, **D1 mini (ESP8266)** ou **M5Stack Core / Basic**, em unidades **Daikin Altherma** com o conector de serviço **X10A** (Altherma 3 R / H HT, Altherma LT, e mais).  
-Lista completa: [modelos](docs/modelos.md) · [compatibilidade](docs/compatibilidade.md) · [Reportar a minha bomba](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
+Lista completa: [modelos](docs/modelos.md) · [compatibilidade](docs/compatibilidade.md) · [Reportar a minha bomba](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
 
 ## Instalar em 3 passos
 
-1. **Instalar o firmware** — Abre o **[instalador web](https://skydoy.github.io/esphome-altherma/)**, escolhe a placa, liga por USB → **Instalar**. (Faz isto *antes* de ligar os fios: nunca ligues o USB e os 5 V do X10A ao mesmo tempo.)
+1. **Instalar o firmware** — Abre o **[instalador web](https://skydoy.github.io/ESPHome_Altherma/)**, escolhe a placa, liga por USB → **Instalar**. (Faz isto *antes* de ligar os fios: nunca ligues o USB e os 5 V do X10A ao mesmo tempo.)
 2. **Wi-Fi** — Escreve a tua rede de 2,4 GHz na mesma janela (ou liga-te depois a `ESPHome Altherma Setup`).
 3. **Ligar e adicionar** — Disjuntor desligado, liga a placa ao **X10A** ([ligações](docs/ligacoes.md)), disjuntor ligado. Home Assistant → **Configurar**.
 
@@ -62,7 +62,7 @@ Detalhes: [Guia de instalação](docs/instalar.md)
 [Segurança e OTA](docs/seguranca.md) ·
 [Uso avançado](docs/avancado.md) ·
 [Alterações](CHANGELOG.md) ·
-[Reportar a minha bomba](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
+[Reportar a minha bomba](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
 
 [PolyForm Noncommercial 1.0.0](LICENSE) — gratuito para uso pessoal e não comercial; uso comercial não permitido (abrange o meu trabalho neste fork; vê [LICENSE](LICENSE) e [avisos de terceiros](THIRD_PARTY_NOTICES.md)).  
 [Política de segurança](SECURITY.md) · [Contribuir](CONTRIBUTING.md) · [Código de conduta](CODE_OF_CONDUCT.md)

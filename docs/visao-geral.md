@@ -11,7 +11,7 @@ Gratuito para uso pessoal e não comercial nos meus ficheiros neste fork ([LICEN
 
 **A minha bomba de calor é compatível?** Vê os [modelos](modelos.md) e a
 [lista de compatibilidade](compatibilidade.md) ·
-[Reportar a minha bomba](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
+[Reportar a minha bomba](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
 
 ## O que aparece no Home Assistant
 

@@ -11,7 +11,7 @@ Only the latest release receives fixes. Devices on the prebuilt firmware update 
 
 ## Reporting a vulnerability
 Please **do not open a public issue**. Report it privately through
-[GitHub private vulnerability reporting](https://github.com/skydoy/esphome-altherma/security/advisories/new).
+[GitHub private vulnerability reporting](https://github.com/skydoy/ESPHome_Altherma/security/advisories/new).
 Include the firmware version, the board, the affected file or feature, and steps to reproduce.
 
 You can expect a first reply within 7 days. Once a fix is released, the advisory is published with credit to the

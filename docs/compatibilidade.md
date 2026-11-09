@@ -5,7 +5,7 @@
 Que unidades Daikin Altherma e que placas funcionam, e com que ficheiro de modelo.
 
 **A tua unidade não está aqui, ou está e alguma coisa não bate certo?**
-[**Reportar a minha bomba**](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml),
+[**Reportar a minha bomba**](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml),
 também quando funciona: cada relato ajuda a pessoa seguinte.
 
 ## Legenda
@@ -93,6 +93,6 @@ Convertidos a partir das definições de modelo do ESPAltherma (raomin e colabor
    temperatura exterior, temperatura da água de saída, modo de funcionamento.
 4. Faltam valores ou estão claramente errados (por exemplo −3276,8, ou uma temperatura de 0 que nunca muda)?
    Experimenta o ficheiro de modelo mais próximo a seguir e depois
-   [reporta-o](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml) com um excerto
+   [reporta-o](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml) com um excerto
    dos registos. Para mapear os valores em falta por ti, vê a
    [descoberta de registos](avancado.md#descoberta-de-registos-experimental).

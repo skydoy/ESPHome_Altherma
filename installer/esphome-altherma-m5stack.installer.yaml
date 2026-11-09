@@ -1,4 +1,4 @@
-# Web installer build for skydoy/esphome-altherma (board: M5Stack Core / Basic).
+# Web installer build for skydoy/ESPHome_Altherma (board: M5Stack Core / Basic).
 # Same idea as the other installer/*.installer.yaml files, built on
 # ../boards/esphome-altherma-m5stack.yaml (screen UI and buttons, left untouched) plus the optional
 # boot animation package. That file is a personal config using !secret for Wi-Fi
@@ -33,7 +33,7 @@ wifi:
     ssid: "ESPHome Altherma Setup"
 
 dashboard_import:
-  package_import_url: github://skydoy/esphome-altherma/boards/esphome-altherma-m5stack.yaml@main
+  package_import_url: github://skydoy/ESPHome_Altherma/boards/esphome-altherma-m5stack.yaml@main
 
 improv_serial:
 
@@ -72,4 +72,4 @@ update:
       - text_sensor.template.publish:
           id: update_status
           state: !lambda 'return "Update available: " + x.latest_version;'
-    source: https://skydoy.github.io/esphome-altherma/firmware/${altherma_board}/${altherma_model}/manifest.json
+    source: https://skydoy.github.io/ESPHome_Altherma/firmware/${altherma_board}/${altherma_model}/manifest.json

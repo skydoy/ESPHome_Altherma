@@ -11,7 +11,7 @@
 # "Install the right firmware" (identify.yaml) repoints the update entity at another model only for
 # that switch; every check below first points it back at the installed model's manifest.
 substitutions:
-  altherma_manifest_url: https://skydoy.github.io/esphome-altherma/firmware/${altherma_board}/${altherma_model}/manifest.json
+  altherma_manifest_url: https://skydoy.github.io/ESPHome_Altherma/firmware/${altherma_board}/${altherma_model}/manifest.json
 
 # SNTP (altherma_sntp_time) comes from boards/base.yaml.
 switch:

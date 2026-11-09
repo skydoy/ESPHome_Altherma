@@ -21,4 +21,4 @@ The installer flashes a **generic** firmware; the board reads the indoor unit's 
 
 All models live in one list, [`installer/models.yaml`](../installer/models.yaml). Who tested which unit: see the [compatibility list](compatibility.md).
 
-Your model isn't listed, or values look wrong? [Report my heat pump](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml).
+Your model isn't listed, or values look wrong? [Report my heat pump](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml).

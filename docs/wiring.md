@@ -13,7 +13,7 @@
 - Opening the unit may affect your warranty. This project is not affiliated with Daikin; you do this at your own risk.
 
 ## What you need
-- One of the supported boards, already flashed with the [web installer](https://skydoy.github.io/esphome-altherma/).
+- One of the supported boards, already flashed with the [web installer](https://skydoy.github.io/ESPHome_Altherma/).
 - A **5-pin JST EH (2.5 mm pitch)** plug with leads, or 4 Dupont jumper wires that fit the X10A header pins.
 - *(Optional)* a USB charger and cable if the X10A 5 V cannot power your board.
 
@@ -58,7 +58,7 @@ just outside the metal casing, helps when the signal is weak.
    - no data at all, timeouts → TX and RX are most likely swapped; swap them.
    - values arrive but look wrong → probably the wrong heat pump model file; see the
      [compatibility list](compatibility.md) and pick another model in the installer.
-4. Still stuck? [Report your heat pump](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml)
+4. Still stuck? [Report your heat pump](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
    with a log excerpt.
 
 ## Optional relays (thermostat / Smart Grid)

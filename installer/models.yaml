@@ -1,4 +1,4 @@
-# Heat pump models of skydoy/esphome-altherma: ONE list for the web installer, the release build,
+# Heat pump models of skydoy/ESPHome_Altherma: ONE list for the web installer, the release build,
 # the board's "Suggested Model" table and the site. Run `python installer/gen_models.py` after an edit
 # (Validate fails when a generated block is out of date).
 #   key:       confs/<key>.yaml

@@ -1,7 +1,7 @@
 # altherma-reports (Cloudflare Worker)
 
 Receives the one-time automatic compatibility report that installer firmwares send on first boot
-(`installer/packages/identify.yaml`) and opens an issue in `skydoy/esphome-altherma` with the label
+(`installer/packages/identify.yaml`) and opens an issue in `skydoy/ESPHome_Altherma` with the label
 `compatibility-report`. URL: `https://altherma-reports.esphome-ac-report.workers.dev/`
 
 - POST JSON `{software_id, micon_id, suggested_model, model_check, board, firmware_version, readings, device_hash}`, max 16 KB.

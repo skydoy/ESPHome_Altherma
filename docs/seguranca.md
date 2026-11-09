@@ -3,7 +3,7 @@
 🇬🇧 [Read in English](security.md) · [Voltar ao README](../README.pt.md)
 
 ## O que faz o firmware pré-compilado
-O firmware do [instalador web](https://skydoy.github.io/esphome-altherma/) é a mesma imagem para todos e, por isso,
+O firmware do [instalador web](https://skydoy.github.io/ESPHome_Altherma/) é a mesma imagem para todos e, por isso,
 **não pode conter as tuas chaves nem palavras-passe**. Vem assim:
 
 | Item | Firmware pré-compilado | Porquê |
