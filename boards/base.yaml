@@ -34,7 +34,9 @@ ota:
   - platform: esphome
 
 wifi:
+  # Fallback hotspot, named after the project like ESPHome_AC / ESPHome Hunter ("<project> Setup").
   ap:
+    ssid: "ESPHome Altherma Setup"
 
 captive_portal:
 

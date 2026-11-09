@@ -30,6 +30,7 @@ wifi:
   ssid: !remove
   password: !remove
   ap:
+    ssid: "ESPHome Altherma Setup"
 
 dashboard_import:
   package_import_url: github://skydoy/esphome-altherma/boards/esphome-altherma-m5stack.yaml@main
