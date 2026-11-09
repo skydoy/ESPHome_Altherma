@@ -1026,6 +1026,9 @@
   window.althermaTranslateUpdateStatus = function (st, lang) {
     return translateUpdateStatus(st, lang || (window.althermaLang && window.althermaLang.get()) || 'en');
   };
+  window.althermaTranslateErrorDesc = function (st, lang) {
+    return translateErrorDesc(st, lang || (window.althermaLang && window.althermaLang.get()) || 'en');
+  };
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
 
@@ -1591,6 +1594,40 @@
   // Diagnostic VALUES (third column of the entity list). Exact strings sent by ESPHome's debug
   // reset_reason text sensor: ESP32 (esp_reset_reason table) and ESP8266 (ResetReasonStrings).
   var VALUE_DICT = {
+// Operation mode / state / error-type strings from altherma_hub converters.h (and ERLA
+// "Fan Only -> Stopped" substitute). Display only — entity state stays English.
+'No error':'Sem erro',
+'Heating':'Aquecimento',
+'Cooling':'Arrefecimento',
+'Fan Only':'Só ventilação',
+'Stopped':'Parado',
+'Stop':'Parado',
+'Auto':'Automático',
+'Ventilation':'Ventilação',
+'Auto Cool':'Auto arrefecimento',
+'Auto Heat':'Auto aquecimento',
+'Dry':'Desumidificação',
+'Aux.':'Aux.',
+'Cooling Storage':'Armazenamento (arrefecimento)',
+'Heating Storage':'Armazenamento (aquecimento)',
+'UseStrdThrm(cl)1':'Term. armazenado (arref.) 1',
+'UseStrdThrm(cl)2':'Term. armazenado (arref.) 2',
+'UseStrdThrm(cl)3':'Term. armazenado (arref.) 3',
+'UseStrdThrm(cl)4':'Term. armazenado (arref.) 4',
+'UseStrdThrm(ht)1':'Term. armazenado (aquec.) 1',
+'UseStrdThrm(ht)2':'Term. armazenado (aquec.) 2',
+'UseStrdThrm(ht)3':'Term. armazenado (aquec.) 3',
+'UseStrdThrm(ht)4':'Term. armazenado (aquec.) 4',
+'DHW':'AQS',
+'Heating + DHW':'Aquecimento + AQS',
+'Cooling + DHW':'Arrefecimento + AQS',
+'H/P only':'Só bomba de calor',
+'Hybrid':'Híbrido',
+'Boiler only':'Só caldeira',
+'Normal':'Normal',
+'Error':'Erro',
+'Warning':'Aviso',
+'Caution':'Atenção',
 // ESP32 (same PT wording as ESPHome_AC core/web-ui.js VAL_PT)
 'unknown source':'origem desconhecida',
 'power-on event':'Ligado',
@@ -1629,6 +1666,15 @@
     if (Object.prototype.hasOwnProperty.call(VALUE_DICT, en)) return VALUE_DICT[en];
     var m = en.match(/^Reboot request from (.+)$/);
     if (m) return 'Pedido de reinício de ' + m[1];
+    m = en.match(/^Unknown \((\d+)\)$/);
+    if (m) return 'Desconhecido (' + m[1] + ')';
+    // Error Description values (No error / "E7: …") — same helper as the diagram banner
+    if (/^No error$/i.test(en) || /^[A-Z0-9]{1,3}:\s/.test(en)) {
+      if (window.althermaTranslateErrorDesc) {
+        var ed = window.althermaTranslateErrorDesc(en, 'pt');
+        if (ed && ed !== en) return ed;
+      }
+    }
     if (window.althermaTranslateUpdateStatus) {
       var upd = window.althermaTranslateUpdateStatus(en, 'pt');
       if (upd && upd !== en) return upd;
