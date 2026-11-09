@@ -128,7 +128,12 @@ ESPAltherma files: [advanced use](docs/advanced.md).
   raomin.
 - Web installer, builds, docs, logo and boot animation: skydoy. Board pictures and the wiring diagram are illustrations.
 
-Provided as-is for personal and educational use, like upstream; ESPAltherma files keep their
-original MIT licence: see [third-party notices](THIRD_PARTY_NOTICES.md). Use at your own risk: work on the
+**Licence:** my own work in this fork (web installer, web UI, docs, logo, blueprint, report worker) is under
+[PolyForm Noncommercial 1.0.0](LICENSE): free for personal and non-commercial use, commercial use not permitted.
+[LICENSE](LICENSE) lists exactly which files that covers. It does not cover the upstream component, model and board files
+(no licence declared, so all rights stay with their author), the ESPAltherma files (MIT), or the GPL-3.0 ESPHome runtime
+inside the firmware images: see [third-party notices](THIRD_PARTY_NOTICES.md).
+
+Use at your own risk: work on the
 heat pump with the breaker off. Daikin and Altherma are trademarks of their owner; this is an independent
 community project, not affiliated with it.

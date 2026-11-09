@@ -9,6 +9,7 @@
 - Correção: o pacote de diagnóstico opcional (`boards/common/diagnostics.yaml`) já funciona no ESP8266. A temperatura interna, que só existe no ESP32, passou para `boards/common/diagnostics-esp32.yaml` (inclui o resto). Se usas o pacote numa placa ESP32 e queres manter a temperatura interna, muda o include para esse ficheiro.
 - Novo blueprint do Home Assistant `homeassistant/blueprints/esphome_altherma_update_available.yaml`: notificação no telemóvel quando há versão nova (placas adotadas no Device Builder).
 - Repositório: CONTRIBUTING, CODE_OF_CONDUCT, modelo de pull request, CODEOWNERS e .editorconfig, como nos outros projetos.
+- Novo LICENSE: a PolyForm Noncommercial 1.0.0 aplica-se só ao trabalho do skydoy neste fork (instalador, página da placa, documentação, logótipo, blueprint, report worker); o LICENSE lista os caminhos. Não abrange o código do projeto original (sem licença declarada), os ficheiros do ESPAltherma (MIT) nem o runtime GPL-3.0 do ESPHome dentro dos `.bin`.
 - Novo THIRD_PARTY_NOTICES.md com os créditos e licenças de terceiros (ESPAltherma, MIT, com o texto completo; projeto original esphome-altherma; ESPHome e ferramentas usadas na compilação). O README deixa de ter link para outro repositório na nota da licença.
 
 ## [2.6.1] - 2026-11-09
