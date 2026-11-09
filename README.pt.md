@@ -100,6 +100,9 @@ Firmware pronto (modelos confirmados):
 O firmware pré-compilado não tem chave da API nem palavra-passe OTA, para que qualquer Home Assistant o possa adotar,
 e atualiza-se pela entidade **Firmware**. Para acrescentar uma chave e palavras-passe, adota-o no ESPHome Device
 Builder: [segurança e atualizações pelo ar](docs/seguranca.md).
+As placas adotadas mostram **Update Available**; o blueprint
+[`esphome_altherma_update_available.yaml`](homeassistant/blueprints/esphome_altherma_update_available.yaml)
+manda-te uma notificação para o telemóvel quando sai uma versão nova.
 
 ## Avançado / YAML manual
 Compilação própria ou Device Builder: configurações por placa `boards/esphome-altherma-<placa>.yaml`, `boards/base.yaml` comum e
@@ -116,7 +119,9 @@ copiados do ESPAltherma: [uso avançado](docs/avancado.md).
 [Reportar a minha bomba](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml) ·
 [Reportar um problema](https://github.com/skydoy/esphome-altherma/issues/new/choose) ·
 [Versões](https://github.com/skydoy/esphome-altherma/releases) ·
-[Política de segurança](SECURITY.md) (em inglês)
+[Política de segurança](SECURITY.md) (em inglês) ·
+[Contribuir](CONTRIBUTING.md) (em inglês) ·
+[Código de conduta](CODE_OF_CONDUCT.md) (em inglês)
 
 ## Créditos
 - Componente, sensores e ficheiros de modelo: esphome-altherma, de jjohnsen, e os seus contribuidores, baseado no

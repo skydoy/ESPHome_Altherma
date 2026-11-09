@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+- Ecrã de arranque do M5Stack: por baixo da versão do firmware aparece agora, mais pequena e mais escura, a versão do ESPHome com que foi compilado (ex. «ESPHome 2026.10.1»).
+- O hotspot de configuração passa a chamar-se «ESPHome Altherma Setup», como nos outros projetos (ESPHome_AC Setup, ESPHome Hunter Setup). O nome da placa e o `project` não mudam, por isso as placas adotadas continuam a atualizar.
+- Pacote de diagnóstico opcional (`boards/common/diagnostics.yaml`): novos **Motivo do reinício**, **Versão do firmware** e **Reiniciar (modo seguro)**, iguais aos do ESPHome_AC; nomes traduzidos no seletor PT/EN da página da placa.
+- Novo blueprint do Home Assistant `homeassistant/blueprints/esphome_altherma_update_available.yaml`: notificação no telemóvel quando há versão nova (placas adotadas no Device Builder).
+- Repositório: CONTRIBUTING, CODE_OF_CONDUCT e modelo de pull request, como nos outros projetos.
+
 ## [2.6.1] - 2026-11-09
 
 - Sincronizado com o projeto original até 2026-11-08. O novo perfil experimental GEO3 EGSAH/EWSAH D (6-10 kW) foi comparado sensor a sensor com o perfil `egsah_x_ewsah_x_d_6_10_geo3` deste fork: todos os registos, posições e conversões coincidem (salmoura de entrada R5T `0x20`/8, saída R6T `0x20`/10, bomba de salmoura `0x30`/1). Nota de verificação no cabeçalho do perfil; sem alterações de sensores.

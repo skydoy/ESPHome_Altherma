@@ -100,6 +100,9 @@ Ready-made firmware (confirmed models):
 The prebuilt firmware has no API key or OTA password, so any Home Assistant can adopt it, and it updates itself from
 the **Firmware** entity. To add a key and passwords, adopt it in the ESPHome Device Builder:
 [security and OTA updates](docs/security.md).
+Adopted boards show **Update Available**; the blueprint
+[`esphome_altherma_update_available.yaml`](homeassistant/blueprints/esphome_altherma_update_available.yaml)
+sends a phone notification when a new release is out.
 
 ## Advanced / manual YAML
 Own build or Device Builder: board configs `boards/esphome-altherma-<board>.yaml`, shared `boards/base.yaml`, sensor maps in
@@ -116,7 +119,9 @@ ESPAltherma files: [advanced use](docs/advanced.md).
 [Report my heat pump](https://github.com/skydoy/esphome-altherma/issues/new?template=compatibility-report.yml) ·
 [Report a problem](https://github.com/skydoy/esphome-altherma/issues/new/choose) ·
 [Releases](https://github.com/skydoy/esphome-altherma/releases) ·
-[Security policy](SECURITY.md)
+[Security policy](SECURITY.md) ·
+[Contributing](CONTRIBUTING.md) ·
+[Code of Conduct](CODE_OF_CONDUCT.md)
 
 ## Credits
 - Component, sensors and model files: esphome-altherma by jjohnsen and its contributors, based on ESPAltherma by
