@@ -4,6 +4,9 @@
 # Every label from that definition is listed; the 0x00 capability block, conv 151
 # placeholders and labels using conversions the hub does not support are left out.
 # Not yet confirmed on a real unit: please report your results.
+# Cross-checked 2026-11-09 against an independent D-Checker (GSHP2) derived GEO3 profile:
+# all its registers, offsets and conversions match this file (brine inlet R5T = 0x20 offset 8,
+# brine outlet R6T = 0x20 offset 10, brine pump feedback = 0x30 offset 1).
 .altherma_base: &altherma_base
   platform: altherma_hub
   altherma_hub_id: altherma_hub_1
