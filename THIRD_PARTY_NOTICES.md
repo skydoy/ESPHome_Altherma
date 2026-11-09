@@ -3,6 +3,9 @@
 ESPHome Altherma (skydoy) is a fork of an earlier ESPHome Altherma project and builds on ESPAltherma. This file lists
 the third-party work in this repository or used to build its firmware, with the licence each one declares.
 
+Tiago Febra's (skydoy) own work in this fork is under the PolyForm Noncommercial License 1.0.0. [LICENSE](LICENSE)
+lists exactly which paths that covers. Everything below keeps its own terms and is **not** relicensed.
+
 ## In this repository
 
 ### ESPAltherma (Raomin and contributors), MIT License
@@ -38,11 +41,16 @@ SOFTWARE.
 ### esphome-altherma (Jan Åge Johnsen and contributors), no licence declared
 The ESPHome component `components/altherma_hub/` (C++ hub, X10A read protocol, mock UART, Python platforms), the
 board files and the original model conversions come from this upstream project. Its repository says the project is
-"provided as-is for educational and personal use" and does not include a licence file.
+"provided as-is for educational and personal use" and does not include a licence file. Without a licence, all rights stay with its author; this fork does not
+relicense it, and the PolyForm licence in [LICENSE](LICENSE) does not apply to it.
+
+## Also in this repository
+- `CODE_OF_CONDUCT.md` is adapted from the Contributor Covenant 2.1 (CC BY 4.0).
 
 ## Downloaded at build time or in the browser (not stored here)
 - **ESPHome** (Open Home Foundation and contributors): the Python tooling is MIT, the C++ runtime that is compiled into
-  every firmware is GPL-3.0. Firmware images built from this repository contain that runtime.
+  every firmware is GPL-3.0. Firmware images built from this repository contain that runtime, so a
+  firmware image as a whole is not under the PolyForm licence.
 - **ESP-IDF / Arduino core for ESP32 and ESP8266** (Espressif and contributors), Apache-2.0 / LGPL-2.1: frameworks
   that ESPHome downloads and links into the firmware.
 - **ESP Web Tools** (Open Home Foundation), Apache-2.0: the web installer's Install button, loaded from a CDN.

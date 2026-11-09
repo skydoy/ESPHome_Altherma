@@ -129,7 +129,13 @@ copiados do ESPAltherma: [uso avançado](docs/avancado.md).
 - Instalador web, compilações, documentação, logótipo e animação de arranque: skydoy. As imagens das placas e o esquema
   de ligações são ilustrações.
 
-Fornecido tal como está, para uso pessoal e educativo, como o projeto original; os ficheiros do ESPAltherma mantêm a
-licença MIT original: vê os [avisos de terceiros](THIRD_PARTY_NOTICES.md) (em inglês). Usa por tua conta e risco: mexe na
+**Licença:** o meu trabalho neste fork (instalador web, página da placa, documentação, logótipo, blueprint, report worker)
+está sob a [PolyForm Noncommercial 1.0.0](LICENSE): gratuito para uso pessoal e não comercial, uso comercial não
+permitido. O [LICENSE](LICENSE) diz exatamente que ficheiros abrange. Não abrange os ficheiros do componente, dos modelos
+e das placas do projeto original (não declaram licença, por isso todos os direitos ficam com o autor), os ficheiros do
+ESPAltherma (MIT), nem o runtime do ESPHome (GPL-3.0) que vai dentro das imagens de firmware: vê os
+[avisos de terceiros](THIRD_PARTY_NOTICES.md) (em inglês).
+
+Usa por tua conta e risco: mexe na
 bomba de calor com o disjuntor desligado. Daikin e Altherma são marcas registadas do seu dono; este é um projeto
 independente da comunidade, sem ligação à marca.
