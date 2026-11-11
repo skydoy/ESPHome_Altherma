@@ -53,6 +53,7 @@ Detalhes: [Guia de instalação](docs/instalar.md)
 
 ## Documentação e mais
 
+[Início da documentação](docs/index.pt.md) ·
 [Visão geral (placas, OTA, créditos)](docs/visao-geral.md) ·
 [Instalar](docs/instalar.md) ·
 [Ligações](docs/ligacoes.md) ·

@@ -26,6 +26,7 @@ form. Bugs and ideas go in the [issue forms](https://github.com/skydoy/ESPHome_A
   texts use Portugal Portuguese and address the reader as "tu".
 - Web UI changes (`installer/packages/report.js`): keep the PT/EN toggle working and add new entity names to the
   translation table. ESPHome `web_server` v3 allows only one `js_include`.
+- Docs site: `python tools/build_docs.py` (strict MkDocs build and link check). Do not run the Publish workflow to preview it.
 - Add a line to `CHANGELOG.md` (Portuguese) under **Unreleased**.
 - Say what you tested on real hardware (board, heat pump model), or "not tested on hardware".
 

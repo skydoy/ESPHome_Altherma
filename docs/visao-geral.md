@@ -1,6 +1,6 @@
 # Visão geral
 
-Detalhes que estavam no [README](../README.pt.md) da raiz. Começo curto: [README](../README.pt.md) · [Instalar](instalar.md).
+Detalhes que estavam no [README](../README.pt.md) da raiz. Começo curto: [Instalar](instalar.md).
 
 ## O que é
 
