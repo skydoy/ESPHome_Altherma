@@ -508,14 +508,22 @@ def check_url(site: Path, html: Path, rel: str, url: str) -> list[str]:
 def destination(raw: str) -> Path:
     """Output directory MkDocs will delete and recreate.
 
-    Only the two preview/publish folders are accepted. Source trees, Git
-    metadata, anything inside a firmware tree, and any directory that already
-    contains firmware are refused, because the build cleans the destination.
+    Inside the repository only site-docs and site/docs are accepted. A path
+    outside the repository is accepted because cleaning it cannot delete this
+    checkout. Source trees, Git metadata, firmware trees, and any directory
+    that already contains firmware are refused.
     """
-    dest = (ROOT / raw).resolve()
+    dest = Path(raw).expanduser().resolve()
     root = ROOT.resolve()
-    if dest == root or root not in dest.parents:
-        raise SystemExit("docs destination must stay inside the repository, and not be the repository root")
+    if "firmware" in dest.parts or ".git" in dest.parts:
+        raise SystemExit(f"refusing to write the docs build into {dest}")
+    if dest.exists() and any(path.is_dir() and path.name == "firmware" for path in dest.rglob("firmware")):
+        raise SystemExit(f"refusing to clean a directory that contains firmware: {dest}")
+    inside = dest == root or root in dest.parents
+    if not inside:
+        return dest
+    if dest == root:
+        raise SystemExit("docs destination must not be the repository root")
     parts = dest.relative_to(root).parts
     if ".git" in parts or "firmware" in parts:
         raise SystemExit(f"refusing to write the docs build into {dest}")
