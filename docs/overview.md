@@ -1,6 +1,6 @@
 # Overview
 
-Details that used to live in the root [README](../README.md). Short start: [README](../README.md) · [Install](install.md).
+Details that used to live in the root [README](../README.md). Short start: [Install](install.md).
 
 ## What it is
 

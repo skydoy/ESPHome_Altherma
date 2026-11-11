@@ -217,8 +217,11 @@ Dicas:
 2. Confirma cada entrada com a [descoberta de registos](#descoberta-de-registos-experimental); retira os sensores
    que a tua unidade não tem e corrige offsets ou conversores.
 3. Compila: `esphome -s altherma_model <o_teu_modelo> -s altherma_component_source ../components run boards/esphome-altherma-esp32.yaml`.
-4. Para o incluir no instalador web, acrescenta-o a `MODELS` em `static/index.html` e à lista `model:` em
-   `.github/workflows/publish.yml` (o workflow Validate confirma que os três coincidem).
+4. Para o incluir no instalador web, acrescenta-o ao [`installer/models.yaml`](../installer/models.yaml)
+   (`confirmed: true` só depois de alguém o ter usado numa unidade real; caso contrário fica escolha manual).
+   Corre `python installer/gen_models.py`. Isso reescreve as listas geradas em `static/index.html`,
+   `installer/packages/identify.yaml` e `installer/packages/report.js`. O Validate falha se esses blocos
+   estiverem desatualizados. A publicação compila o `generic` e cada modelo com `confirmed: true`.
 5. Abre um *pull request*, ou [reporta a tua bomba de calor](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
    e anexa o ficheiro.
 
@@ -261,7 +264,7 @@ components/altherma_hub/
   converters.h, labeldef.h      copiados do ESPAltherma (raomin)
 static/                         página do instalador web (GitHub Pages)
 homeassistant/                  blueprint e ferramentas Emoncms
-docs/                           esta documentação (imagens em docs/img/)
+docs/                           guias em português e inglês (imagens em docs/img/)
 .github/workflows/              validate.yml (verificações), publish.yml (compilações de versões)
 ```
 
@@ -269,8 +272,9 @@ docs/                           esta documentação (imagens em docs/img/)
 - Cada *push* e *pull request* corre o **Validate**: `esphome config` para cada par placa × modelo, os ficheiros de
   placa, uma verificação de que o site e a matriz de compilação listam todos os ficheiros de modelo, e uma
   compilação completa.
-- Enviar uma *tag* `v*` corre o **Publish**: compila 5 placas × 6 modelos, publica o instalador web e os manifestos
-  OTA no GitHub Pages e cria uma versão no GitHub. Os dispositivos veem então a atualização na entidade Firmware.
+- Enviar uma *tag* `v*` corre o **Publish**: compila 5 placas × (`generic` mais cada modelo com `confirmed: true`
+  em `installer/models.yaml`), publica o instalador web e os manifestos OTA no GitHub Pages e cria uma versão no
+  GitHub. Os dispositivos veem então a atualização na entidade Firmware.
 
 ### Ficheiros copiados do ESPAltherma
 Os `components/altherma_hub/converters.h` e `labeldef.h` vêm do ESPAltherma (`include/converters.h` e

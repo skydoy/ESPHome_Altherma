@@ -6,9 +6,9 @@ Abre `http://<ip-da-placa>/` no browser na tua rede local: tens um esquema da bo
 
 O botão **PT · EN** muda a página toda entre português e inglês, incluindo os nomes das entidades, os grupos, os botões e os valores de diagnóstico. Só muda o texto que vês; o que a placa envia e recebe fica igual.
 
-<p align="center"><img src="img/webui-pt.png" alt="Página web da placa em português" width="720"></p>
+![Página web da placa em português](img/webui-pt.png){ width="720" }
 
-<p align="center"><img src="img/webui-en.png" alt="Página web da placa em inglês" width="720"></p>
+![Página web da placa em inglês](img/webui-en.png){ width="720" }
 
 <sub>Valores de exemplo de uma página de teste, não de uma bomba real.</sub>
 

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Documentação bilingue (pré-visualização, ainda não publicada): MkDocs Material em português (tu) e inglês, com menu lateral, pesquisa e tema claro/escuro. O instalador web na raiz não muda. O site só entra no Pages quando o workflow Publish já corre (tag `v*` ou execução manual).
+- Uso avançado: para acrescentar um modelo ao instalador, a lista é `installer/models.yaml` (depois `python installer/gen_models.py`). A publicação compila 5 placas × (`generic` + modelos com `confirmed: true`).
 - Instalador web: botão de tema (sol/lua) igual ao hub ESPmaniacs — última pílula depois de PT | EN, 36,4×25 px, ícone SVG 14 px centrado (sem emoji).
 
 ## [2.6.2] - 2026-11-09

@@ -78,3 +78,13 @@ jobs:
       - run: pip install esphome==2026.10.1
       # Default model = generic, the firmware the web installer flashes first.
       - run: esphome compile installer/esphome-altherma-esp32.installer.yaml
+  docs:
+    # Bilingual docs site. Build and link-check only — this job does not deploy Pages.
+    name: docs site
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: { python-version: "3.13" }
+      - run: pip install -r requirements-docs.txt
+      - run: python tools/build_docs.py

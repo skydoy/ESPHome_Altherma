@@ -6,9 +6,9 @@ Open `http://<board-ip>/` in a browser on your LAN: a live diagram of the heat p
 
 The **PT · EN** button switches the whole page between Portuguese and English, including entity names, groups, buttons and diagnostic values. Only the text on screen changes; what the board sends and receives stays the same.
 
-<p align="center"><img src="img/webui-en.png" alt="Device web page in English" width="720"></p>
+![Device web page in English](img/webui-en.png){ width="720" }
 
-<p align="center"><img src="img/webui-pt.png" alt="Device web page in Portuguese" width="720"></p>
+![Device web page in Portuguese](img/webui-pt.png){ width="720" }
 
 <sub>Example values from a test page, not a live heat pump.</sub>
 

@@ -6,3 +6,5 @@
 **/__pycache__/*
 .venv/
 /installer/.esphome/
+/site-src/
+/site-docs/

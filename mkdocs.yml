@@ -1,0 +1,118 @@
+site_name: ESPHome Altherma
+site_description: Daikin Altherma in Home Assistant — docs
+site_url: https://skydoy.github.io/ESPHome_Altherma/docs/
+site_author: skydoy
+repo_url: https://github.com/skydoy/ESPHome_Altherma
+repo_name: skydoy/ESPHome_Altherma
+edit_uri: ""
+docs_dir: site-src
+site_dir: site-docs
+copyright: PolyForm Noncommercial 1.0.0 · Independent community project
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/skydoy/ESPHome_Altherma
+    - icon: fontawesome/solid/mug-hot
+      link: https://ko-fi.com/skydoy
+
+theme:
+  name: material
+  custom_dir: overrides
+  language: en
+  logo: icon.png
+  favicon: img/favicon.svg
+  font: false
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: custom/sun
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: custom/moon
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - toc.follow
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search:
+      lang:
+        - en
+        - pt
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: pt
+          name: Português
+          build: true
+          site_description: Daikin Altherma no Home Assistant — documentação
+          copyright: PolyForm Noncommercial 1.0.0 · Projeto independente da comunidade
+          nav_translations:
+            Home: Início
+            Overview: Visão geral
+            Install: Instalar
+            Wiring: Ligações
+            Models: Modelos
+            Compatibility: Compatibilidade
+            Device web page: Página web da placa
+            Security and updates: Segurança e atualizações
+            Advanced: Uso avançado
+          theme:
+            palette:
+              - toggle:
+                  name: Mudar para o tema escuro
+              - toggle:
+                  name: Mudar para o tema claro
+
+nav:
+  - Home: index.md
+  - Overview: overview.md
+  - Install: install.md
+  - Wiring: wiring.md
+  - Models: models.md
+  - Compatibility: compatibility.md
+  - Device web page: web-page.md
+  - Security and updates: security.md
+  - Advanced: advanced.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+validation:
+  omitted_files: warn
+  absolute_links: ignore
+  unrecognized_links: warn
+  anchors: warn

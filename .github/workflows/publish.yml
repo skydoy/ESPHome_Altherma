@@ -93,6 +93,15 @@ jobs:
             done
           done
           test "$(find site/firmware -name manifest.json | wc -l)" -eq ${{ needs.models.outputs.count }}
+      - uses: actions/setup-python@v7
+        with: { python-version: "3.13" }
+      - name: Build documentation (MkDocs → site/docs)
+        run: |
+          pip install -r requirements-docs.txt
+          python tools/build_docs.py --dest site/docs
+          test -f site/docs/en/index.html
+          test -f site/docs/pt/index.html
+          test -f site/firmware/esp32/generic/manifest.json
       - uses: actions/upload-pages-artifact@v5
         with:
           path: site

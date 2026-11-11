@@ -1,0 +1,33 @@
+{# PT | EN pills. Prefer the page alternates so the link stays on the same topic. #}
+{% if page and page.file and page.file.alternates %}
+  {% set current = i18n_page_locale if i18n_page_locale is defined else config.theme.language %}
+  {% for code in ['pt', 'en'] %}
+    {% if code in page.file.alternates %}
+      {% set alt = page.file.alternates[code] %}
+      <a class="lang-pill"
+         href="{{ alt.url | url }}"
+         hreflang="{{ code }}"
+         lang="{{ code }}"
+         aria-pressed="{{ 'true' if code == current else 'false' }}"
+         {% if code == current %}aria-current="true"{% endif %}>{{ code | upper }}</a>
+    {% endif %}
+  {% endfor %}
+{% elif config.extra.alternate %}
+  {% set current = i18n_page_locale if i18n_page_locale is defined else config.theme.language %}
+  {% set ns = namespace(ordered=[]) %}
+  {% for code in ['pt', 'en'] %}
+    {% for alt in config.extra.alternate %}
+      {% if alt.lang == code %}
+        {% set ns.ordered = ns.ordered + [alt] %}
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+  {% for alt in ns.ordered %}
+    <a class="lang-pill"
+       href="{{ alt.link | url }}"
+       hreflang="{{ alt.lang }}"
+       lang="{{ alt.lang }}"
+       aria-pressed="{{ 'true' if alt.lang == current else 'false' }}"
+       {% if alt.lang == current %}aria-current="true"{% endif %}>{{ alt.lang | upper }}</a>
+  {% endfor %}
+{% endif %}
