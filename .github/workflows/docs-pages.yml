@@ -1,0 +1,77 @@
+name: Publish documentation only
+# Adds /docs to the already published site. It does not compile firmware and it
+# does not replace the installer or the OTA manifests. Do not run
+# "Build firmware & publish installer" for a documentation change: a manual run
+# of that workflow publishes dev firmware.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cursor/altherma-docs-preview-de79
+      - main
+    paths:
+      - .github/workflows/docs-pages.yml
+      - tools/publish_docs_only.py
+      - tools/build_docs.py
+      - requirements-docs.txt
+      - mkdocs.yml
+      - docs/**
+      - overrides/**
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: pages-docs-only
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      actions: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: { python-version: "3.13" }
+      - name: Build the docs site
+        run: |
+          pip install -r requirements-docs.txt
+          python tools/build_docs.py --dest "${RUNNER_TEMP}/altherma-docs"
+      - name: Rebuild the published site and add docs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python tools/publish_docs_only.py assemble \
+            --docs "${RUNNER_TEMP}/altherma-docs" \
+            --dest "${RUNNER_TEMP}/pages-site" \
+            --hash-out "${RUNNER_TEMP}/preserve.sha256"
+          test "$(grep -c . "${RUNNER_TEMP}/preserve.sha256")" -gt 100
+          test -f "${RUNNER_TEMP}/pages-site/index.html"
+          test -f "${RUNNER_TEMP}/pages-site/docs/pt/index.html"
+          test -f "${RUNNER_TEMP}/pages-site/docs/en/index.html"
+          test -f "${RUNNER_TEMP}/pages-site/firmware/esp32/generic/manifest.json"
+          python3 -c 'import json,sys; v=json.load(open(sys.argv[1]))["version"]; assert not v.startswith("dev"), v' \
+            "${RUNNER_TEMP}/pages-site/firmware/esp32/generic/manifest.json"
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: ${{ runner.temp }}/pages-site
+      - id: deployment
+        uses: actions/deploy-pages@v5
+      - name: Confirm the live site
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ok=0
+          for _ in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            if python tools/publish_docs_only.py verify --hash-file "${RUNNER_TEMP}/preserve.sha256"; then
+              ok=1
+              break
+            fi
+            sleep 20
+          done
+          test "$ok" = 1
