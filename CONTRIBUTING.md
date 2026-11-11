@@ -26,14 +26,15 @@ form. Bugs and ideas go in the [issue forms](https://github.com/skydoy/ESPHome_A
   texts use Portugal Portuguese and address the reader as "tu".
 - Web UI changes (`installer/packages/report.js`): keep the PT/EN toggle working and add new entity names to the
   translation table. ESPHome `web_server` v3 allows only one `js_include`.
-- Docs site: `python tools/build_docs.py` (strict MkDocs build and link check). Do not run the Publish workflow to preview it.
+- Docs site: `python tools/build_docs.py` (strict MkDocs build and link check). Publishing the guides alone is the «Publish documentation only» workflow. Do not run «Build firmware & publish installer» by hand: a manual run of that workflow ships dev firmware.
 - Add a line to `CHANGELOG.md` (Portuguese) under **Unreleased**.
 - Say what you tested on real hardware (board, heat pump model), or "not tested on hardware".
 
 ## Releases
 The maintainer moves the **Unreleased** notes to `## [x.y.z] - YYYY-MM-DD`, bumps `altherma_version` in
-`boards/base.yaml` and pushes a `vx.y.z` tag. CI builds every board and model, publishes the installer and OTA
-manifests to GitHub Pages and creates the GitHub Release with those notes.
+`boards/base.yaml` and pushes a `vx.y.z` tag. CI builds every board and model, publishes the installer, the OTA
+manifests and the docs site to GitHub Pages, and creates the GitHub Release with those notes. A docs-only change
+can go out through «Publish documentation only», which keeps the already published installer and firmware.
 
 Code copied from other projects must keep its licence notice: add it to [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 Do not copy code from projects without a licence, or GPL code into the component.
