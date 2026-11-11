@@ -1,0 +1,133 @@
+:root {
+  --md-primary-fg-color: #1784F7;
+  --md-primary-fg-color--light: #4fb3ff;
+  --md-primary-fg-color--dark: #0f63c4;
+  --md-accent-fg-color: #0FE3FA;
+  --md-accent-fg-color--transparent: rgba(15, 227, 250, 0.1);
+}
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #4fb3ff;
+  --md-primary-fg-color--light: #7ec9ff;
+  --md-primary-fg-color--dark: #1784F7;
+  --md-accent-fg-color: #0FE3FA;
+}
+.md-typeset .md-button--primary {
+  background: linear-gradient(135deg, #0FE3FA, #1784F7);
+  border: 0;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(23, 132, 247, 0.35);
+}
+.md-typeset .md-button--primary:hover {
+  color: #fff;
+  filter: brightness(1.05);
+}
+.hero-install {
+  text-align: center;
+  margin: 1.5rem 0 2rem;
+}
+.hero-install .md-button {
+  font-size: 1.05rem;
+  padding: 0.7rem 1.6rem;
+}
+
+/* Header logo stays at Material size (source PNGs are large) */
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg,
+.md-logo img,
+.md-logo svg {
+  width: auto !important;
+  height: 1.8rem !important;
+  max-height: 1.8rem !important;
+}
+.md-nav__title .md-nav__button.md-logo img,
+.md-nav__title .md-nav__button.md-logo svg {
+  height: 2.4rem !important;
+  max-height: 2.4rem !important;
+}
+
+.md-typeset img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1rem auto;
+}
+
+/* PT | EN | theme pills, same controls as the web installer */
+.md-header__lang.lang {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+  flex: none;
+  margin-left: .4rem;
+}
+.md-header__lang .lang-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #fff8;
+  background: transparent;
+  color: #fff;
+  border-radius: 999px;
+  padding: .25rem .7rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: .7rem;
+  line-height: 1;
+  text-decoration: none;
+  height: 25px;
+  box-sizing: border-box;
+}
+.md-header__lang .lang-pill:hover {
+  background: #fff3;
+  color: #fff;
+}
+.md-header__lang .lang-pill[aria-pressed=true],
+.md-header__lang .lang-pill[aria-current=true] {
+  background: #fff;
+  color: #0f63c4;
+}
+.md-header__lang .md-header__palette {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+.md-header__lang .lang-theme:not([hidden]) {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  /* Installer pill is 36.4×25 at a 16px root. */
+  width: 36.4px !important;
+  height: 25px !important;
+  min-width: 0 !important;
+  max-width: 36.4px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid #fff8;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  line-height: 1;
+  box-sizing: border-box;
+}
+.md-header__lang .lang-theme[hidden] {
+  display: none !important;
+}
+.md-header__lang .lang-theme:hover {
+  background: #fff3;
+}
+[data-md-color-scheme=slate] .md-header__lang .lang-theme {
+  background: #fff;
+  color: #0f63c4;
+}
+.md-header__lang .lang-theme svg {
+  display: block;
+  width: 14px !important;
+  height: 14px !important;
+  flex: none;
+}
+
+@media (max-width: 60em) {
+  .md-header__title { min-width: 0; }
+  .md-header__lang .lang-pill { padding: .25rem .55rem; }
+}

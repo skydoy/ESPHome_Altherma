@@ -218,8 +218,11 @@ Tips:
 2. Check each entry with [register discovery](#register-discovery-experimental); remove sensors your unit does not
    have and correct offsets or converters.
 3. Build it: `esphome -s altherma_model <your_model> -s altherma_component_source ../components run boards/esphome-altherma-esp32.yaml`.
-4. To include it in the web installer, add it to `MODELS` in `static/index.html` and to the `model:` list in
-   `.github/workflows/publish.yml` (the Validate workflow checks that all three match).
+4. To include it in the web installer, add it to [`installer/models.yaml`](../installer/models.yaml)
+   (`confirmed: true` only after someone has run it on a real unit; otherwise it stays a manual pick).
+   Run `python installer/gen_models.py`. That rewrites the generated lists in `static/index.html`,
+   `installer/packages/identify.yaml` and `installer/packages/report.js`. Validate fails if those blocks
+   are out of date. Publish builds `generic` plus every model with `confirmed: true`.
 5. Open a pull request, or [report your heat pump](https://github.com/skydoy/ESPHome_Altherma/issues/new?template=compatibility-report.yml)
    and attach the file.
 
@@ -262,15 +265,16 @@ components/altherma_hub/
   converters.h, labeldef.h      vendored from ESPAltherma (raomin)
 static/                         web installer page (GitHub Pages)
 homeassistant/                  Emoncms blueprint and tools
-docs/                           this documentation (images in docs/img/)
+docs/                           guides in English and Portuguese (images in docs/img/)
 .github/workflows/              validate.yml (checks), publish.yml (release builds)
 ```
 
 ### Checks and releases
 - Every push and pull request runs **Validate**: `esphome config` for every board × model pair, the plain board
   files, a check that the site and the build matrix list every model file, and one full compile.
-- Pushing a tag `v*` runs **Publish**: 5 boards × 6 models are compiled, the web installer and the OTA manifests are
-  deployed to GitHub Pages and a GitHub release is created. Devices then see the update on their Firmware entity.
+- Pushing a tag `v*` runs **Publish**: 5 boards × (`generic` plus every model with `confirmed: true` in
+  `installer/models.yaml`) are compiled, the web installer and the OTA manifests are deployed to GitHub Pages
+  and a GitHub release is created. Devices then see the update on their Firmware entity.
 
 ### Vendored ESPAltherma files
 `components/altherma_hub/converters.h` and `labeldef.h` come from ESPAltherma (`include/converters.h` and

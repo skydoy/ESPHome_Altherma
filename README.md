@@ -53,6 +53,7 @@ Details: [Install guide](docs/install.md)
 
 ## Docs & more
 
+[Docs home](docs/index.md) ·
 [Overview (boards, OTA, credits)](docs/overview.md) ·
 [Install](docs/install.md) ·
 [Wiring](docs/wiring.md) ·
