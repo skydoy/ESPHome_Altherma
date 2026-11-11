@@ -163,8 +163,10 @@ def expected_firmware_count(tag: str) -> int:
     # Avoid a PyYAML dependency in this script: confirmed lines are explicit.
     confirmed = 0
     for line in show.splitlines():
-        if "confirmed: true" in line:
-            confirmed += 1
+        stripped = line.strip()
+        if stripped.startswith("#") or "confirmed: true" not in stripped:
+            continue
+        confirmed += 1
     if confirmed < 1:
         raise SystemExit(f"{tag} models.yaml has no confirmed models")
     return len(BOARDS) * (confirmed + 1)
