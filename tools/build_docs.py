@@ -11,6 +11,7 @@ pt/ so the future paths are /docs/en/ and /docs/pt/.
 from __future__ import annotations
 
 import argparse
+import gzip
 import json
 import posixpath
 import re
@@ -394,6 +395,9 @@ def rewrite_sitemap(site: Path) -> None:
 
     text = re.sub(re.escape(ORIGIN) + r"[^<\"\s]*", repl, text)
     path.write_text(text, encoding="utf-8")
+    # MkDocs also writes sitemap.xml.gz. Replace it from the rewritten XML so
+    # the compressed copy does not keep the pre-move English URLs.
+    (site / "sitemap.xml.gz").write_bytes(gzip.compress(text.encode("utf-8")))
 
 
 def check(site: Path) -> None:
@@ -410,12 +414,19 @@ def check(site: Path) -> None:
         "pt/security/index.html",
         "search/search_index.json",
         "sitemap.xml",
+        "sitemap.xml.gz",
     ]
     for rel in required:
         if not (site / rel).is_file():
             errors.append(f"missing {rel}")
     if (site / "install" / "index.html").exists():
         errors.append("English install page is still at /install/; expected /en/install/")
+    sitemap = (site / "sitemap.xml").read_text(encoding="utf-8")
+    compressed = gzip.decompress((site / "sitemap.xml.gz").read_bytes()).decode("utf-8")
+    if compressed != sitemap:
+        errors.append("sitemap.xml.gz does not match the rewritten sitemap.xml")
+    if re.search(r"/docs/(?!en/|pt/)[A-Za-z]", sitemap):
+        errors.append("sitemap.xml still has an English page outside /en/ and /pt/")
     for html in site.rglob("*.html"):
         text = html.read_text(encoding="utf-8")
         rel = html.relative_to(site).as_posix()
@@ -495,18 +506,43 @@ def check_url(site: Path, html: Path, rel: str, url: str) -> list[str]:
 
 
 def destination(raw: str) -> Path:
+    """Output directory MkDocs will delete and recreate.
+
+    Only the two preview/publish folders are accepted. Source trees, Git
+    metadata, anything inside a firmware tree, and any directory that already
+    contains firmware are refused, because the build cleans the destination.
+    """
     dest = (ROOT / raw).resolve()
     root = ROOT.resolve()
-    if dest != root and root not in dest.parents:
-        raise SystemExit("docs destination must stay inside the repository")
-    banned = [
-        root / name
-        for name in ("static", "installer", "boards", "confs", "components", "docs", "homeassistant")
-    ]
-    if dest in banned or any(item in dest.parents for item in banned):
+    if dest == root or root not in dest.parents:
+        raise SystemExit("docs destination must stay inside the repository, and not be the repository root")
+    parts = dest.relative_to(root).parts
+    if ".git" in parts or "firmware" in parts:
         raise SystemExit(f"refusing to write the docs build into {dest}")
-    if (dest / "firmware").exists():
+    source_roots = [
+        root / name
+        for name in (
+            "static",
+            "installer",
+            "boards",
+            "confs",
+            "components",
+            "docs",
+            "homeassistant",
+            "tools",
+            "overrides",
+            ".github",
+            ".git",
+            "site-src",
+        )
+    ]
+    if dest in source_roots or any(item in dest.parents for item in source_roots):
+        raise SystemExit(f"refusing to write the docs build into {dest}")
+    if dest.exists() and any(path.is_dir() and path.name == "firmware" for path in dest.rglob("firmware")):
         raise SystemExit(f"refusing to clean a directory that contains firmware: {dest}")
+    allowed = {(root / "site-docs"), (root / "site" / "docs")}
+    if dest not in allowed:
+        raise SystemExit(f"docs destination must be site-docs or site/docs (refusing {dest})")
     return dest
 
 

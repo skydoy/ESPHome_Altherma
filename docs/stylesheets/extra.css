@@ -14,11 +14,12 @@
 .md-typeset .md-button--primary {
   background: linear-gradient(135deg, #0FE3FA, #1784F7);
   border: 0;
-  color: #fff;
+  /* Installer navy. White on #0FE3FA is about 1.6:1; this text clears 4.5:1 on both stops. */
+  color: #0b1b3f;
   box-shadow: 0 4px 14px rgba(23, 132, 247, 0.35);
 }
 .md-typeset .md-button--primary:hover {
-  color: #fff;
+  color: #0b1b3f;
   filter: brightness(1.05);
 }
 .hero-install {
