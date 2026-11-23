@@ -10,11 +10,43 @@ so it **cannot contain your keys or passwords**. It ships:
 |---|---|---|
 | Home Assistant API encryption key | none | Any Home Assistant on your network can adopt it with one click. |
 | OTA password (ESPHome) | none | Same image for all users. The M5Stack image includes `boards/esphome-altherma-m5stack.yaml`, which asks for `!secret ota_password`; for the installer build that secret comes from [`installer/secrets.yaml`](../installer/secrets.yaml) and is intentionally empty. |
-| Fallback hotspot (`esphome-altherma…`) | open, only while Wi-Fi is not connected | So you can set up Wi-Fi from a phone. It also offers a firmware upload page (captive portal). |
+| Fallback hotspot ("ESPHome Altherma Setup") | open, only while Wi-Fi is not connected | So you can set up Wi-Fi from a phone. It also offers a firmware upload page (captive portal). |
 | Firmware updates | **Firmware** entity in Home Assistant | Downloaded over HTTPS from this project's GitHub Pages; the manifest carries an MD5 checksum that the device checks before it reboots. |
 
 On a home network that you trust this is the usual ESPHome "ready-made" setup. If other people or devices share that
 network, secure it as shown below.
+
+## What the device exposes on your network
+Everything below is reachable by **any device on the same network** (LAN or Wi-Fi). Nothing is opened to the internet
+unless you forward ports on your router — don't.
+
+| Service | Port | Prebuilt firmware | What someone on your network can do |
+|---|---|---|---|
+| Device web page (`web_server` v3) | TCP 80 (HTTP) | on, **no login** | See every sensor and the live log, press the buttons (Restart, Check for Update, Install Update, Install the right firmware), turn Auto Update on/off, and upload a firmware file (`POST /update`). |
+| Home Assistant native API | TCP 6053 | on, **no encryption key** | Connect like Home Assistant does: read all entities and logs, press buttons, call the read-only `query_register` service. |
+| ESPHome OTA | TCP 3232 (ESP32) / 8266 (ESP8266) | on, **no password** (the M5Stack image uses the empty `ota_password` placeholder) | Flash any firmware over the air with the ESPHome tools. |
+| mDNS | UDP 5353 | on | See the device name (`esphome-altherma-xxxxxx.local`), its IP and that it runs ESPHome. |
+| Fallback hotspot "ESPHome Altherma Setup" + captive portal | Wi-Fi AP | **open**, only when the board cannot join your Wi-Fi | Join it, set new Wi-Fi credentials or upload a firmware file. |
+| Improv over USB | USB serial | on | Set Wi-Fi credentials — needs physical access to the USB cable. |
+
+What the device connects to by itself (outgoing only): your Wi-Fi, NTP time servers (`pool.ntp.org`) and
+`skydoy.github.io` over HTTPS every 6 hours to check for updates (and to download one when you or Auto Update install
+it). The ESP32 checks the TLS certificate; the **ESP8266 cannot** (`verify_ssl: false`), so on an ESP8266 the MD5 in the
+manifest only protects against a broken download, not against someone who can tamper with your traffic.
+
+Towards the heat pump the board only sends **read-only** queries on the X10A port; no setting of the heat pump is ever
+written. The **📝 Report my heat pump** button on the web page only opens a GitHub form in your browser — the board itself sends
+nothing.
+
+### Recommendations
+1. Keep the board on a home network you trust, ideally an IoT VLAN or guest network that cannot reach your PCs.
+2. Never forward ports 80, 6053, 3232 or 8266 on your router. For remote access use Home Assistant.
+3. If other people or devices share the network, adopt the board and add an API encryption key, an OTA password and a
+   hotspot password ([next sections](#securing-your-own-build)).
+4. In your own build, stop firmware uploads through the web page with `web_server: ota: false` (the captive portal
+   can still flash while the hotspot is up), or remove the page entirely with `web_server: !remove`.
+5. Install updates from Home Assistant (Firmware entity) or the Device Builder only; don't flash `.bin` files from
+   other sources.
 
 ## Updating with the Firmware entity
 1. When a new release is published, Home Assistant shows an update on the **Firmware** entity of the device

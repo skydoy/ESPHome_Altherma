@@ -10,11 +10,44 @@ O firmware do [instalador web](https://skydoy.github.io/ESPHome_Altherma/) é a 
 |---|---|---|
 | Chave de encriptação da API do Home Assistant | nenhuma | Qualquer Home Assistant da tua rede o adota com um clique. |
 | Palavra-passe OTA (ESPHome) | nenhuma | A mesma imagem para todos. A imagem M5Stack inclui o `boards/esphome-altherma-m5stack.yaml`, que pede `!secret ota_password`; na compilação do instalador esse segredo vem do [`installer/secrets.yaml`](../installer/secrets.yaml) e está vazio de propósito. |
-| Rede de recurso (`esphome-altherma…`) | aberta, só enquanto o Wi-Fi não está ligado | Para poderes configurar o Wi-Fi com o telemóvel. Também tem uma página para enviar firmware (portal cativo). |
+| Rede de recurso («ESPHome Altherma Setup») | aberta, só enquanto o Wi-Fi não está ligado | Para poderes configurar o Wi-Fi com o telemóvel. Também tem uma página para enviar firmware (portal cativo). |
 | Atualizações de firmware | Entidade **Firmware** no Home Assistant | Descarregadas por HTTPS a partir do GitHub Pages deste projeto; o manifesto inclui uma soma MD5 que o dispositivo confirma antes de reiniciar. |
 
 Numa rede doméstica de confiança esta é a configuração habitual dos firmwares ESPHome "prontos a usar". Se outras
 pessoas ou dispositivos partilharem essa rede, protege-a como se explica a seguir.
+
+## O que o dispositivo expõe na tua rede
+Tudo o que está abaixo fica acessível a **qualquer dispositivo na mesma rede** (cabo ou Wi-Fi). Nada fica aberto para
+a internet, a não ser que reencaminhes portas no router — não o faças.
+
+| Serviço | Porta | Firmware pré-compilado | O que alguém na tua rede pode fazer |
+|---|---|---|---|
+| Página web da placa (`web_server` v3) | TCP 80 (HTTP) | ligada, **sem login** | Ver todos os sensores e o registo em direto, carregar nos botões (Reiniciar, Procurar atualização, Instalar atualização, Instalar o firmware certo), ligar/desligar a Atualização automática e enviar um ficheiro de firmware (`POST /update`). |
+| API nativa do Home Assistant | TCP 6053 | ligada, **sem chave de encriptação** | Ligar-se como o Home Assistant: ler todas as entidades e o registo, carregar nos botões, chamar o serviço `query_register` (só leitura). |
+| OTA do ESPHome | TCP 3232 (ESP32) / 8266 (ESP8266) | ligada, **sem palavra-passe** (a imagem M5Stack usa o `ota_password` vazio) | Instalar qualquer firmware pelo ar com as ferramentas do ESPHome. |
+| mDNS | UDP 5353 | ligado | Ver o nome da placa (`esphome-altherma-xxxxxx.local`), o IP e que corre ESPHome. |
+| Rede de recurso «ESPHome Altherma Setup» + portal cativo | Ponto de acesso Wi-Fi | **aberta**, só quando a placa não consegue ligar ao teu Wi-Fi | Entrar, mudar as credenciais de Wi-Fi ou enviar um ficheiro de firmware. |
+| Improv por USB | Série USB | ligado | Configurar o Wi-Fi — precisa de acesso físico ao cabo USB. |
+
+Ligações que a placa faz sozinha (só de saída): ao teu Wi-Fi, aos servidores de hora NTP (`pool.ntp.org`) e ao
+`skydoy.github.io` por HTTPS de 6 em 6 horas para procurar atualizações (e para descarregar uma quando tu ou a
+Atualização automática a instalam). O ESP32 confirma o certificado TLS; o **ESP8266 não consegue** (`verify_ssl: false`),
+por isso num ESP8266 o MD5 do manifesto só protege contra uma transferência estragada, não contra alguém que consiga
+mexer no teu tráfego.
+
+Para a bomba de calor a placa só envia pedidos de **leitura** na porta X10A; nunca escreve nenhuma definição da bomba.
+O botão **📝 Reportar a minha bomba** da página web só abre um formulário do GitHub no teu browser — a placa não envia nada.
+
+### Recomendações
+1. Mantém a placa numa rede doméstica de confiança, de preferência uma VLAN de IoT ou rede de convidados que não chegue
+   aos teus computadores.
+2. Nunca reencaminhes as portas 80, 6053, 3232 ou 8266 no router. Para acesso remoto usa o Home Assistant.
+3. Se outras pessoas ou dispositivos partilham a rede, adota a placa e acrescenta uma chave de encriptação da API, uma
+   palavra-passe OTA e uma palavra-passe para a rede de recurso ([secções seguintes](#proteger-a-tua-propria-compilacao)).
+4. Na tua compilação, impede o envio de firmware pela página web com `web_server: ota: false` (o portal cativo continua
+   a poder instalar enquanto a rede de recurso está ativa), ou tira a página de vez com `web_server: !remove`.
+5. Instala atualizações só pelo Home Assistant (entidade Firmware) ou pelo Device Builder; não instales ficheiros
+   `.bin` de outras origens.
 
 ## Atualizar com a entidade Firmware
 1. Quando sai uma nova versão, o Home Assistant mostra uma atualização na entidade **Firmware** do dispositivo
