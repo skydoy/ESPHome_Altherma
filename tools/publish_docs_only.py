@@ -7,6 +7,15 @@ rebuilds that exact tree from the tag's static files and firmware artifacts,
 checks every file against the live URL, then adds a freshly built docs/
 directory. It refuses to continue if any published installer or firmware
 byte differs. It does not run the firmware publish workflow.
+
+Catch-up: if the live site is still an OLDER release than the latest successful tag
+publish (for example the tag's own Pages deploy was a no-op because the docs had
+already been deployed on the same commit), the live comparison is replaced by a
+stricter one against the tag's GitHub Release: every *.factory.bin and *.ota.bin must
+be byte-identical to the release asset (SHA256SUMS.txt), every manifest must carry
+the tag version and the sha256 of its OTA image, and the live version must be a
+plain older release (never dev, never newer). Then the whole tag site (installer,
+firmware, manifests) is deployed together with the docs.
 """
 from __future__ import annotations
 
@@ -178,6 +187,60 @@ def iter_files(root: Path):
             yield path
 
 
+def version_tuple(version: str) -> tuple[int, ...] | None:
+    parts = version.strip().lstrip("v").split(".")
+    if not parts or not all(part.isdigit() for part in parts):
+        return None
+    return tuple(int(part) for part in parts)
+
+
+def live_version() -> str:
+    return json.loads(fetch_text(f"{LIVE}/firmware/esp32/generic/manifest.json"))["version"]
+
+
+def check_against_release(site: Path, tag: str) -> dict[str, str]:
+    """Live site is an older release: prove the assembled firmware IS the tag's release."""
+    release = gh_json([f"repos/{REPO}/releases/tags/{tag}"])
+    if release.get("draft") or release.get("prerelease"):
+        raise SystemExit(f"release {tag} is a draft or prerelease; not deploying")
+    sums_url = next((a["browser_download_url"] for a in release.get("assets", [])
+                     if a["name"] == "SHA256SUMS.txt"), None)
+    if not sums_url:
+        raise SystemExit(f"release {tag} has no SHA256SUMS.txt")
+    sums = {}
+    for line in fetch_text(sums_url).splitlines():
+        if line.strip():
+            digest, name = line.split(None, 1)
+            sums[name.strip().lstrip("*")] = digest
+    checked = 0
+    mismatches: list[str] = []
+    for path in sorted(site.glob("firmware/*/*/*.bin")):
+        board, model = path.parent.parent.name, path.parent.name
+        kind = path.name.split(".", 1)[1]  # factory.bin / ota.bin
+        asset = f"esphome-altherma-{board}-{model}-{tag}.{kind}"
+        local = sha256_file(path)
+        if sums.get(asset) != local:
+            mismatches.append(f"{path.relative_to(site)}: {local} != release {asset} {sums.get(asset)}")
+        checked += 1
+    for manifest in sorted(site.glob("firmware/*/*/manifest.json")):
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+        if data.get("version") != tag[1:]:
+            mismatches.append(f"{manifest.relative_to(site)}: version {data.get('version')} != {tag[1:]}")
+        for build in data.get("builds", []):
+            ota = build.get("ota") or {}
+            bin_path = manifest.parent / ota.get("path", "")
+            if not bin_path.is_file() or sha256_file(bin_path) != ota.get("sha256"):
+                mismatches.append(f"{manifest.relative_to(site)}: OTA sha256 does not match {ota.get('path')}")
+    if checked == 0 or checked != 2 * len(list(site.glob("firmware/*/*/manifest.json"))):
+        mismatches.append(f"expected factory + ota per firmware, found {checked} images")
+    if mismatches:
+        print("\n".join(mismatches[:30]))
+        raise SystemExit(f"{len(mismatches)} firmware files differ from release {tag}; not deploying")
+    hashes = {path.relative_to(site).as_posix(): sha256_file(path) for path in iter_files(site)}
+    print(f"catch-up: {checked} images byte-identical to release {tag}; deploying the whole {tag} site")
+    return hashes
+
+
 def check_against_live(site: Path) -> dict[str, str]:
     files = [path.relative_to(site).as_posix() for path in iter_files(site)]
     if not files:
@@ -324,7 +387,15 @@ def assemble(args: argparse.Namespace) -> None:
     version = json.loads(manifest_path.read_text(encoding="utf-8"))["version"]
     if version != tag[1:]:
         raise SystemExit(f"manifest version {version} does not match tag {tag}")
-    hashes = check_against_live(dest)
+    live = live_version()
+    live_t, tag_t = version_tuple(live), version_tuple(tag)
+    if live == tag[1:]:
+        hashes = check_against_live(dest)
+    elif live_t is not None and tag_t is not None and live_t < tag_t and not args.only:
+        print(f"live site is {live}, latest tag build is {tag}: catch-up deploy of {tag}")
+        hashes = check_against_release(dest, tag)
+    else:
+        raise SystemExit(f"live firmware {live} is neither {tag[1:]} nor an older release; not deploying")
     if args.only:
         print("smoke check passed; incomplete tree was not turned into a deployable site")
         return

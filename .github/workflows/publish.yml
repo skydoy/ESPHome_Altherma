@@ -121,6 +121,22 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
+      - name: Confirm the live manifest is this release
+        # GitHub Pages treats a second deploy of the same commit as already done (it reports success
+        # and keeps the old site), e.g. when docs-pages.yml deployed this commit before the tag.
+        # Fail loudly instead; the fix is any docs change pushed to main (docs-pages catches up to
+        # the latest tag, see tools/publish_docs_only.py).
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          url="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/firmware/esp32/generic/manifest.json"
+          want="${GITHUB_REF_NAME#v}"; v=""
+          for i in $(seq 1 18); do
+            v=$(curl -fsSL -H 'Cache-Control: no-cache' "$url?run=${GITHUB_RUN_ID}-$i" | python3 -c 'import json,sys;print(json.load(sys.stdin)["version"])') || v=""
+            if [ "$v" = "$want" ]; then echo "live manifest $v"; exit 0; fi
+            echo "live manifest '$v', want $want; waiting"; sleep 20
+          done
+          echo "::error::Pages deploy did not go live (manifest '$v', want $want). Push a docs change to main so docs-pages deploys the $GITHUB_REF_NAME site."
+          exit 1
   release:
     # Create (or update) the GitHub Release for a v* tag: notes from CHANGELOG.md when it has
     # a "## [x.y.z]" section (otherwise GitHub's generated notes), every image attached.
