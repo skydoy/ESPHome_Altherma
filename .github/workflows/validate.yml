@@ -1,8 +1,9 @@
 name: Validate
 # Fast checks on every push and pull request (same idea as skydoy/ESPHome_AC and ESPHOME_Hunter):
 # `esphome config` for every board x heat pump model (confs/*.yaml, including the generic
-# identify-first one; seconds each) and the plain board configs, plus ONE real compile as a smoke test. The full board x model
-# build only runs on release tags, in publish.yml.
+# identify-first one; seconds each) and the plain board configs, plus one real compile per board
+# (generic model) with the firmware size check. The full board x model build only runs on release
+# tags, in publish.yml.
 # Pull requests also reject any commit in base..head whose git author is not
 # exactly skydoy <25871317+skydoy@users.noreply.github.com>. That job does not publish.
 on: [push, pull_request]
@@ -67,8 +68,18 @@ jobs:
       - run: python installer/gen_models.py --check
       - run: python installer/gen_models.py --matrix
   compile:
-    # One real build (default board and model) so compiler errors show up before a release.
+    # One real build per board (default model = generic, the firmware the web installer flashes
+    # first) so compiler errors show up before a release, plus the firmware size check: fails when
+    # the app image uses more than tools/firmware_size.py MAX_PERCENT (90%) of the app partition,
+    # and lists what takes the most space (job summary).
+    name: compile + size / ${{ matrix.board }}
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        board: [esp32, esp32-s3, atoms3, esp8266, m5stack]
+    env:
+      WRAPPER: installer/esphome-altherma-${{ matrix.board }}.installer.yaml
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -76,10 +87,15 @@ jobs:
       - uses: actions/cache@v6
         with:
           path: ~/.platformio
-          key: pio-${{ runner.os }}-esphome-2026.10.1
+          key: pio-${{ runner.os }}-esphome-2026.10.1-${{ matrix.board }}
+          restore-keys: pio-${{ runner.os }}-esphome-2026.10.1
       - run: pip install esphome==2026.10.1
-      # Default model = generic, the firmware the web installer flashes first.
-      - run: esphome compile installer/esphome-altherma-esp32.installer.yaml
+      - run: esphome compile "$WRAPPER"
+      - name: Firmware size check
+        run: |
+          set -o pipefail
+          elf=$(esphome idedata "$WRAPPER" 2>/dev/null | python -c "import json,sys;print(json.load(sys.stdin)['prog_path'])")
+          python tools/firmware_size.py --dir "$(dirname "$elf")" --label "${{ matrix.board }}/generic"
   docs:
     # Bilingual docs site. Build and link-check only — this job does not deploy Pages.
     name: docs site

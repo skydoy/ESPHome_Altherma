@@ -60,6 +60,8 @@ jobs:
           version: "2026.10.1"
           complete-manifest: true
           release-url: ${{ github.server_url }}/${{ github.repository }}/releases
+      - name: Firmware size check (app image vs. app partition, limit in tools/firmware_size.py)
+        run: python3 tools/firmware_size.py --dir "${{ steps.esphome.outputs.name }}" --label "$BOARD/$MODEL"
       - name: Stage the firmware in its Pages folder
         run: |
           mkdir -p "out/$SITE_DIR"
