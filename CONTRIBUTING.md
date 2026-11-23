@@ -17,6 +17,7 @@ form. Bugs and ideas go in the [issue forms](https://github.com/skydoy/ESPHome_A
 | `tools/` | Report worker |
 
 ## Before a pull request
+- Commit author must be exactly `skydoy <25871317+skydoy@users.noreply.github.com>` (name and email) on every commit in the pull request (`base..head` only). CI fails the pull request and prints the offending commit SHAs and authors. Set it with `git config user.name skydoy` / `git config user.email 25871317+skydoy@users.noreply.github.com`.
 - `esphome config` passes for at least one board + model, e.g. from `installer/`:
   `esphome config esphome-altherma-esp32.installer.yaml` (set `altherma_model` to the profile you changed).
 - New or changed sensors: say which register and byte you used and on which unit you checked it. Never write

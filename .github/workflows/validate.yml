@@ -3,6 +3,8 @@ name: Validate
 # `esphome config` for every board x heat pump model (confs/*.yaml, including the generic
 # identify-first one; seconds each) and the plain board configs, plus ONE real compile as a smoke test. The full board x model
 # build only runs on release tags, in publish.yml.
+# Pull requests also reject any commit in base..head whose git author is not
+# exactly skydoy <25871317+skydoy@users.noreply.github.com>. That job does not publish.
 on: [push, pull_request]
 permissions:
   contents: read
@@ -88,3 +90,33 @@ jobs:
         with: { python-version: "3.13" }
       - run: pip install -r requirements-docs.txt
       - run: python tools/build_docs.py
+  commit-authors:
+    # Git author of each commit in the pull request (base..head only).
+    # Committer and Co-authored-by trailers are not checked. Skipped on push,
+    # so commits that are already on the base branch are never judged here.
+    # This job does not publish or deploy.
+    name: commit authors
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Fetch pull request base and head
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin \
+            "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}" \
+            "+refs/pull/${PR_NUMBER}/head:refs/remotes/pull/${PR_NUMBER}/head"
+          git cat-file -e "${BASE_SHA}^{commit}"
+          git cat-file -e "${HEAD_SHA}^{commit}"
+      - name: Require author skydoy on base..head
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: bash tools/check_commit_authors.sh
