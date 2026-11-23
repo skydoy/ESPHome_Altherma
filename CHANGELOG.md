@@ -1,10 +1,15 @@
 # Changelog
 
-## [Unreleased]
+## [2.6.3] - 2026-11-23
 
 - Documentação bilingue (MkDocs Material, português com tu e inglês, menu lateral, pesquisa, tema claro/escuro): https://skydoy.github.io/ESPHome_Altherma/docs/pt/ e /docs/en/. O workflow «Publish documentation only» publica só essa documentação por cima do site já no ar, sem recompilar firmware nem mexer no instalador. O workflow «Build firmware & publish installer» fica para tags `v*`; uma execução manual desse workflow publica firmware dev e não serve para atualizar a documentação.
 - Uso avançado: para acrescentar um modelo ao instalador, a lista é `installer/models.yaml` (depois `python installer/gen_models.py`). A publicação compila 5 placas × (`generic` + modelos com `confirmed: true`).
 - Instalador web: botão de tema (sol/lua) igual ao hub ESPmaniacs — última pílula depois de PT | EN, 36,4×25 px, ícone SVG 14 px centrado (sem emoji).
+- Entidades secundárias passam a vir desativadas por defeito (`disabled_by_default: true`): **Manual Query Registry Result**, **Latest Version** (placas adotadas) e, no pacote de diagnóstico opcional (sempre incluído no M5Stack), **Boot Count**, **ESPHome Version**, **WiFi BSSID** e **MAC Address**. O Home Assistant só aplica isto a entidades novas: as que já tens não mudam e os IDs ficam iguais. Na página web da placa ficam atrás de «Mostrar tudo».
+- Segurança: o SECURITY.md indica as versões suportadas (2.6.x) e como reportar em privado; a página Segurança (docs/security.md, docs/seguranca.md) tem uma secção nova com o que a placa expõe na rede local (página web na porta 80 sem login e com envio de firmware, API 6053 sem chave, OTA 3232/8266 sem palavra-passe, mDNS, rede de recurso aberta com portal cativo, Improv por USB), as ligações que faz para fora e recomendações.
+- CI: os pull requests falham se algum commit (`base..head`) não tiver como autor `skydoy <25871317+skydoy@users.noreply.github.com>` (`tools/check_commit_authors.sh`).
+- CI: verificação do tamanho do firmware (`tools/firmware_size.py`). Em cada compilação (Validate: uma por placa; publicação: todas as placas × modelos) compara a imagem da app com a partição da app e falha acima de 90% (um só valor, `MAX_PERCENT`, para baixar mais tarde para 80%). O resumo do job mostra tamanho, partição, % usada e o que ocupa mais espaço. Agora (modelo `generic`): ESP32 55,3%, ESP32-S3 55,2%, AtomS3 55,2%, ESP8266 59,3%, M5Stack 65,7%.
+- Versão do projeto 2.6.3 para o Device Builder detetar a atualização.
 
 ## [2.6.2] - 2026-11-09
 

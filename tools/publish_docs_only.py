@@ -2,7 +2,7 @@
 """Publish the docs site without rebuilding firmware.
 
 The live GitHub Pages site is the last successful tag of
-"Build firmware & publish installer" (currently v2.6.2). This script
+"Build firmware & publish installer" (currently v2.6.3). This script
 rebuilds that exact tree from the tag's static files and firmware artifacts,
 checks every file against the live URL, then adds a freshly built docs/
 directory. It refuses to continue if any published installer or firmware
