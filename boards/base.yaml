@@ -70,6 +70,7 @@ text_sensor:
     name: "Manual Query Registry Result"
     id: query_registry_result
     entity_category: diagnostic
+    disabled_by_default: true
 
 packages:
   altherma_sensors: !include ../confs/${altherma_model}.yaml

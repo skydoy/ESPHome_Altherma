@@ -4,6 +4,9 @@
 # WiFi Signal / Uptime / IP / SSID use stable ids (wifi_signal_sensor, uptime_s, ip_addr,
 # ssid_name) so the M5Stack board can include this package and drive its display from the
 # same sensors — do not redefine those names on the board.
+# Boot Count, ESPHome Version, WiFi BSSID and MAC Address are disabled_by_default: Home Assistant
+# adds them disabled (enable them under the device's entities) and the web page hides them behind
+# "Show All". Entities that already exist in Home Assistant are not changed.
 globals:
   - id: boot_count
     type: int
@@ -44,6 +47,7 @@ sensor:
     lambda: |-
       return id(boot_count);
     entity_category: "diagnostic"
+    disabled_by_default: true
 
 # Reset reason ("Power on", "Brownout", ...), same as ESPHome_AC / ESPHome Hunter. A brownout
 # usually means the 5 V supply to the board is too weak or badly connected.
@@ -73,6 +77,7 @@ text_sensor:
     name: "ESPHome Version"
     hide_timestamp: true
     entity_category: "diagnostic"
+    disabled_by_default: true
 
   - platform: wifi_info
     ip_address:
@@ -86,9 +91,11 @@ text_sensor:
     bssid:
       name: "WiFi BSSID"
       entity_category: "diagnostic"
+      disabled_by_default: true
     mac_address:
       name: "MAC Address"
       entity_category: "diagnostic"
+      disabled_by_default: true
 
 button:
   - platform: restart

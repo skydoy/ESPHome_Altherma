@@ -30,6 +30,7 @@ text_sensor:
     name: "Latest Version"
     icon: mdi:cloud-download-outline
     entity_category: diagnostic
+    disabled_by_default: true
     update_interval: never
 
 binary_sensor:
