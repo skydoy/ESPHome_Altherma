@@ -67,7 +67,7 @@ sensor:
     convid: 105
     datasize: 2
   - <<: *altherma_base
-    name: Flow sensor (l⁄min)
+    name: Flow sensor (l min)
     register: 0x62
     offset: 9
     convid: 105
@@ -99,7 +99,7 @@ text_sensor:
     convid: 217
     datasize: 1
   - <<: *text
-    name: I⁄U operation mode
+    name: I U operation mode
     icon: mdi:heat-pump
     register: 0x60
     offset: 2

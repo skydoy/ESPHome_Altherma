@@ -87,7 +87,7 @@ blueprint:
 
     heatpump_flowrate:
       name: heatpump_flowrate
-      description: Flow rate, typical ESPHome Altherma - Flow sensor (l⁄min)
+      description: Flow rate, typical ESPHome Altherma - Flow sensor (l min)
       default: ""
       selector:
         entity:
