@@ -28,7 +28,7 @@ a internet, a não ser que reencaminhes portas no router — não o faças.
 | mDNS | UDP 5353 | ligado | Ver o nome da placa (`esphome-altherma-xxxxxx.local`), o IP e que corre ESPHome. |
 | Rede de recurso «ESPHome Altherma Setup» + portal cativo | Ponto de acesso Wi-Fi | **aberta**, só quando a placa não consegue ligar ao teu Wi-Fi | Entrar, mudar as credenciais de Wi-Fi ou enviar um ficheiro de firmware. |
 | Improv por USB | Série USB | ligado | Configurar o Wi-Fi — precisa de acesso físico ao cabo USB. |
-| Partilha de valores (`packet_transport`, [opcional](avancado.md#partilhar-valores-com-outros-esphome-udp)) | UDP 18511 difusão | **desligada** (só se acrescentares o pacote à tua compilação) | Com a tua chave: ler as temperaturas de saída, retorno e exterior, a frequência do compressor e os códigos de erro. Sem ela: só o nome da placa. |
+| Partilha de valores (`packet_transport`, [opcional](avancado.md#partilhar-valores-com-outros-esphome-udp)) | UDP 18511 difusão | **desligada** (só se acrescentares o pacote à tua compilação) | Os valores vão **em claro**: qualquer pessoa na tua rede consegue ler as temperaturas de saída, retorno e exterior, a frequência do compressor e os códigos de erro. Só a ligues numa rede em que confias. |
 
 Ligações que a placa faz sozinha (só de saída): ao teu Wi-Fi, aos servidores de hora NTP (`pool.ntp.org`) e ao
 `skydoy.github.io` por HTTPS de 6 em 6 horas para procurar atualizações (e para descarregar uma quando tu ou a

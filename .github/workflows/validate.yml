@@ -100,7 +100,7 @@ jobs:
     # The optional boards/common/packet-transport.yaml (UDP value sharing for adopted builds) is not in
     # any prebuilt firmware, so check it here: config on every board with the generic model and with
     # erla_d_ebv_ebb_ebvz_11_16 (which has its own altherma_* ids), plus a real compile on ESP32 and
-    # ESP8266 (the smallest RAM). Uses tools/packet-transport-check.yaml with a public test key.
+    # ESP8266 (the smallest RAM). Uses tools/packet-transport-check.yaml.
     name: packet-transport / ${{ matrix.board }}
     runs-on: ubuntu-24.04
     strategy:

@@ -2,8 +2,8 @@
 
 ## [Unreleased]
 
-- Pacote opcional `boards/common/packet-transport.yaml` para compilações adotadas (Device Builder): envia na rede local, por UDP (`packet_transport` do ESPHome, porta 18511, cifrado com a chave `altherma_udp_key`), a temperatura da água de saída e de retorno, a temperatura exterior, a frequência do compressor, os códigos de erro das unidades exterior e interior (byte em bruto, 0 = sem erro) e um binário de avaria, para outro ESPHome (por exemplo um controlador de piso radiante) os usar sem Home Assistant. Funciona com todos os modelos e placas; sem a chave a configuração dá erro. O firmware pré-compilado não muda. Documentado em Uso avançado e na página Segurança.
-- CI: job «packet-transport» valida o pacote em ESP32, ESP32-S3, AtomS3 e ESP8266 e compila-o em ESP32 e ESP8266 (`tools/packet-transport-check.yaml`, com uma chave de teste pública).
+- Pacote opcional `boards/common/packet-transport.yaml` para compilações adotadas (Device Builder): envia na rede local, por UDP (`packet_transport` do ESPHome, porta 18511, em claro, sem encriptação), a temperatura da água de saída e de retorno, a temperatura exterior, a frequência do compressor, os códigos de erro das unidades exterior e interior (byte em bruto, 0 = sem erro) e um binário de avaria, para outro ESPHome (por exemplo um controlador de piso radiante) os usar sem Home Assistant. Funciona com todos os modelos e placas. Os valores vão sem encriptação (o recetor pode ter firmware pré-compilado, sem chave): qualquer pessoa na rede local os consegue ler, por isso só o ligues numa rede em que confias. O firmware pré-compilado não muda. Documentado em Uso avançado e na página Segurança.
+- CI: job «packet-transport» valida o pacote em ESP32, ESP32-S3, AtomS3 e ESP8266 e compila-o em ESP32 e ESP8266 (`tools/packet-transport-check.yaml`).
 
 ## [2.6.3] - 2026-11-23
 

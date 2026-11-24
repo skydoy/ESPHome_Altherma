@@ -1,13 +1,11 @@
 # Optional: share a few Altherma values with other ESPHome devices on the LAN, with no Home
-# Assistant in between (ESPHome packet_transport over UDP broadcast, encrypted).
+# Assistant in between (ESPHome packet_transport over UDP broadcast, not encrypted).
 # Made for an underfloor-heating controller that needs water/outdoor temperatures, compressor
 # frequency and the fault state, but any ESPHome device can receive them.
 #
 # Not part of any prebuilt firmware: nothing is sent unless you add this package to your own
-# (Device Builder) YAML, together with a key:
+# (Device Builder) YAML:
 #
-#   substitutions:
-#     altherma_udp_key: !secret altherma_udp_key   # any long random text, same on the receiver
 #   packages:
 #     altherma_udp: github://skydoy/ESPHome_Altherma/boards/common/packet-transport.yaml@main
 #
@@ -36,12 +34,11 @@
 #   second char = "0123456789AHCJEF"[byte & 0x0F]
 # e.g. 55 (0x37) = "E7", 147 (0x93) = "U3"; 0 = no error. Same table as the "Error Code" entities.
 # The receiver should treat a value it has not received recently as unknown (see the docs).
+#
+# Sent in clear (no encryption, by design: the receiver can be a prebuilt firmware with no key).
+# Anyone on your LAN can read these values, so only add this package on a network you trust.
 
 substitutions:
-  # Required: set altherma_udp_key in your own YAML. This placeholder is a list on purpose, so the
-  # config stops with an error ("string value cannot be dictionary or list" under
-  # packet_transport -> encryption -> key) instead of building with a known key.
-  altherma_udp_key: [set_altherma_udp_key_in_your_yaml]
   # How often the values are broadcast. The hub reads the heat pump every 30 s.
   altherma_udp_interval: 15s
   # UDP port, the same on both sides (ESPHome default 18511).
@@ -56,8 +53,6 @@ packet_transport:
     id: altherma_packet_transport
     udp_id: altherma_udp
     update_interval: ${altherma_udp_interval}
-    encryption:
-      key: ${altherma_udp_key}
     sensors:
       - id: altherma_pt_lwt
         broadcast_id: altherma_lwt

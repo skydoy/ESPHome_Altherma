@@ -89,7 +89,7 @@ To get the same firmware as the web installer (Firmware entity, Improv Wi-Fi, OT
 | `confs/*.yaml` | [Model files](#model-files). |
 | `boards/common/diagnostics.yaml` | Optional ESP diagnostics for every board: status, uptime, Wi-Fi info, boot count, reset reason, firmware version, restart and safe-mode restart buttons. |
 | `boards/common/diagnostics-esp32.yaml` | The same plus the chip's internal temperature (ESP32 boards only; ESPHome has no internal temperature on ESP8266). |
-| `boards/common/packet-transport.yaml` | Optional: shares a few values with other ESPHome devices over UDP, encrypted, no Home Assistant needed. See [below](#share-values-with-other-esphome-devices-udp). |
+| `boards/common/packet-transport.yaml` | Optional: shares a few values with other ESPHome devices over UDP, sent in clear, no Home Assistant needed. See [below](#share-values-with-other-esphome-devices-udp). |
 
 To enable the diagnostics, add the package to your YAML:
 
@@ -239,24 +239,23 @@ For long-term performance and COP tracking with Emoncms (for example the MyHeatp
 ![MyHeatpump dashboard in Home Assistant](img/home-assistant-emoncms-myheatpump-dashboard.png)
 
 ## Share values with other ESPHome devices (UDP)
-Optional, for your own (Device Builder) build only: the board broadcasts a few values on your LAN, encrypted, so another
-ESPHome device (for example an underfloor heating controller) can use them **without Home Assistant**. It uses ESPHome's
+Optional, for your own (Device Builder) build only: the board broadcasts a few values on your LAN so another ESPHome
+device (for example an underfloor heating controller) can use them **without Home Assistant**. It uses ESPHome's
 `packet_transport` over UDP and works with every model and board, ESP8266 included. The prebuilt firmware never sends
 anything.
 
-Add to your adopted YAML, with a long random key (put it in `secrets.yaml`, the same key goes on the receiver):
+Add to your adopted YAML:
 
 ```yaml
-substitutions:
-  altherma_udp_key: !secret altherma_udp_key
-
 packages:
   altherma_udp: github://skydoy/ESPHome_Altherma/boards/common/packet-transport.yaml@main
 ```
 
-Without `altherma_udp_key` the config stops with an error under `packet_transport → encryption → key`. Optional:
-`altherma_udp_interval` (default `15s`) and `altherma_udp_port` (default `18511`, the same on both sides). The web
-installer cannot set this: its firmware is prebuilt and has no key.
+Optional: `altherma_udp_interval` (default `15s`) and `altherma_udp_port` (default `18511`, the same on both sides).
+The web installer cannot turn this on: its firmware is prebuilt.
+
+**Sent in clear:** the values go out without encryption, so a receiver with a prebuilt firmware can read them with no
+key. Anyone on your network can read them too. Only add this package on a network you trust.
 
 | Broadcast id | What | Unit |
 |---|---|---|
@@ -280,10 +279,6 @@ udp:
 packet_transport:
   - platform: udp
     update_interval: 15s
-    providers:
-      - name: esphome-altherma-xxxxxx
-        encryption:
-          key: !secret altherma_udp_key
 
 sensor:
   - platform: packet_transport
@@ -301,8 +296,7 @@ binary_sensor:
 ```
 
 If the heat pump board goes quiet, the receiver keeps the last value: when it matters (a backup heater, for example),
-check how long ago a value last arrived and treat old values as unknown. Anyone on your network with the key can read
-these values; without it they only see the board's name.
+check how long ago a value last arrived and treat old values as unknown.
 
 ## Development
 ### Mock UART

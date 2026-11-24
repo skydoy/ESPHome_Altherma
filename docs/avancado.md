@@ -88,7 +88,7 @@ ficheiro em [`installer/`](../installer/): `esphome -s altherma_model <modelo> r
 | `confs/*.yaml` | [Ficheiros de modelo](#ficheiros-de-modelo). |
 | `boards/common/diagnostics.yaml` | Diagnóstico opcional do ESP, para qualquer placa: estado, tempo ligado, Wi-Fi, número de arranques, motivo do reinício, versão do firmware, botões de reinício e de reinício em modo seguro. |
 | `boards/common/diagnostics-esp32.yaml` | O mesmo e ainda a temperatura interna do chip (só placas ESP32; o ESPHome não tem temperatura interna no ESP8266). |
-| `boards/common/packet-transport.yaml` | Opcional: partilha alguns valores com outros ESPHome por UDP, cifrados, sem precisar do Home Assistant. Vê [mais abaixo](#partilhar-valores-com-outros-esphome-udp). |
+| `boards/common/packet-transport.yaml` | Opcional: partilha alguns valores com outros ESPHome por UDP, em claro, sem precisar do Home Assistant. Vê [mais abaixo](#partilhar-valores-com-outros-esphome-udp). |
 
 Para ativar o diagnóstico, acrescenta o pacote ao teu YAML:
 
@@ -238,25 +238,23 @@ Para acompanhar o desempenho e o COP a longo prazo com o Emoncms (por exemplo o 
 ![Painel MyHeatpump no Home Assistant](img/home-assistant-emoncms-myheatpump-dashboard.png)
 
 ## Partilhar valores com outros ESPHome (UDP)
-Opcional e só para a tua compilação (Device Builder): a placa envia alguns valores na tua rede local, cifrados, para
-outro dispositivo ESPHome (por exemplo um controlador de piso radiante) os usar **sem Home Assistant**. Usa o
+Opcional e só para a tua compilação (Device Builder): a placa envia alguns valores na tua rede local para outro
+dispositivo ESPHome (por exemplo um controlador de piso radiante) os usar **sem Home Assistant**. Usa o
 `packet_transport` do ESPHome por UDP e funciona com todos os modelos e placas, ESP8266 incluída. O firmware
 pré-compilado nunca envia nada.
 
-Acrescenta ao teu YAML adotado, com uma chave longa e aleatória (põe-na no `secrets.yaml`; a mesma chave vai para o
-recetor):
+Acrescenta ao teu YAML adotado:
 
 ```yaml
-substitutions:
-  altherma_udp_key: !secret altherma_udp_key
-
 packages:
   altherma_udp: github://skydoy/ESPHome_Altherma/boards/common/packet-transport.yaml@main
 ```
 
-Sem `altherma_udp_key` a configuração para com um erro em `packet_transport → encryption → key`. Opcionais:
-`altherma_udp_interval` (predefinido `15s`) e `altherma_udp_port` (predefinido `18511`, igual nos dois lados). O
-instalador web não consegue configurar isto: o firmware dele é pré-compilado e não tem chave.
+Opcionais: `altherma_udp_interval` (predefinido `15s`) e `altherma_udp_port` (predefinido `18511`, igual nos dois
+lados). O instalador web não consegue ligar isto: o firmware dele é pré-compilado.
+
+**Enviado em claro:** os valores vão sem encriptação, para um recetor com firmware pré-compilado os poder ler sem
+chave. Qualquer pessoa na tua rede também os consegue ler. Só acrescentes este pacote numa rede em que confias.
 
 | Id enviado | O quê | Unidade |
 |---|---|---|
@@ -280,10 +278,6 @@ udp:
 packet_transport:
   - platform: udp
     update_interval: 15s
-    providers:
-      - name: esphome-altherma-xxxxxx
-        encryption:
-          key: !secret altherma_udp_key
 
 sensor:
   - platform: packet_transport
@@ -302,7 +296,6 @@ binary_sensor:
 
 Se a placa da bomba deixar de enviar, o recetor fica com o último valor: quando isso importa (uma resistência de
 apoio, por exemplo), confirma há quanto tempo chegou o último valor e trata valores antigos como desconhecidos.
-Qualquer pessoa na tua rede com a chave consegue ler estes valores; sem ela só vê o nome da placa.
 
 ## Desenvolvimento
 ### UART simulada

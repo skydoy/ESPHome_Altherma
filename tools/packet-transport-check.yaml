@@ -1,11 +1,10 @@
 # CI only (validate.yml, job "packet-transport"): a board file + the optional
 # boards/common/packet-transport.yaml, the way an adopted Device Builder YAML adds it.
 # Run with: esphome -s pt_board <esp32|esp32-s3|atoms3|esp8266|m5stack> -s altherma_model <model> config tools/packet-transport-check.yaml
-# The key below is a public test value for CI builds; never flash this file.
+# CI only; never flash this file.
 substitutions:
   pt_board: esp32
   altherma_component_source: ../components
-  altherma_udp_key: ci-test-key-not-secret
 
 packages:
   board: !include ../boards/esphome-altherma-${pt_board}.yaml
