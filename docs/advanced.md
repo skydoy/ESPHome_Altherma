@@ -327,15 +327,26 @@ components/altherma_hub/
 static/                         web installer page (GitHub Pages)
 homeassistant/                  Emoncms blueprint and tools
 docs/                           guides in English and Portuguese (images in docs/img/)
-.github/workflows/              validate.yml (checks), publish.yml (release builds)
+.github/workflows/              validate.yml (checks), publish.yml (release builds), auto-release.yml and
+                                esphome-auto-update.yml (automatic releases)
+.github/esphome-version         ESPHome version used by CI and the prebuilt firmware
 ```
 
 ### Checks and releases
 - Every push and pull request runs **Validate**: `esphome config` for every board × model pair, the plain board
   files, a check that the site and the build matrix list every model file, and one full compile.
-- Pushing a tag `v*` runs **Publish**: 5 boards × (`generic` plus every model with `confirmed: true` in
+- A release runs **Publish**: 5 boards × (`generic` plus every model with `confirmed: true` in
   `installer/models.yaml`) are compiled, the web installer and the OTA manifests are deployed to GitHub Pages
   and a GitHub release is created. Devices then see the update on their Firmware entity.
+- Releases are automatic. Every push to `main` that changes the firmware (`components/`, `confs/`, `boards/`,
+  `installer/` or `.github/esphome-version`) runs **Auto release**: it validates the commit, bumps the patch
+  version (`altherma_version` in `boards/base.yaml`) and `CHANGELOG.md`, tags `vX.Y.Z` and runs Publish. Pushes
+  that only change docs, READMEs, the installer page (`static/`) or CI do not release. If `altherma_version` was
+  already raised by hand (a minor version, for example), that version is released as it is.
+- Every day **ESPHome auto-update** checks for a new stable ESPHome. It opens a pull request that bumps
+  `.github/esphome-version`, builds every board × model and, if everything passes, merges it and releases a patch
+  version. If a build fails, the pull request stays open and nothing is released.
+- A tag `v*` pushed by hand still runs Publish.
 
 ### Vendored ESPAltherma files
 `components/altherma_hub/converters.h` and `labeldef.h` come from ESPAltherma (`include/converters.h` and

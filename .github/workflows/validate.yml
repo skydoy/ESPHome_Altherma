@@ -6,11 +6,23 @@ name: Validate
 # tags, in publish.yml.
 # Pull requests also reject any commit in base..head whose git author is not
 # exactly skydoy <25871317+skydoy@users.noreply.github.com>. That job does not publish.
-on: [push, pull_request]
+# The ESPHome version is the pin in .github/esphome-version (bumped by esphome-auto-update.yml).
+# auto-release.yml and esphome-auto-update.yml also call this workflow (workflow_call with a ref),
+# because pushes and pull requests made with GITHUB_TOKEN do not start other workflows.
+on:
+  push:
+  pull_request:
+  workflow_call:
+    inputs:
+      ref:
+        description: Commit, branch or tag to check
+        type: string
+        required: true
 permissions:
   contents: read
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # "validate-" prefix: when called, github.workflow is the caller's name.
+  group: validate-${{ github.workflow }}-${{ inputs.ref || github.ref }}
   cancel-in-progress: true
 jobs:
   config:
@@ -24,9 +36,11 @@ jobs:
       WRAPPER: installer/esphome-altherma-${{ matrix.board }}.installer.yaml
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
       - uses: actions/setup-python@v7
         with: { python-version: "3.13" }
-      - run: pip install esphome==2026.11.0
+      - run: pip install "esphome==$(cat .github/esphome-version)"
       - name: esphome config for every model, with its own OTA manifest URL
         run: |
           set -o pipefail
@@ -52,9 +66,11 @@ jobs:
           - boards/esphome-altherma-esp8266.yaml
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
       - uses: actions/setup-python@v7
         with: { python-version: "3.13" }
-      - run: pip install esphome==2026.11.0
+      - run: pip install "esphome==$(cat .github/esphome-version)"
       - run: esphome -s altherma_component_source ../components config ${{ matrix.file }} > /dev/null
   site:
     # installer/models.yaml is the single model list: the board's ID table (identify.yaml), the board
@@ -62,6 +78,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
       - uses: actions/setup-python@v7
         with: { python-version: "3.13" }
       - run: pip install pyyaml
@@ -82,14 +100,18 @@ jobs:
       WRAPPER: installer/esphome-altherma-${{ matrix.board }}.installer.yaml
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+      - name: ESPHome version (.github/esphome-version)
+        run: echo "ESPHOME_VERSION=$(cat .github/esphome-version)" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v7
         with: { python-version: "3.13" }
       - uses: actions/cache@v6
         with:
           path: ~/.platformio
-          key: pio-${{ runner.os }}-esphome-2026.11.0-${{ matrix.board }}
-          restore-keys: pio-${{ runner.os }}-esphome-2026.11.0
-      - run: pip install esphome==2026.11.0
+          key: pio-${{ runner.os }}-esphome-${{ env.ESPHOME_VERSION }}-${{ matrix.board }}
+          restore-keys: pio-${{ runner.os }}-esphome-${{ env.ESPHOME_VERSION }}
+      - run: pip install "esphome==$ESPHOME_VERSION"
       - run: esphome compile "$WRAPPER"
       - name: Firmware size check
         run: |
@@ -112,15 +134,19 @@ jobs:
       CHECK: tools/packet-transport-check.yaml
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+      - name: ESPHome version (.github/esphome-version)
+        run: echo "ESPHOME_VERSION=$(cat .github/esphome-version)" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v7
         with: { python-version: "3.13" }
       - uses: actions/cache@v6
         if: matrix.board == 'esp32' || matrix.board == 'esp8266' || matrix.board == 'm5stack'
         with:
           path: ~/.platformio
-          key: pio-${{ runner.os }}-esphome-2026.11.0-pt-${{ matrix.board }}
-          restore-keys: pio-${{ runner.os }}-esphome-2026.11.0
-      - run: pip install esphome==2026.11.0
+          key: pio-${{ runner.os }}-esphome-${{ env.ESPHOME_VERSION }}-pt-${{ matrix.board }}
+          restore-keys: pio-${{ runner.os }}-esphome-${{ env.ESPHOME_VERSION }}
+      - run: pip install "esphome==$ESPHOME_VERSION"
       - name: Placeholder secrets (M5Stack board file uses !secret)
         if: matrix.board == 'm5stack'
         run: |
@@ -139,6 +165,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
       - uses: actions/setup-python@v7
         with: { python-version: "3.13" }
       - run: pip install -r requirements-docs.txt

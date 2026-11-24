@@ -5,25 +5,85 @@ name: Build firmware & publish installer
 # the "Firmware" update entity (see installer/*.installer.yaml).
 # Pushes and pull requests are checked by validate.yml (config checks + one compile); the full
 # board x model build runs only here, for release tags (v*) or a manual run.
+# Releases normally come from auto-release.yml (firmware change pushed to main) and
+# esphome-auto-update.yml (daily ESPHome bump). They call this workflow with workflow_call, because a
+# tag pushed with GITHUB_TOKEN does not start it: release: true + ref: vX.Y.Z publishes that tag,
+# release: false only builds every board x model of the ref (no Pages, no release; artifacts check-fw-*).
+# A tag pushed by hand still publishes on its own. A manual run (workflow_dispatch) publishes dev
+# firmware: do not use it to release or to update the docs.
+# ESPHome version: .github/esphome-version.
 on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: Tag (release) or branch/commit (build only) to build
+        type: string
+        required: true
+      release:
+        description: Publish the tag (Pages, OTA manifests, GitHub Release)
+        type: boolean
+        default: true
 permissions:
   contents: read
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  # "publish-" prefix: when called, github.workflow is the caller's name.
+  group: publish-${{ github.workflow }}-${{ inputs.ref || github.ref }}
   cancel-in-progress: true
 jobs:
+  meta:
+    # What to build and whether to publish it.
+    runs-on: ubuntu-24.04
+    outputs:
+      ref: ${{ steps.m.outputs.ref }}
+      release: ${{ steps.m.outputs.release }}
+      deploy: ${{ steps.m.outputs.deploy }}
+      tag: ${{ steps.m.outputs.tag }}
+      prefix: ${{ steps.m.outputs.prefix }}
+    steps:
+      - id: m
+        env:
+          IN_REF: ${{ inputs.ref }}
+          IN_RELEASE: ${{ inputs.release }}
+        run: |
+          set -euo pipefail
+          if [ -n "$IN_REF" ]; then
+            # Called by another workflow.
+            ref="$IN_REF"; release="$IN_RELEASE"; deploy="$IN_RELEASE"
+          elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            ref="$GITHUB_REF"; release=true; deploy=true
+          else
+            # Manual run: dev firmware on Pages, no release.
+            ref="$GITHUB_REF"; release=false; deploy=true
+          fi
+          tag=""
+          if [ "$release" = true ]; then
+            tag="${ref#refs/tags/}"
+            [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::release ref '$ref' is not a vX.Y.Z tag"; exit 1; }
+          fi
+          prefix=fw-; [ "$deploy" = true ] || prefix=check-fw-
+          { echo "ref=$ref"; echo "release=$release"; echo "deploy=$deploy"; echo "tag=$tag"; echo "prefix=$prefix"; } | tee -a "$GITHUB_OUTPUT"
   models:
     # Firmware list from installer/models.yaml: "generic" (what the installer flashes first) + every
     # confirmed model. Untested models are not built (manual pick: build it yourself).
+    needs: meta
     runs-on: ubuntu-24.04
     outputs:
       models: ${{ steps.m.outputs.models }}
       count: ${{ steps.m.outputs.count }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.meta.outputs.ref }}
+      - name: A release tag must match altherma_version in boards/base.yaml
+        if: needs.meta.outputs.release == 'true'
+        env:
+          TAG: ${{ needs.meta.outputs.tag }}
+        run: |
+          v=$(sed -n 's/^\s*altherma_version:\s*"\{0,1\}\([0-9.]*\)"\{0,1\}.*/\1/p' boards/base.yaml | head -1)
+          [ "v$v" = "$TAG" ] || { echo "::error::boards/base.yaml has altherma_version $v, tag is $TAG"; exit 1; }
       - id: m
         run: |
           python3 -c "import yaml" 2>/dev/null || sudo apt-get install -y python3-yaml
@@ -33,7 +93,7 @@ jobs:
           echo "$m"
   build:
     name: ${{ matrix.board }} / ${{ matrix.model }}
-    needs: models
+    needs: [meta, models]
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -47,17 +107,22 @@ jobs:
       SITE_DIR: firmware/${{ matrix.board }}/${{ matrix.model }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.meta.outputs.ref }}
       - name: Pick the heat pump model and the firmware version
+        env:
+          TAG: ${{ needs.meta.outputs.tag }}
         run: |
           test -f "confs/$MODEL.yaml"
-          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then v="${GITHUB_REF_NAME#v}"; else v="dev-${GITHUB_SHA::7}"; fi
+          if [ -n "$TAG" ]; then v="${TAG#v}"; else v="dev-$(git rev-parse --short=7 HEAD)"; fi
+          echo "ESPHOME_VERSION=$(cat .github/esphome-version)" >> "$GITHUB_ENV"
           sed -i "s|^\(\s*altherma_model:\).*|\1 $MODEL|; s|^\(\s*altherma_version:\).*|\1 \"$v\"|" "$WRAPPER"
           grep -n "altherma_model:\|altherma_version:\|altherma_board:" "$WRAPPER"
       - id: esphome
         uses: esphome/build-action@ae5408cdbc4f70692bf8e345c4982bca05a93667 # v8.1.0
         with:
           yaml-file: ${{ env.WRAPPER }}
-          version: "2026.11.0"
+          version: ${{ env.ESPHOME_VERSION }}
           complete-manifest: true
           release-url: ${{ github.server_url }}/${{ github.repository }}/releases
       - name: Firmware size check (app image vs. app partition, limit in tools/firmware_size.py)
@@ -69,15 +134,18 @@ jobs:
           ls -R out
       - uses: actions/upload-artifact@v7
         with:
-          name: fw-${{ matrix.board }}-${{ matrix.model }}
+          name: ${{ needs.meta.outputs.prefix }}${{ matrix.board }}-${{ matrix.model }}
           path: out
           if-no-files-found: error
   pages:
     # Installer page + every firmware folder in one Pages artifact.
-    needs: [models, build]
+    needs: [meta, models, build]
+    if: needs.meta.outputs.deploy == 'true'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.meta.outputs.ref }}
       - uses: actions/download-artifact@v8
         with:
           pattern: fw-*
@@ -110,7 +178,7 @@ jobs:
   deploy:
     # Publish the installer and the OTA manifests only for release tags (or a manual run).
     # The github-pages environment must allow v* tags (Settings -> Environments).
-    needs: pages
+    needs: [meta, pages]
     runs-on: ubuntu-24.04
     permissions:
       pages: write
@@ -126,30 +194,34 @@ jobs:
         # and keeps the old site), e.g. when docs-pages.yml deployed this commit before the tag.
         # Fail loudly instead; the fix is any docs change pushed to main (docs-pages catches up to
         # the latest tag, see tools/publish_docs_only.py).
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: needs.meta.outputs.release == 'true'
+        env:
+          TAG: ${{ needs.meta.outputs.tag }}
         run: |
           url="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/firmware/esp32/generic/manifest.json"
-          want="${GITHUB_REF_NAME#v}"; v=""
+          want="${TAG#v}"; v=""
           for i in $(seq 1 18); do
             v=$(curl -fsSL -H 'Cache-Control: no-cache' "$url?run=${GITHUB_RUN_ID}-$i" | python3 -c 'import json,sys;print(json.load(sys.stdin)["version"])') || v=""
             if [ "$v" = "$want" ]; then echo "live manifest $v"; exit 0; fi
             echo "live manifest '$v', want $want; waiting"; sleep 20
           done
-          echo "::error::Pages deploy did not go live (manifest '$v', want $want). Push a docs change to main so docs-pages deploys the $GITHUB_REF_NAME site."
+          echo "::error::Pages deploy did not go live (manifest '$v', want $want). Push a docs change to main so docs-pages deploys the $TAG site."
           exit 1
   release:
     # Create (or update) the GitHub Release for a v* tag: notes from CHANGELOG.md when it has
     # a "## [x.y.z]" section (otherwise GitHub's generated notes), every image attached.
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: [models, build]
+    if: needs.meta.outputs.release == 'true'
+    needs: [meta, models, build]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
     env:
       GH_TOKEN: ${{ github.token }}
-      TAG: ${{ github.ref_name }}
+      TAG: ${{ needs.meta.outputs.tag }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.meta.outputs.ref }}
       - uses: actions/download-artifact@v8
         with:
           pattern: fw-*
@@ -193,3 +265,9 @@ jobs:
           else
             gh release create "$TAG" assets/* --title "$TAG" --generate-notes --notes-file notes.md --verify-tag
           fi
+      - name: Mark this run as the build of the release (tools/publish_docs_only.py looks for it)
+        run: mkdir -p marker && echo "$TAG" > marker/tag.txt
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ needs.meta.outputs.tag }}
+          path: marker

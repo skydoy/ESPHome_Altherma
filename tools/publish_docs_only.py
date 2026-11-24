@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Publish the docs site without rebuilding firmware.
 
-The live GitHub Pages site is the last successful tag of
-"Build firmware & publish installer" (currently v2.6.3). This script
+The live GitHub Pages site is the latest successful release build: a v* tag push of
+"Build firmware & publish installer" (publish.yml), or an automatic release (auto-release.yml,
+esphome-auto-update.yml) that calls publish.yml and leaves a "release-vX.Y.Z" marker artifact
+next to the firmware artifacts. This script
 rebuilds that exact tree from the tag's static files and firmware artifacts,
 checks every file against the live URL, then adds a freshly built docs/
 directory. It refuses to continue if any published installer or firmware
@@ -36,6 +38,8 @@ REPO = "skydoy/ESPHome_Altherma"
 LIVE = "https://skydoy.github.io/ESPHome_Altherma"
 BOARDS = ("esp32", "esp32-s3", "atoms3", "esp8266", "m5stack")
 WORKFLOW = "publish.yml"
+# Workflows that release by calling publish.yml (workflow_call).
+CALLER_WORKFLOWS = ("auto-release.yml", "esphome-auto-update.yml")
 
 
 def gh_json(args: list[str]):
@@ -44,23 +48,49 @@ def gh_json(args: list[str]):
 
 
 def latest_release_run() -> tuple[int, str]:
-    """Latest successful tag publish. Manual runs are ignored (they ship dev firmware)."""
-    raw = subprocess.check_output(
-        [
-            "gh", "run", "list",
-            "--repo", REPO,
-            "--workflow", WORKFLOW,
-            "--limit", "30",
-            "--json", "databaseId,headBranch,event,conclusion",
-        ],
-        text=True,
-    )
-    runs = json.loads(raw)
-    for run in runs:
-        branch = run.get("headBranch") or ""
-        if run.get("conclusion") == "success" and run.get("event") == "push" and branch.startswith("v"):
-            return int(run["databaseId"]), branch
-    raise SystemExit("no successful tag publish found; refusing to guess the live site")
+    """Latest successful release build. Manual runs are ignored (they ship dev firmware).
+
+    A tag push of publish.yml has the tag as its branch. Automatic releases run publish.yml
+    inside auto-release.yml / esphome-auto-update.yml, whose branch is main; their release job
+    uploads a "release-<tag>" artifact, which names the tag.
+    """
+    candidates: list[tuple[str, int, str | None, str]] = []
+    for workflow in (WORKFLOW, *CALLER_WORKFLOWS):
+        try:
+            raw = subprocess.check_output(
+                [
+                    "gh", "run", "list",
+                    "--repo", REPO,
+                    "--workflow", workflow,
+                    "--limit", "30",
+                    "--json", "databaseId,headBranch,event,conclusion,createdAt",
+                ],
+                text=True,
+                stderr=subprocess.DEVNULL,
+            )
+        except subprocess.CalledProcessError:
+            continue  # workflow not on the default branch yet
+        for run in json.loads(raw):
+            if run.get("conclusion") != "success":
+                continue
+            branch = run.get("headBranch") or ""
+            if workflow == WORKFLOW:
+                if run.get("event") == "push" and branch.startswith("v"):
+                    candidates.append((run["createdAt"], int(run["databaseId"]), branch, workflow))
+            else:
+                candidates.append((run["createdAt"], int(run["databaseId"]), None, workflow))
+    for _created, run_id, tag, _workflow in sorted(candidates, reverse=True):
+        if tag:
+            return run_id, tag
+        names = subprocess.check_output(
+            ["gh", "api", "--paginate", f"repos/{REPO}/actions/runs/{run_id}/artifacts",
+             "--jq", ".artifacts[].name"],
+            text=True,
+        ).split()
+        tags = [n[len("release-"):] for n in names if n.startswith("release-v")]
+        if tags and any(n.startswith("fw-") for n in names):
+            return run_id, tags[0]
+    raise SystemExit("no successful release build found; refusing to guess the live site")
 
 
 def sha256_bytes(chunks) -> str:

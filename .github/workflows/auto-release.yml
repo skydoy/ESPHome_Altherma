@@ -1,0 +1,135 @@
+name: Auto release
+# Every push to main that changes the firmware publishes a new patch version: validate the pushed
+# commit, then a "release vX.Y.Z" commit on main (tools/release_bump.py: altherma_version in
+# boards/base.yaml + CHANGELOG.md), tag vX.Y.Z and publish it (publish.yml, called directly because a
+# tag pushed with GITHUB_TOKEN does not start other workflows).
+# - Pushes that only touch docs, READMEs, the web installer page (static/), Home Assistant
+#   blueprints or CI do not release: see "paths".
+# - altherma_version already newer than the latest tag (a release prepared by hand, e.g. a minor
+#   bump): that version is released as it is, no extra bump.
+# - No loop: the release commit and the tag are pushed with GITHUB_TOKEN, which starts no workflow,
+#   and commits named "release v..." are skipped anyway.
+# - GitHub Pages skips a deploy of a commit that is already live, so the tag is always on the new
+#   release commit (never deployed by docs-pages.yml), and a docs-pages run for the pushed commit is
+#   waited for first.
+# Manual run: releases the current main if it has firmware commits since the latest tag.
+on:
+  push:
+    branches: [main]
+    paths:
+      # Same list as FIRMWARE_PATHS in tools/release_bump.py.
+      - components/**
+      - confs/**
+      - boards/**
+      - installer/**
+      - .github/esphome-version
+  workflow_dispatch:
+concurrency:
+  # Shared with esphome-auto-update.yml so two releases never pick the same version.
+  group: altherma-release
+  cancel-in-progress: false
+permissions:
+  contents: write
+  actions: read
+  pages: write
+  id-token: write
+env:
+  AUTHOR_NAME: skydoy
+  AUTHOR_EMAIL: 25871317+skydoy@users.noreply.github.com
+jobs:
+  guard:
+    runs-on: ubuntu-24.04
+    if: >-
+      github.actor != 'github-actions[bot]' &&
+      !startsWith(github.event.head_commit.message, 'release v')
+    outputs:
+      sha: ${{ steps.g.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - id: g
+        run: |
+          set -euo pipefail
+          sha=$(git rev-parse HEAD)
+          tag=$(git tag --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ] && [ -z "$(git log --format=%h "$tag..HEAD" -- components confs boards installer .github/esphome-version)" ]; then
+            echo "::error::no firmware commits on main since $tag; nothing to release"; exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "Release candidate $sha (latest tag $tag)"
+  validate:
+    needs: guard
+    uses: ./.github/workflows/validate.yml
+    with:
+      ref: ${{ needs.guard.outputs.sha }}
+    permissions:
+      contents: read
+  tag:
+    needs: [guard, validate]
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.bump.outputs.tag }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SHA: ${{ needs.guard.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+          fetch-tags: true
+      - name: main must still contain the validated commit
+        id: check
+        run: |
+          set -euo pipefail
+          head=$(git rev-parse HEAD)
+          git merge-base --is-ancestor "$SHA" "$head" || { echo "::error::$SHA is no longer on main"; exit 1; }
+          if [ "$head" != "$SHA" ] && [ -n "$(git log --format=%h "$SHA..$head" -- components confs boards installer .github/esphome-version)" ]; then
+            # A newer firmware push is on main; its own run (queued behind this one) releases it.
+            echo "::notice::newer firmware commits on main after $SHA; leaving the release to that run"
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            # Commits after $SHA (if any) touch no firmware; release main as it is.
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Wait for running docs-pages deploys
+        if: steps.check.outputs.go == 'true'
+        run: |
+          for _ in $(seq 1 60); do
+            busy=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow docs-pages.yml --limit 20 \
+              --json status --jq '[.[] | select(.status != "completed")] | length')
+            [ "$busy" = 0 ] && exit 0
+            echo "docs-pages is still running; waiting"; sleep 30
+          done
+          echo "::error::docs-pages did not finish in 30 minutes"; exit 1
+      - id: bump
+        if: steps.check.outputs.go == 'true'
+        run: python3 tools/release_bump.py
+      - name: Release commit and tag
+        if: steps.check.outputs.go == 'true'
+        env:
+          TAG: ${{ steps.bump.outputs.tag }}
+        run: |
+          set -euo pipefail
+          git config user.name "$AUTHOR_NAME"
+          git config user.email "$AUTHOR_EMAIL"
+          git add boards/base.yaml CHANGELOG.md
+          # Always a new commit (empty when the version was prepared by hand), so the tagged commit
+          # was never deployed by docs-pages.yml (Pages skips a commit that is already live).
+          git commit --allow-empty -m "release $TAG"
+          git tag -a "$TAG" -m "$TAG"
+          git push --atomic origin HEAD:refs/heads/main "refs/tags/$TAG"
+          echo "### Released $TAG at $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+  publish:
+    needs: tag
+    if: needs.tag.outputs.tag != ''
+    uses: ./.github/workflows/publish.yml
+    with:
+      ref: ${{ needs.tag.outputs.tag }}
+      release: true
+    permissions:
+      contents: write
+      pages: write
+      id-token: write

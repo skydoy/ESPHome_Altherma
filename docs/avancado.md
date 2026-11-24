@@ -326,16 +326,27 @@ components/altherma_hub/
 static/                         página do instalador web (GitHub Pages)
 homeassistant/                  blueprint e ferramentas Emoncms
 docs/                           guias em português e inglês (imagens em docs/img/)
-.github/workflows/              validate.yml (verificações), publish.yml (compilações de versões)
+.github/workflows/              validate.yml (verificações), publish.yml (compilações de versões), auto-release.yml
+                                e esphome-auto-update.yml (versões automáticas)
+.github/esphome-version         versão do ESPHome usada no CI e no firmware pré-compilado
 ```
 
 ### Verificações e versões
 - Cada *push* e *pull request* corre o **Validate**: `esphome config` para cada par placa × modelo, os ficheiros de
   placa, uma verificação de que o site e a matriz de compilação listam todos os ficheiros de modelo, e uma
   compilação completa.
-- Enviar uma *tag* `v*` corre o **Publish**: compila 5 placas × (`generic` mais cada modelo com `confirmed: true`
+- Cada versão corre o **Publish**: compila 5 placas × (`generic` mais cada modelo com `confirmed: true`
   em `installer/models.yaml`), publica o instalador web e os manifestos OTA no GitHub Pages e cria uma versão no
   GitHub. Os dispositivos veem então a atualização na entidade Firmware.
+- As versões são automáticas. Cada *push* para o `main` que muda o firmware (`components/`, `confs/`, `boards/`,
+  `installer/` ou `.github/esphome-version`) corre o **Auto release**: valida o commit, sobe a versão *patch*
+  (`altherma_version` em `boards/base.yaml`) e o `CHANGELOG.md`, cria a *tag* `vX.Y.Z` e corre o Publish. Um *push*
+  que só muda documentação, READMEs, a página do instalador (`static/`) ou o CI não lança versão. Se o
+  `altherma_version` já foi subido à mão (uma versão *minor*, por exemplo), sai essa versão tal como está.
+- Todos os dias o **ESPHome auto-update** procura uma versão estável nova do ESPHome. Abre um *pull request* que
+  muda o `.github/esphome-version`, compila todas as placas × modelos e, se tudo passar, junta-o e lança uma versão
+  *patch*. Se alguma compilação falhar, o *pull request* fica aberto e não sai versão.
+- Uma *tag* `v*` enviada à mão continua a correr o Publish.
 
 ### Ficheiros copiados do ESPAltherma
 Os `components/altherma_hub/converters.h` e `labeldef.h` vêm do ESPAltherma (`include/converters.h` e

@@ -1,0 +1,191 @@
+name: ESPHome auto-update
+# Daily (04:00 UTC): if PyPI has a newer stable ESPHome than .github/esphome-version, open a pull
+# request that bumps the pin and prepares the next patch release (tools/release_bump.py --esphome:
+# pin, altherma_version, CHANGELOG.md). This workflow then validates the branch and builds every
+# board x model itself (validate.yml + publish.yml with release: false, via workflow_call, because a
+# pull request opened with GITHUB_TOKEN does not start other workflows). If everything passes it
+# fast-forwards main to the PR commit (author and committer stay skydoy, GitHub marks the PR as
+# merged), tags vX.Y.Z and publishes it (publish.yml, release: true). If anything fails the PR stays
+# open and nothing is released; while a bump PR is open no new one is opened.
+# Opening the PR needs Settings > Actions > General > "Allow GitHub Actions to create and approve
+# pull requests". Without it the run continues on the ci/esphome-* branch alone (warning).
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Only show the plan (no branch, PR, merge, tag or release)
+        type: boolean
+        default: false
+concurrency:
+  # Shared with auto-release.yml so two releases never pick the same version.
+  group: altherma-release
+  cancel-in-progress: false
+permissions:
+  contents: write
+  pull-requests: write
+  pages: write
+  id-token: write
+env:
+  AUTHOR_NAME: skydoy
+  AUTHOR_EMAIL: 25871317+skydoy@users.noreply.github.com
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      needed: ${{ steps.plan.outputs.needed }}
+      current: ${{ steps.plan.outputs.current }}
+      latest: ${{ steps.plan.outputs.latest }}
+      branch: ${{ steps.plan.outputs.branch }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          current=$(tr -d '[:space:]' < .github/esphome-version)
+          latest=$(curl -fsSL https://pypi.org/pypi/esphome/json | python3 -c '
+          import json, re, sys
+          rel = json.load(sys.stdin)["releases"]
+          ok = [v for v, files in rel.items() if re.fullmatch(r"\d+\.\d+\.\d+", v) and files and not all(f.get("yanked") for f in files)]
+          print(max(ok, key=lambda v: tuple(map(int, v.split(".")))))')
+          branch="ci/esphome-$latest"
+          newer=$(python3 -c 'import sys; t=lambda v: tuple(map(int, v.split("."))); print("yes" if t(sys.argv[2]) > t(sys.argv[1]) else "no")' "$current" "$latest")
+          open=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --json url,headRefName \
+            --jq '[.[] | select(.headRefName | startswith("ci/esphome-"))][0].url // ""')
+          needed=false
+          if [ "$newer" != yes ]; then
+            reason="Already on the latest stable ESPHome ($current)."
+          elif [ -n "$open" ]; then
+            reason="An ESPHome bump PR is still open (it failed or waits for a person): $open"
+          elif git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+            reason="Branch $branch already exists (an earlier attempt failed); delete it to retry."
+          else
+            plan=$(python3 tools/release_bump.py --esphome "$latest" --dry-run)
+            reason="Bump: $plan, branch $branch."
+            [ "$DRY_RUN" = true ] || needed=true
+          fi
+          { echo "needed=$needed"; echo "current=$current"; echo "latest=$latest"; echo "branch=$branch"; } | tee -a "$GITHUB_OUTPUT"
+          echo "$reason"
+          {
+            echo "### ESPHome auto-update"
+            echo "- Pin: \`$current\`, latest stable on PyPI: \`$latest\`"
+            echo "- Dry run: \`$DRY_RUN\`"
+            echo "- $reason"
+          } >> "$GITHUB_STEP_SUMMARY"
+  pr:
+    needs: plan
+    if: needs.plan.outputs.needed == 'true'
+    runs-on: ubuntu-24.04
+    outputs:
+      branch: ${{ needs.plan.outputs.branch }}
+      sha: ${{ steps.open.outputs.sha }}
+      base: ${{ steps.open.outputs.base }}
+      tag: ${{ steps.open.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+          fetch-tags: true
+      - id: open
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT: ${{ needs.plan.outputs.current }}
+          LATEST: ${{ needs.plan.outputs.latest }}
+          BRANCH: ${{ needs.plan.outputs.branch }}
+        run: |
+          set -euo pipefail
+          git config user.name "$AUTHOR_NAME"
+          git config user.email "$AUTHOR_EMAIL"
+          base=$(git rev-parse HEAD)
+          git checkout -b "$BRANCH"
+          python3 tools/release_bump.py --esphome "$LATEST" | tee plan.txt
+          tag="v$(sed -n 's/^\s*altherma_version:\s*"\([0-9.]*\)".*/\1/p' boards/base.yaml | head -1)"
+          git add .github/esphome-version boards/base.yaml CHANGELOG.md
+          git commit -m "release $tag: ESPHome $LATEST"
+          git push origin "HEAD:refs/heads/$BRANCH"
+          {
+            echo "ESPHome $CURRENT → $LATEST and firmware $tag (patch release)."
+            echo
+            echo "The **ESPHome auto-update** workflow validates this branch and builds every board × model itself (a PR opened with \`GITHUB_TOKEN\` does not start other workflows). If everything passes it fast-forwards \`main\` to this commit, tags \`$tag\` and publishes it. If anything fails this PR stays open and nothing is released."
+            echo
+            echo "Before merging by hand, read the ESPHome $LATEST release notes for breaking changes."
+          } > pr-body.md
+          if gh pr create --base main --head "$BRANCH" --title "release $tag: ESPHome $LATEST" --body-file pr-body.md; then
+            :
+          else
+            echo "::warning::could not open the pull request (enable Settings > Actions > General > Allow GitHub Actions to create and approve pull requests); continuing on branch $BRANCH"
+          fi
+          { echo "sha=$(git rev-parse HEAD)"; echo "base=$base"; echo "tag=$tag"; } >> "$GITHUB_OUTPUT"
+  validate:
+    needs: pr
+    uses: ./.github/workflows/validate.yml
+    with:
+      ref: ${{ needs.pr.outputs.sha }}
+    permissions:
+      contents: read
+  build:
+    needs: pr
+    uses: ./.github/workflows/publish.yml
+    with:
+      ref: ${{ needs.pr.outputs.sha }}
+      release: false
+    # GitHub checks every job of the called workflow against these, including the Pages/release
+    # jobs that are skipped when release is false.
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+  merge-and-tag:
+    needs: [pr, validate, build]
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ needs.pr.outputs.tag }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BRANCH: ${{ needs.pr.outputs.branch }}
+      SHA: ${{ needs.pr.outputs.sha }}
+      BASE: ${{ needs.pr.outputs.base }}
+      TAG: ${{ needs.pr.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.pr.outputs.sha }}
+          fetch-depth: 0
+      - run: |
+          set -euo pipefail
+          git config user.name "$AUTHOR_NAME"
+          git config user.email "$AUTHOR_EMAIL"
+          git fetch origin main
+          if [ "$(git rev-parse origin/main)" != "$BASE" ]; then
+            echo "::error::main moved since the bump branch was made; the PR stays open (merge it by hand: auto-release.yml then releases it)"
+            exit 1
+          fi
+          # Fast-forward (no merge commit, author and committer stay skydoy) and the tag in one push.
+          git tag -a "$TAG" -m "$TAG" "$SHA"
+          git push --atomic origin "$SHA:refs/heads/main" "refs/tags/$TAG"
+          echo "### Released $TAG at $SHA" >> "$GITHUB_STEP_SUMMARY"
+          # GitHub marks the PR as merged once main contains its commit; then drop the branch.
+          for _ in $(seq 1 12); do
+            state=$(gh pr view "$BRANCH" --json state --jq .state 2>/dev/null || echo NONE)
+            [ "$state" = MERGED ] || [ "$state" = NONE ] && break
+            sleep 5
+          done
+          git push origin --delete "$BRANCH" || true
+  publish:
+    needs: merge-and-tag
+    uses: ./.github/workflows/publish.yml
+    with:
+      ref: ${{ needs.merge-and-tag.outputs.tag }}
+      release: true
+    permissions:
+      contents: write
+      pages: write
+      id-token: write

@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Nomes de entidades sem «/», que o ESPHome 2027.7 deixa de aceitar (até lá o ESPHome trocava-os por «⁄» e avisava): o «/» passa a espaço em 15 nomes do modelo `altherma_ehvh_ehvx_cb` («O U capacity», «I U operation mode», «Reheat ON OFF», …) e em «3-Way Valve (DHW Space)» do `erla_d_ebv_ebb_ebvz_11_16`. Os IDs das entidades no Home Assistant não mudam (o `object_id` e a chave de cada entidade ficam iguais, confirmado no código gerado); só muda o nome mostrado. O seletor PT/EN da página da placa já traduz os nomes novos.
+- Componente `altherma_hub`, identificação do modelo e ecrãs do M5Stack: deixam de usar `EntityBase::get_name()` (obsoleto no ESPHome 2026.11, removido no 2027.5). Escolhe a função pela versão do ESPHome, por isso as placas adotadas continuam a compilar no 2026.10.
+- M5Stack: a imagem do ecrã de arranque usa o formato novo `image:` com `platform: file` (o antigo deixa de funcionar no ESPHome 2027.1).
+- Versões automáticas: cada *push* para o `main` que muda o firmware (`components/`, `confs/`, `boards/`, `installer/`, `.github/esphome-version`) é validado e publica sozinho a versão *patch* seguinte (commit `release vX.Y.Z` com `altherma_version` e este ficheiro, tag e publicação). Mudanças só na documentação, nos READMEs, na página do instalador ou no CI não lançam versão. Todos os dias às 04:00 (UTC) o workflow «ESPHome auto-update» procura uma versão estável nova do ESPHome, abre um *pull request*, compila todas as placas × modelos e, se tudo passar, junta-o e lança uma versão *patch*; se falhar, o *pull request* fica aberto e não sai versão.
+- A versão do ESPHome do CI e do firmware pré-compilado está agora num só sítio, `.github/esphome-version`.
+
 ## [2.6.4] - 2026-11-24
 
 - Pacote opcional `boards/common/packet-transport.yaml` para compilações adotadas (Device Builder): envia na rede local, por UDP (`packet_transport` do ESPHome, porta 18511, em claro, sem encriptação), a temperatura da água de saída e de retorno, a temperatura exterior, a frequência do compressor, os códigos de erro das unidades exterior e interior (byte em bruto, 0 = sem erro) e um binário de avaria, para outro ESPHome (por exemplo um controlador de piso radiante) os usar sem Home Assistant. Funciona com todos os modelos e placas. Os valores vão sem encriptação (o recetor pode ter firmware pré-compilado, sem chave): qualquer pessoa na rede local os consegue ler, por isso só o ligues numa rede em que confias. O firmware pré-compilado não muda. Documentado em Uso avançado e na página Segurança.

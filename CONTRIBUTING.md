@@ -32,10 +32,16 @@ form. Bugs and ideas go in the [issue forms](https://github.com/skydoy/ESPHome_A
 - Say what you tested on real hardware (board, heat pump model), or "not tested on hardware".
 
 ## Releases
-The maintainer moves the **Unreleased** notes to `## [x.y.z] - YYYY-MM-DD`, bumps `altherma_version` in
-`boards/base.yaml` and pushes a `vx.y.z` tag. CI builds every board and model, publishes the installer, the OTA
-manifests and the docs site to GitHub Pages, and creates the GitHub Release with those notes. A docs-only change
-can go out through «Publish documentation only», which keeps the already published installer and firmware.
+Releases are automatic (`.github/workflows/auto-release.yml`): every push to `main` that changes the firmware
+(`components/`, `confs/`, `boards/`, `installer/`, `.github/esphome-version`) is validated, then a `release vX.Y.Z`
+commit bumps the patch version (`altherma_version` in `boards/base.yaml`) and moves the **Unreleased** notes of
+`CHANGELOG.md` to `## [x.y.z] - YYYY-MM-DD`, and the `vX.Y.Z` tag is published: CI builds every board and model,
+publishes the installer, the OTA manifests and the docs site to GitHub Pages, and creates the GitHub Release with
+those notes. For a minor version, raise `altherma_version` (and add the `## [x.y.0]` section) in the push itself.
+Pushes that only change docs, READMEs, `static/` or CI do not release; a docs-only change goes out through
+«Publish documentation only», which keeps the already published installer and firmware.
+`.github/workflows/esphome-auto-update.yml` checks for a new stable ESPHome every day, builds every board and model
+in a pull request and releases a patch version if everything passes (the pull request stays open if not).
 
 Code copied from other projects must keep its licence notice: add it to [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 Do not copy code from projects without a licence, or GPL code into the component.
