@@ -28,6 +28,7 @@ unless you forward ports on your router — don't.
 | mDNS | UDP 5353 | on | See the device name (`esphome-altherma-xxxxxx.local`), its IP and that it runs ESPHome. |
 | Fallback hotspot "ESPHome Altherma Setup" + captive portal | Wi-Fi AP | **open**, only when the board cannot join your Wi-Fi | Join it, set new Wi-Fi credentials or upload a firmware file. |
 | Improv over USB | USB serial | on | Set Wi-Fi credentials — needs physical access to the USB cable. |
+| Value sharing (`packet_transport`, [optional](advanced.md#share-values-with-other-esphome-devices-udp)) | UDP 18511 broadcast | **off** (only if you add the package to your own build) | With your key: read LWT, return and outdoor temperatures, compressor frequency and error codes. Without it: only the board name. |
 
 What the device connects to by itself (outgoing only): your Wi-Fi, NTP time servers (`pool.ntp.org`) and
 `skydoy.github.io` over HTTPS every 6 hours to check for updates (and to download one when you or Auto Update install

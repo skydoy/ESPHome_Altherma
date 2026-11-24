@@ -14,6 +14,7 @@ quem quer compilar o próprio firmware, acrescentar relés, mapear sensores novo
 - [Descoberta de registos (experimental)](#descoberta-de-registos-experimental)
 - [Acrescentar um modelo de bomba de calor](#acrescentar-um-modelo-de-bomba-de-calor)
 - [Emoncms](#emoncms)
+- [Partilhar valores com outros ESPHome (UDP)](#partilhar-valores-com-outros-esphome-udp)
 - [Desenvolvimento](#desenvolvimento)
 
 ## Três formas de usar
@@ -86,8 +87,8 @@ ficheiro em [`installer/`](../installer/): `esphome -s altherma_model <modelo> r
 | `installer/*.installer.yaml` | O que o instalador web compila: ficheiro da placa + escolha do modelo + entidade Firmware. Vê [segurança](seguranca.md#configurações-do-instalador--de-fábrica). |
 | `confs/*.yaml` | [Ficheiros de modelo](#ficheiros-de-modelo). |
 | `boards/common/diagnostics.yaml` | Diagnóstico opcional do ESP, para qualquer placa: estado, tempo ligado, Wi-Fi, número de arranques, motivo do reinício, versão do firmware, botões de reinício e de reinício em modo seguro. |
-
 | `boards/common/diagnostics-esp32.yaml` | O mesmo e ainda a temperatura interna do chip (só placas ESP32; o ESPHome não tem temperatura interna no ESP8266). |
+| `boards/common/packet-transport.yaml` | Opcional: partilha alguns valores com outros ESPHome por UDP, cifrados, sem precisar do Home Assistant. Vê [mais abaixo](#partilhar-valores-com-outros-esphome-udp). |
 
 Para ativar o diagnóstico, acrescenta o pacote ao teu YAML:
 
@@ -235,6 +236,73 @@ Para acompanhar o desempenho e o COP a longo prazo com o Emoncms (por exemplo o 
   do Emoncms para outro (em inglês).
 
 ![Painel MyHeatpump no Home Assistant](img/home-assistant-emoncms-myheatpump-dashboard.png)
+
+## Partilhar valores com outros ESPHome (UDP)
+Opcional e só para a tua compilação (Device Builder): a placa envia alguns valores na tua rede local, cifrados, para
+outro dispositivo ESPHome (por exemplo um controlador de piso radiante) os usar **sem Home Assistant**. Usa o
+`packet_transport` do ESPHome por UDP e funciona com todos os modelos e placas, ESP8266 incluída. O firmware
+pré-compilado nunca envia nada.
+
+Acrescenta ao teu YAML adotado, com uma chave longa e aleatória (põe-na no `secrets.yaml`; a mesma chave vai para o
+recetor):
+
+```yaml
+substitutions:
+  altherma_udp_key: !secret altherma_udp_key
+
+packages:
+  altherma_udp: github://skydoy/ESPHome_Altherma/boards/common/packet-transport.yaml@main
+```
+
+Sem `altherma_udp_key` a configuração para com um erro em `packet_transport → encryption → key`. Opcionais:
+`altherma_udp_interval` (predefinido `15s`) e `altherma_udp_port` (predefinido `18511`, igual nos dois lados). O
+instalador web não consegue configurar isto: o firmware dele é pré-compilado e não tem chave.
+
+| Id enviado | O quê | Unidade |
+|---|---|---|
+| `altherma_lwt` | Temperatura da água de saída depois da BUH (R2T) | °C |
+| `altherma_return` | Temperatura da água de retorno / entrada (R4T) | °C |
+| `altherma_outdoor_temp` | Temperatura do ar exterior (R1T) | °C |
+| `altherma_comp_freq` | Frequência do compressor | rps |
+| `altherma_outdoor_error` | Código de erro da unidade exterior, byte em bruto (0 = sem erro) | — |
+| `altherma_indoor_error` | Código de erro da unidade interior, byte em bruto (0 = sem erro) | — |
+| `altherma_fault` (binário) | Ligado quando algum dos códigos de erro não é 0 | — |
+
+O `packet_transport` só leva números e ligado/desligado, não texto, por isso os códigos de erro vão como o byte que a
+bomba envia. O código que aparece na unidade é `" ACEHFJLPU987654"[byte >> 4]` seguido de
+`"0123456789AHCJEF"[byte & 15]` (por exemplo 55 = `E7`, 147 = `U3`). O nome do fornecedor (*provider*) é o nome da
+placa (`esphome-altherma-xxxxxx`, como aparece no Device Builder). No recetor:
+
+```yaml
+udp:
+  port: 18511
+
+packet_transport:
+  - platform: udp
+    update_interval: 15s
+    providers:
+      - name: esphome-altherma-xxxxxx
+        encryption:
+          key: !secret altherma_udp_key
+
+sensor:
+  - platform: packet_transport
+    provider: esphome-altherma-xxxxxx
+    id: altherma_lwt
+    remote_id: altherma_lwt
+  # o mesmo para altherma_return, altherma_outdoor_temp, altherma_comp_freq,
+  # altherma_outdoor_error e altherma_indoor_error
+
+binary_sensor:
+  - platform: packet_transport
+    provider: esphome-altherma-xxxxxx
+    id: altherma_fault
+    remote_id: altherma_fault
+```
+
+Se a placa da bomba deixar de enviar, o recetor fica com o último valor: quando isso importa (uma resistência de
+apoio, por exemplo), confirma há quanto tempo chegou o último valor e trata valores antigos como desconhecidos.
+Qualquer pessoa na tua rede com a chave consegue ler estes valores; sem ela só vê o nome da placa.
 
 ## Desenvolvimento
 ### UART simulada

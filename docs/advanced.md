@@ -14,6 +14,7 @@ your own firmware, adding relays, mapping new sensors and working on the code.
 - [Register discovery (experimental)](#register-discovery-experimental)
 - [Adding a heat pump model](#adding-a-heat-pump-model)
 - [Emoncms](#emoncms)
+- [Share values with other ESPHome devices (UDP)](#share-values-with-other-esphome-devices-udp)
 - [Development](#development)
 
 ## Three ways to run it
@@ -87,8 +88,8 @@ To get the same firmware as the web installer (Firmware entity, Improv Wi-Fi, OT
 | `installer/*.installer.yaml` | What the web installer builds: board file + model choice + Firmware entity. See [security](security.md#installer--factory-configurations). |
 | `confs/*.yaml` | [Model files](#model-files). |
 | `boards/common/diagnostics.yaml` | Optional ESP diagnostics for every board: status, uptime, Wi-Fi info, boot count, reset reason, firmware version, restart and safe-mode restart buttons. |
-
 | `boards/common/diagnostics-esp32.yaml` | The same plus the chip's internal temperature (ESP32 boards only; ESPHome has no internal temperature on ESP8266). |
+| `boards/common/packet-transport.yaml` | Optional: shares a few values with other ESPHome devices over UDP, encrypted, no Home Assistant needed. See [below](#share-values-with-other-esphome-devices-udp). |
 
 To enable the diagnostics, add the package to your YAML:
 
@@ -236,6 +237,72 @@ For long-term performance and COP tracking with Emoncms (for example the MyHeatp
   Emoncms feed to another.
 
 ![MyHeatpump dashboard in Home Assistant](img/home-assistant-emoncms-myheatpump-dashboard.png)
+
+## Share values with other ESPHome devices (UDP)
+Optional, for your own (Device Builder) build only: the board broadcasts a few values on your LAN, encrypted, so another
+ESPHome device (for example an underfloor heating controller) can use them **without Home Assistant**. It uses ESPHome's
+`packet_transport` over UDP and works with every model and board, ESP8266 included. The prebuilt firmware never sends
+anything.
+
+Add to your adopted YAML, with a long random key (put it in `secrets.yaml`, the same key goes on the receiver):
+
+```yaml
+substitutions:
+  altherma_udp_key: !secret altherma_udp_key
+
+packages:
+  altherma_udp: github://skydoy/ESPHome_Altherma/boards/common/packet-transport.yaml@main
+```
+
+Without `altherma_udp_key` the config stops with an error under `packet_transport → encryption → key`. Optional:
+`altherma_udp_interval` (default `15s`) and `altherma_udp_port` (default `18511`, the same on both sides). The web
+installer cannot set this: its firmware is prebuilt and has no key.
+
+| Broadcast id | What | Unit |
+|---|---|---|
+| `altherma_lwt` | Leaving water temperature after BUH (R2T) | °C |
+| `altherma_return` | Return / inlet water temperature (R4T) | °C |
+| `altherma_outdoor_temp` | Outdoor air temperature (R1T) | °C |
+| `altherma_comp_freq` | Compressor frequency | rps |
+| `altherma_outdoor_error` | Outdoor unit error code, raw byte (0 = no error) | — |
+| `altherma_indoor_error` | Indoor unit error code, raw byte (0 = no error) | — |
+| `altherma_fault` (binary) | On when either error code is not 0 | — |
+
+`packet_transport` only carries numbers and on/off, not text, so the error codes travel as the byte the unit sends.
+The code shown on the unit is `" ACEHFJLPU987654"[byte >> 4]` followed by `"0123456789AHCJEF"[byte & 15]`
+(for example 55 = `E7`, 147 = `U3`). The provider name is the board's name (`esphome-altherma-xxxxxx`, as in the Device
+Builder). On the receiver:
+
+```yaml
+udp:
+  port: 18511
+
+packet_transport:
+  - platform: udp
+    update_interval: 15s
+    providers:
+      - name: esphome-altherma-xxxxxx
+        encryption:
+          key: !secret altherma_udp_key
+
+sensor:
+  - platform: packet_transport
+    provider: esphome-altherma-xxxxxx
+    id: altherma_lwt
+    remote_id: altherma_lwt
+  # the same for altherma_return, altherma_outdoor_temp, altherma_comp_freq,
+  # altherma_outdoor_error and altherma_indoor_error
+
+binary_sensor:
+  - platform: packet_transport
+    provider: esphome-altherma-xxxxxx
+    id: altherma_fault
+    remote_id: altherma_fault
+```
+
+If the heat pump board goes quiet, the receiver keeps the last value: when it matters (a backup heater, for example),
+check how long ago a value last arrived and treat old values as unknown. Anyone on your network with the key can read
+these values; without it they only see the board's name.
 
 ## Development
 ### Mock UART

@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+- Pacote opcional `boards/common/packet-transport.yaml` para compilações adotadas (Device Builder): envia na rede local, por UDP (`packet_transport` do ESPHome, porta 18511, cifrado com a chave `altherma_udp_key`), a temperatura da água de saída e de retorno, a temperatura exterior, a frequência do compressor, os códigos de erro das unidades exterior e interior (byte em bruto, 0 = sem erro) e um binário de avaria, para outro ESPHome (por exemplo um controlador de piso radiante) os usar sem Home Assistant. Funciona com todos os modelos e placas; sem a chave a configuração dá erro. O firmware pré-compilado não muda. Documentado em Uso avançado e na página Segurança.
+- CI: job «packet-transport» valida o pacote em ESP32, ESP32-S3, AtomS3 e ESP8266 e compila-o em ESP32 e ESP8266 (`tools/packet-transport-check.yaml`, com uma chave de teste pública).
+
 ## [2.6.3] - 2026-11-23
 
 - Documentação bilingue (MkDocs Material, português com tu e inglês, menu lateral, pesquisa, tema claro/escuro): https://skydoy.github.io/ESPHome_Altherma/docs/pt/ e /docs/en/. O workflow «Publish documentation only» publica só essa documentação por cima do site já no ar, sem recompilar firmware nem mexer no instalador. O workflow «Build firmware & publish installer» fica para tags `v*`; uma execução manual desse workflow publica firmware dev e não serve para atualizar a documentação.
