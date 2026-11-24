@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/publish.yml"><img src="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/publish.yml/badge.svg" alt="Build"></a>
+  <a href="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/auto-release.yml"><img src="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/auto-release.yml/badge.svg" alt="Build"></a>
   <a href="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/validate.yml"><img src="https://github.com/skydoy/ESPHome_Altherma/actions/workflows/validate.yml/badge.svg" alt="Validação"></a>
   <a href="https://github.com/skydoy/ESPHome_Altherma/releases/latest"><img src="https://img.shields.io/github/v/release/skydoy/ESPHome_Altherma?sort=semver" alt="Versão"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-PolyForm%20Noncommercial%201.0.0-blue" alt="Licença: PolyForm Noncommercial"></a>
