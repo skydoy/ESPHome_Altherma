@@ -55,7 +55,7 @@ body:
     attributes:
       label: Firmware / ESPHome version
       description: The **Firmware** entity in Home Assistant, or the ESPHome version you build with.
-      placeholder: "v2.0.1 / ESPHome 2026.10.1"
+      placeholder: "v2.0.1 / ESPHome 2026.11.0"
     validations:
       required: true
   - type: dropdown

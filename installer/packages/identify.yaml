@@ -62,7 +62,7 @@ text_sensor:
 # "Install the right firmware": OTA from the installer site to the suggested model's firmware for
 # this board (firmware/<board>/<model>/manifest.json). Only confirmed models have IDs in the table
 # above (installer/models.yaml), and every confirmed model is built for every board, so the
-# firmware exists. update.http_request has no templatable source in ESPHome 2026.10, but
+# firmware exists. update.http_request has no templatable source in ESPHome 2026.11, but
 # HttpRequestUpdate::set_source_url() works at run time: point the update entity at the model,
 # check, then install. The model firmware keeps update.http_request on its own manifest.
 button:

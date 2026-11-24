@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with: { python-version: "3.13" }
-      - run: pip install esphome==2026.10.1
+      - run: pip install esphome==2026.11.0
       - name: esphome config for every model, with its own OTA manifest URL
         run: |
           set -o pipefail
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with: { python-version: "3.13" }
-      - run: pip install esphome==2026.10.1
+      - run: pip install esphome==2026.11.0
       - run: esphome -s altherma_component_source ../components config ${{ matrix.file }} > /dev/null
   site:
     # installer/models.yaml is the single model list: the board's ID table (identify.yaml), the board
@@ -87,9 +87,9 @@ jobs:
       - uses: actions/cache@v6
         with:
           path: ~/.platformio
-          key: pio-${{ runner.os }}-esphome-2026.10.1-${{ matrix.board }}
-          restore-keys: pio-${{ runner.os }}-esphome-2026.10.1
-      - run: pip install esphome==2026.10.1
+          key: pio-${{ runner.os }}-esphome-2026.11.0-${{ matrix.board }}
+          restore-keys: pio-${{ runner.os }}-esphome-2026.11.0
+      - run: pip install esphome==2026.11.0
       - run: esphome compile "$WRAPPER"
       - name: Firmware size check
         run: |
@@ -99,14 +99,15 @@ jobs:
   packet-transport:
     # The optional boards/common/packet-transport.yaml (UDP value sharing for adopted builds) is not in
     # any prebuilt firmware, so check it here: config on every board with the generic model and with
-    # erla_d_ebv_ebb_ebvz_11_16 (which has its own altherma_* ids), plus a real compile on ESP32 and
-    # ESP8266 (the smallest RAM). Uses tools/packet-transport-check.yaml.
+    # erla_d_ebv_ebb_ebvz_11_16 (which has its own altherma_* ids), plus a real compile on ESP32,
+    # ESP8266 (the smallest RAM) and M5Stack (the largest image). Uses tools/packet-transport-check.yaml.
+    # The M5Stack board file uses !secret: CI writes placeholder values to tools/secrets.yaml (git-ignored).
     name: packet-transport / ${{ matrix.board }}
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        board: [esp32, esp32-s3, atoms3, esp8266]
+        board: [esp32, esp32-s3, atoms3, esp8266, m5stack]
     env:
       CHECK: tools/packet-transport-check.yaml
     steps:
@@ -114,19 +115,22 @@ jobs:
       - uses: actions/setup-python@v7
         with: { python-version: "3.13" }
       - uses: actions/cache@v6
-        if: matrix.board == 'esp32' || matrix.board == 'esp8266'
+        if: matrix.board == 'esp32' || matrix.board == 'esp8266' || matrix.board == 'm5stack'
         with:
           path: ~/.platformio
-          key: pio-${{ runner.os }}-esphome-2026.10.1-pt-${{ matrix.board }}
-          restore-keys: pio-${{ runner.os }}-esphome-2026.10.1
-      - run: pip install esphome==2026.10.1
+          key: pio-${{ runner.os }}-esphome-2026.11.0-pt-${{ matrix.board }}
+          restore-keys: pio-${{ runner.os }}-esphome-2026.11.0
+      - run: pip install esphome==2026.11.0
+      - name: Placeholder secrets (M5Stack board file uses !secret)
+        if: matrix.board == 'm5stack'
+        run: printf 'wifi_ssid: "ci-placeholder"\nwifi_password: "ci-placeholder"\nota_password: ""\n' > tools/secrets.yaml
       - name: esphome config
         run: |
           for m in generic erla_d_ebv_ebb_ebvz_11_16; do
             esphome -s pt_board ${{ matrix.board }} -s altherma_model "$m" config "$CHECK" > /dev/null
           done
       - name: esphome compile
-        if: matrix.board == 'esp32' || matrix.board == 'esp8266'
+        if: matrix.board == 'esp32' || matrix.board == 'esp8266' || matrix.board == 'm5stack'
         run: esphome -s pt_board ${{ matrix.board }} -s altherma_model erla_d_ebv_ebb_ebvz_11_16 compile "$CHECK"
   docs:
     # Bilingual docs site. Build and link-check only — this job does not deploy Pages.

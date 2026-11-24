@@ -2,8 +2,13 @@
 
 ## [Unreleased]
 
+## [2.6.4] - 2026-11-24
+
 - Pacote opcional `boards/common/packet-transport.yaml` para compilações adotadas (Device Builder): envia na rede local, por UDP (`packet_transport` do ESPHome, porta 18511, em claro, sem encriptação), a temperatura da água de saída e de retorno, a temperatura exterior, a frequência do compressor, os códigos de erro das unidades exterior e interior (byte em bruto, 0 = sem erro) e um binário de avaria, para outro ESPHome (por exemplo um controlador de piso radiante) os usar sem Home Assistant. Funciona com todos os modelos e placas. Os valores vão sem encriptação (o recetor pode ter firmware pré-compilado, sem chave): qualquer pessoa na rede local os consegue ler, por isso só o ligues numa rede em que confias. O firmware pré-compilado não muda. Documentado em Uso avançado e na página Segurança.
-- CI: job «packet-transport» valida o pacote em ESP32, ESP32-S3, AtomS3 e ESP8266 e compila-o em ESP32 e ESP8266 (`tools/packet-transport-check.yaml`).
+- ESPHome 2026.11.0 (antes 2026.10.1) no CI, na publicação (build-action) e no firmware pré-compilado. Revi as alterações que partem compatibilidade: nenhuma afeta este projeto (não usa canbus, lvgl, ethernet, nextion, openthread nem remote_base). As ações `http_request.get`/`post` deixam de bloquear o loop; os scripts que as usam (verificação de atualizações e relatório automático) continuam em `mode: single`, por isso um segundo disparo enquanto o pedido está a decorrer é ignorado, o que aqui não faz mal. A página web só deixa de servir por URL entidades `internal: true`, e o botão «Install the right firmware» não é interno.
+- Publicação: o workflow «Publish documentation only» apanha a última tag quando o site no ar ainda tem uma versão anterior (o deploy do Pages de uma tag no mesmo commit que um deploy de docs já publicado não ficava no ar), sempre depois de confirmar o firmware contra os checksums da release; a publicação de uma tag falha se o site não mostrar a versão nova.
+- CI: job «packet-transport» valida o pacote em ESP32, ESP32-S3, AtomS3, ESP8266 e M5Stack e compila-o em ESP32, ESP8266 e M5Stack (`tools/packet-transport-check.yaml`; no M5Stack o CI escreve segredos de exemplo em `tools/secrets.yaml`, ignorado pelo git).
+- Versão do projeto 2.6.4 para o Device Builder detetar a atualização.
 
 ## [2.6.3] - 2026-11-23
 
