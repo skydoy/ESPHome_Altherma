@@ -1,6 +1,8 @@
 #pragma once
 
 #include "esphome/core/component.h"
+#include "esphome/core/entity_base.h"
+#include "esphome/core/version.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
@@ -16,13 +18,39 @@ namespace esphome
   {
     class Converter;
 
+    // Entity name helpers. ESPHome 2026.11.0 deprecates EntityBase::get_name() (removed in 2027.5.0);
+    // older ESPHome (2026.10.x) has no replacement, so pick the API by version.
+    // Copy of the name, for logs and JSON keys (ESP8266 keeps names in flash).
+    inline std::string altherma_entity_name(const EntityBase *e)
+    {
+#if ESPHOME_VERSION_CODE >= VERSION_CODE(2026, 11, 0)
+      char buf[ENTITY_NAME_BUF_SIZE];
+      const size_t len = e->write_name_to(buf, sizeof(buf));
+      return std::string(buf, len);
+#else
+      return e->get_name().str();
+#endif
+    }
+
+#ifndef USE_ESP8266
+    // Name as a C string that stays valid (no copy). Not on ESP8266, where names are in flash.
+    inline const char *altherma_entity_name_cstr(const EntityBase *e)
+    {
+#if ESPHOME_VERSION_CODE >= VERSION_CODE(2026, 11, 0)
+      return e->get_name_progmem().progmem_ptr();
+#else
+      return e->get_name().c_str();
+#endif
+    }
+#endif
+
     class AlthermaSensorBase
     {
     public:
       virtual ~AlthermaSensorBase() = default;
 
       // Pure virtual functions that derived classes must implement
-      virtual std::string get_name() const = 0;
+      virtual std::string entity_name() const = 0;
       virtual void publish_state(const std::string &state) = 0;
 
       void set_registry_id(uint8_t v) { registry_id_ = v; }
@@ -47,8 +75,8 @@ namespace esphome
           public AlthermaSensorBase
     {
     public:
-      std::string get_name() const override {
-        return sensor::Sensor::get_name();
+      std::string entity_name() const override {
+        return altherma_entity_name(this);
       }
       
       void publish_state(const std::string &state) override {
@@ -60,7 +88,7 @@ namespace esphome
           sensor::Sensor::publish_state(value);
         } else {
           ESP_LOGW("AlthermaSensor", "Non-numeric value '%s' for %s",
-                  state.c_str(), get_name().c_str());
+                  state.c_str(), entity_name().c_str());
         }
       }
     };
@@ -70,8 +98,8 @@ namespace esphome
           public AlthermaSensorBase
     {
     public:
-      std::string get_name() const override {
-        return text_sensor::TextSensor::get_name();
+      std::string entity_name() const override {
+        return altherma_entity_name(this);
       }
 
       void publish_state(const std::string &state) override {
@@ -84,8 +112,8 @@ namespace esphome
           public AlthermaSensorBase
     {
     public:
-      std::string get_name() const override {
-        return binary_sensor::BinarySensor::get_name();
+      std::string entity_name() const override {
+        return altherma_entity_name(this);
       }
 
       void publish_state(const std::string &state) override {

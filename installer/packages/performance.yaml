@@ -1,7 +1,7 @@
 # Derived performance sensors for ERLA D (and any conf that defines the altherma_* ids).
 # COP and thermal power use confirmed Flow, LWT after BUH, Inlet Water and INV current.
 # Electrical power is INV Primary Current × 230 V (no CT clamps on this unit — approximate).
-# Energy is split by the confirmed 3-Way Valve (DHW/Space) while the compressor runs.
+# Energy is split by the confirmed 3-Way Valve (DHW Space) while the compressor runs.
 # Defrost count uses the confirmed Defrost Operation bit. Error text uses Outdoor/Indoor Error Code.
 
 # SNTP (altherma_sntp_time) comes from boards/base.yaml.

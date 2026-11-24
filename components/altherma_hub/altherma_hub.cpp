@@ -206,7 +206,7 @@ bool AlthermaHub::decode_label(AlthermaSensorBase *sensor, unsigned char *frame,
   const int offset = sensor->offset();
   const int data_size = sensor->datasize();
   if (offset < 0 || data_size <= 0) {
-    ESP_LOGE(TAG, "Invalid sensor bounds for '%s': offset=%d size=%d", sensor->get_name().c_str(), offset, data_size);
+    ESP_LOGE(TAG, "Invalid sensor bounds for '%s': offset=%d size=%d", sensor->entity_name().c_str(), offset, data_size);
     return false;
   }
 
@@ -216,7 +216,7 @@ bool AlthermaHub::decode_label(AlthermaSensorBase *sensor, unsigned char *frame,
   if (payload_start >= frame_data_end || payload_end > frame_data_end) {
     ESP_LOGE(TAG,
              "Out-of-bounds decode for '%s' reg=0x%02x offset=%d size=%d frame_len=%d",
-             sensor->get_name().c_str(), sensor->registry_id(), offset, data_size, frame_len);
+             sensor->entity_name().c_str(), sensor->registry_id(), offset, data_size, frame_len);
     return false;
   }
 
@@ -226,7 +226,7 @@ bool AlthermaHub::decode_label(AlthermaSensorBase *sensor, unsigned char *frame,
     sensor->convid(),
     data_size,
     1,
-    sensor->get_name().c_str()
+    ""  // label text is not used by the converter (it used to point at a temporary copy of the name)
   );
 
   unsigned char *input = frame + payload_start;

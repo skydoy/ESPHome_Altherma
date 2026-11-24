@@ -117,21 +117,21 @@ sensor:
     datasize: 1
     accuracy_decimals: 0
   - <<: *number
-    name: O/U MPU ID (xx)
+    name: O U MPU ID (xx)
     register: 0x00
     offset: 10
     convid: 152
     datasize: 1
     accuracy_decimals: 0
   - <<: *number
-    name: O/U MPU ID (yy)
+    name: O U MPU ID (yy)
     register: 0x00
     offset: 11
     convid: 152
     datasize: 1
     accuracy_decimals: 0
   - <<: *number
-    name: O/U capacity
+    name: O U capacity
     register: 0x00
     offset: 12
     convid: 105
@@ -161,7 +161,7 @@ sensor:
     convid: 105
     datasize: 2
   - <<: *temp
-    name: O/U Heat Exch. Temp.
+    name: O U Heat Exch. Temp.
     register: 0x20
     offset: 2
     convid: 105
@@ -305,7 +305,7 @@ sensor:
     datasize: 2
     accuracy_decimals: 0
   - <<: *number
-    name: I/U capacity code
+    name: I U capacity code
     register: 0x60
     offset: 6
     convid: 219
@@ -331,7 +331,7 @@ sensor:
     datasize: 1
     accuracy_decimals: 0
   - <<: *number
-    name: I/U EEPROM Ver.
+    name: I U EEPROM Ver.
     register: 0x60
     offset: 16
     convid: 152
@@ -462,7 +462,7 @@ sensor:
 binary_sensor:
   # Outdoor state bits
   - <<: *binary
-    name: Thermostat ON/OFF outdoor
+    name: Thermostat ON OFF outdoor
     register: 0x10
     offset: 1
     convid: 307
@@ -590,7 +590,7 @@ binary_sensor:
     convid: 304
     datasize: 1
   - <<: *binary
-    name: Thermostat ON/OFF indoor
+    name: Thermostat ON OFF indoor
     register: 0x60
     offset: 2
     convid: 303
@@ -711,31 +711,31 @@ binary_sensor:
     convid: 307
     datasize: 1
   - <<: *binary
-    name: Reheat ON/OFF
+    name: Reheat ON OFF
     register: 0x62
     offset: 2
     convid: 307
     datasize: 1
   - <<: *binary
-    name: Storage ECO ON/OFF
+    name: Storage ECO ON OFF
     register: 0x62
     offset: 2
     convid: 306
     datasize: 1
   - <<: *binary
-    name: Storage comfort ON/OFF
+    name: Storage comfort ON OFF
     register: 0x62
     offset: 2
     convid: 305
     datasize: 1
   - <<: *binary
-    name: Powerful DHW Operation ON/OFF
+    name: Powerful DHW Operation ON OFF
     register: 0x62
     offset: 2
     convid: 304
     datasize: 1
   - <<: *binary
-    name: Space heating Operation ON/OFF
+    name: Space heating Operation ON OFF
     register: 0x62
     offset: 2
     convid: 303
@@ -801,7 +801,7 @@ binary_sensor:
     convid: 300
     datasize: 1
   - <<: *binary
-    name: Tank preheat ON/OFF
+    name: Tank preheat ON OFF
     register: 0x62
     offset: 8
     convid: 303
@@ -890,7 +890,7 @@ text_sensor:
     convid: 204
     datasize: 1
   - <<: *text
-    name: I/U operation mode
+    name: I U operation mode
     icon: mdi:heat-pump
     register: 0x60
     offset: 2

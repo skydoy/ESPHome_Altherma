@@ -271,7 +271,7 @@ binary_sensor:
 
   - <<: *binary
     id: altherma_valve_dhw
-    name: "3-Way Valve (DHW/Space)"
+    name: "3-Way Valve (DHW Space)"
     register: 0x60
     offset: 12
     convid: 306

@@ -168,11 +168,11 @@ script:
                   int n = 0;
                   for (auto *s : App.get_sensors()) {
                     if (s->is_internal() || !s->has_state() || std::isnan(s->state) || ++n > 250) continue;
-                    r[s->get_name().str()] = str_sprintf("%.*f %s", s->get_accuracy_decimals() < 0 ? 2 : s->get_accuracy_decimals(), s->state, s->get_unit_of_measurement_ref().c_str());
+                    r[altherma_hub::altherma_entity_name(s)] = str_sprintf("%.*f %s", s->get_accuracy_decimals() < 0 ? 2 : s->get_accuracy_decimals(), s->state, s->get_unit_of_measurement_ref().c_str());
                   }
                   for (auto *t : App.get_text_sensors()) {
                     if (t->is_internal() || !t->has_state() || ++n > 250) continue;
-                    r[t->get_name().str()] = t->state.substr(0, 80);
+                    r[altherma_hub::altherma_entity_name(t)] = t->state.substr(0, 80);
                   }
                 on_response:
                   then:

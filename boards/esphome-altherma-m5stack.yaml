@@ -132,10 +132,10 @@ script:
           for (auto *s : App.get_switches())       { if (!s->is_internal()) items.push_back({s, 3}); }
 
           auto entry_name = [](const Entry &e) -> const char * {
-            if (e.type == 0) return static_cast<sensor::Sensor *>(e.ptr)->get_name().c_str();
-            if (e.type == 1) return static_cast<text_sensor::TextSensor *>(e.ptr)->get_name().c_str();
-            if (e.type == 2) return static_cast<binary_sensor::BinarySensor *>(e.ptr)->get_name().c_str();
-            return static_cast<switch_::Switch *>(e.ptr)->get_name().c_str();
+            if (e.type == 0) return altherma_hub::altherma_entity_name_cstr(static_cast<sensor::Sensor *>(e.ptr));
+            if (e.type == 1) return altherma_hub::altherma_entity_name_cstr(static_cast<text_sensor::TextSensor *>(e.ptr));
+            if (e.type == 2) return altherma_hub::altherma_entity_name_cstr(static_cast<binary_sensor::BinarySensor *>(e.ptr));
+            return altherma_hub::altherma_entity_name_cstr(static_cast<switch_::Switch *>(e.ptr));
           };
           std::sort(items.begin(), items.end(), [&entry_name](const Entry &a, const Entry &b) {
             return strcmp(entry_name(a), entry_name(b)) < 0;
@@ -289,10 +289,10 @@ display:
       for (auto *s : App.get_switches())       { if (!s->is_internal()) items.push_back({s, 3}); }
 
       auto entry_name = [](const Entry &e) -> const char * {
-        if (e.type == 0) return static_cast<sensor::Sensor *>(e.ptr)->get_name().c_str();
-        if (e.type == 1) return static_cast<text_sensor::TextSensor *>(e.ptr)->get_name().c_str();
-        if (e.type == 2) return static_cast<binary_sensor::BinarySensor *>(e.ptr)->get_name().c_str();
-        return static_cast<switch_::Switch *>(e.ptr)->get_name().c_str();
+        if (e.type == 0) return altherma_hub::altherma_entity_name_cstr(static_cast<sensor::Sensor *>(e.ptr));
+        if (e.type == 1) return altherma_hub::altherma_entity_name_cstr(static_cast<text_sensor::TextSensor *>(e.ptr));
+        if (e.type == 2) return altherma_hub::altherma_entity_name_cstr(static_cast<binary_sensor::BinarySensor *>(e.ptr));
+        return altherma_hub::altherma_entity_name_cstr(static_cast<switch_::Switch *>(e.ptr));
       };
       std::sort(items.begin(), items.end(), [&entry_name](const Entry &a, const Entry &b) {
         return strcmp(entry_name(a), entry_name(b)) < 0;

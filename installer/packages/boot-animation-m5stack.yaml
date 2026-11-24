@@ -19,7 +19,8 @@ globals:
     initial_value: "0"
 
 image:
-  - file: packages/splash_icon.png   # 120x120 logo without the mercury column
+  - platform: file
+    file: packages/splash_icon.png   # 120x120 logo without the mercury column
     id: splash_icon
     type: RGB565
     transparency: alpha_channel
