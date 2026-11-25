@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [2.6.6] - 2026-11-25
+
+- ESPHome 2026.11.1 (antes 2026.11.0) no CI, na publicação e no firmware pré-compilado (atualização automática diária; o build de todas as placas passou antes da publicação).
+- Versão do projeto 2.6.6 para o Device Builder detetar a atualização.
+
 ## [2.6.5] - 2026-11-24
 
 - Nomes de entidades sem «/», que o ESPHome 2027.7 deixa de aceitar (até lá o ESPHome trocava-os por «⁄» e avisava): o «/» passa a espaço em 15 nomes do modelo `altherma_ehvh_ehvx_cb` («O U capacity», «I U operation mode», «Reheat ON OFF», …) e em «3-Way Valve (DHW Space)» do `erla_d_ebv_ebb_ebvz_11_16`. Os nomes que já usavam «⁄» nos modelos `erga_eh_da_04_08`, `erga_eh_e_ej_04_08` e `erla_d_ebsh_11_16_ech2o` («Flow sensor (l min)», «Thermostat ON OFF», «I U operation mode», …) também passam a ter espaço. Os IDs das entidades no Home Assistant não mudam (o `object_id` e a chave de cada entidade ficam iguais, confirmado no código gerado); só muda o nome mostrado. O seletor PT/EN da página da placa já traduz os nomes novos.
